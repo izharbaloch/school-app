@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{{ asset('assets/dashboard/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/dashboard/css/components.css') }}">
     <!-- Start GA -->
+    @stack('styles')
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-94034622-3"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -284,23 +285,58 @@
                     <ul class="sidebar-menu">
                         <li class="menu-header">Dashboard</li>
 
-                        <li class=active><a class="nav-link" href="{{ route('dashboard') }}"><i
-                                    class="fas fa-fire"></i>
-                                <span>Dashboard</span></a></li>
+                        <li class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('dashboard') }}">
+                                <i class="fas fa-fire"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+
                         <li class="menu-header">Starter</li>
+
                         @hasallroles('super admin')
-                            <li><a class="nav-link" href="{{ route('academic.setup.view') }}"><i
-                                        class="far fa-square"></i> <span>Academic Setup</span></a></li>
-                            <li><a class="nav-link" href="{{ route('access.management.view') }}"><i
-                                        class="far fa-square"></i> <span>Access Management</span></a></li>
+                            <li class="{{ request()->routeIs('academic.setup.view') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('academic.setup.view') }}">
+                                    <i class="far fa-square"></i>
+                                    <span>Academic Setup</span>
+                                </a>
+                            </li>
+
+                            <li class="{{ request()->routeIs('access.management.view') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('access.management.view') }}">
+                                    <i class="far fa-square"></i>
+                                    <span>Access Management</span>
+                                </a>
+                            </li>
                         @endhasallroles
-                        <li><a class="nav-link" href="{{ route('student.management.view') }}"><i
-                                    class="far fa-square"></i> <span>Student Management</span></a></li>
+
+                        <li class="dropdown {{ request()->routeIs('students.*') ? 'active' : '' }}">
+                            <a href="#"
+                                class="nav-link has-dropdown {{ request()->routeIs('students.*') ? 'toggled' : '' }}">
+                                <i class="fas fa-th"></i>
+                                <span>Students</span>
+                            </a>
+
+                            <ul class="dropdown-menu"
+                                style="{{ request()->routeIs('students.*') ? 'display: block;' : '' }}">
+                                <li class="{{ request()->routeIs('students.create') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('students.create') }}">
+                                        Create Student
+                                    </a>
+                                </li>
+
+                                <li class="{{ request()->routeIs('students.index') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('students.index') }}">
+                                        View Students
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
 
                     <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
-                        <a href="https://getstisla.com/docs" class="btn btn-primary btn-lg btn-block btn-icon-split">
-                            <i class="fas fa-rocket"></i> Documentation
+                        <a href="#" class="btn btn-primary btn-lg btn-block btn-icon-split">
+                            <i class="fas fa-rocket"></i> Website Visit
                         </a>
                     </div>
                 </aside>
@@ -345,6 +381,8 @@
     <!-- Template JS File -->
     <script src="{{ asset('assets/dashboard/js/scripts.js') }}"></script>
     <script src="{{ asset('assets/dashboard/js/custom.js') }}"></script>
+
+    @stack('scripts')
 
     @livewireScripts
 </body>

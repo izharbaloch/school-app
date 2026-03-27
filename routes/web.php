@@ -3,6 +3,7 @@
 use App\Http\Controllers\AcademicSetupController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,7 +22,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/academic-setup', [IndexController::class, 'academicSetupView'])->name('academic.setup.view');
     Route::get('/admin/access-management', [IndexController::class, 'accessManagementView'])->name('access.management.view');
-    Route::get('/admin/student-management', [IndexController::class, 'studentManagementView'])->name('student.management.view');
+
+    // student route
+    Route::resource('/students', StudentController::class);
 });
 
 require __DIR__.'/auth.php';

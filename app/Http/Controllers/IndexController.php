@@ -14,8 +14,4 @@ class IndexController extends Controller
     {
         return view('admin.access-management');
     }
-    public function studentManagementView()
-    {
-        return view('admin.student-management');
-    }
 }
