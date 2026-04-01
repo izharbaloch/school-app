@@ -100,6 +100,11 @@
                                 </div>
 
                                 <div class="col-md-4 mb-3">
+                                    <strong>Guardian CNIC:</strong><br>
+                                    {{ $student->guardian_cnic_no ?? '-' }}
+                                </div>
+
+                                <div class="col-md-4 mb-3">
                                     <strong>Admission Date:</strong><br>
                                     {{ $student->admission_date ?? '-' }}
                                 </div>

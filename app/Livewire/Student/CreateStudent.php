@@ -28,6 +28,7 @@ class CreateStudent extends Component
     public string $father_name = '';
     public string $mother_name = '';
     public string $guardian_phone = '';
+    public string $guardian_cnic_no = '';
 
     public string $address = '';
     public string $admission_date = '';
@@ -96,6 +97,7 @@ class CreateStudent extends Component
             'father_name' => 'required|string|max:255',
             'mother_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:255',
+            'guardian_cnic_no' => 'nullable|string|max:255',
 
             'address' => 'nullable|string',
             'admission_date' => 'nullable|date',
@@ -152,6 +154,7 @@ class CreateStudent extends Component
                 'father_name' => $validated['father_name'],
                 'mother_name' => $this->emptyToNull($validated['mother_name'] ?? null),
                 'guardian_phone' => $this->emptyToNull($validated['guardian_phone'] ?? null),
+                'guardian_cnic_no' => $this->emptyToNull($validated['guardian_cnic_no'] ?? null),
 
                 'address' => $this->emptyToNull($validated['address'] ?? null),
                 'admission_date' => $this->emptyToNull($validated['admission_date'] ?? null),

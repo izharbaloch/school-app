@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('father_name');
             $table->string('mother_name')->nullable();
             $table->string('guardian_phone')->nullable();
+            $table->string('guardian_cnic_no')->nullable();
 
             $table->text('address')->nullable();
             $table->date('admission_date')->nullable();

@@ -33,6 +33,7 @@ class EditStudent extends Component
     public string $father_name = '';
     public string $mother_name = '';
     public string $guardian_phone = '';
+    public string $guardian_cnic_no = '';
 
     public string $address = '';
     public string $admission_date = '';
@@ -75,6 +76,7 @@ class EditStudent extends Component
         $this->father_name = $student->father_name;
         $this->mother_name = (string) ($student->mother_name ?? '');
         $this->guardian_phone = (string) ($student->guardian_phone ?? '');
+        $this->guardian_cnic_no = (string) ($student->guardian_cnic_no ?? '');
 
         $this->address = (string) ($student->address ?? '');
         $this->admission_date = $this->formatDateForInput($student->admission_date);
@@ -141,6 +143,7 @@ class EditStudent extends Component
             'father_name' => 'required|string|max:255',
             'mother_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:255',
+            'guardian_cnic_no' => 'nullable|string|max:255',
 
             'address' => 'nullable|string',
             'admission_date' => 'nullable|date',
@@ -194,6 +197,7 @@ class EditStudent extends Component
                 'father_name' => $validated['father_name'],
                 'mother_name' => $this->emptyToNull($validated['mother_name'] ?? null),
                 'guardian_phone' => $this->emptyToNull($validated['guardian_phone'] ?? null),
+                'guardian_cnic_no' => $this->emptyToNull($validated['guardian_cnic_no'] ?? null),
 
                 'address' => $this->emptyToNull($validated['address'] ?? null),
                 'admission_date' => $this->emptyToNull($validated['admission_date'] ?? null),
