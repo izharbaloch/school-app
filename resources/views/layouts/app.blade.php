@@ -332,6 +332,28 @@
                                 </li>
                             </ul>
                         </li>
+                        <li class="dropdown {{ request()->routeIs('attendances.*') ? 'active' : '' }}">
+                            <a href="#"
+                                class="nav-link has-dropdown {{ request()->routeIs('attendances.*') ? 'toggled' : '' }}">
+                                <i class="fas fa-th"></i>
+                                <span>Attendance</span>
+                            </a>
+
+                            <ul class="dropdown-menu"
+                                style="{{ request()->routeIs('attendances.*') ? 'display: block;' : '' }}">
+                                <li class="{{ request()->routeIs('attendances.create') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('attendances.create') }}">
+                                        Mark Attendance
+                                    </a>
+                                </li>
+
+                                <li class="{{ request()->routeIs('attendances.index') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('attendances.index') }}">
+                                        View Attendance
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
 
                     <div class="mt-4 mb-4 p-3 hide-sidebar-mini">

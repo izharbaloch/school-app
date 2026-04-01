@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
@@ -11,6 +12,7 @@ class Student extends Model
      *
      * @var list<string>
      */
+    use HasFactory;
     protected $fillable = [
         'admission_no',
         'roll_no',
@@ -56,5 +58,15 @@ class Student extends Model
     {
         return $this->hasOne(StudentAttachment::class)
             ->where('document_type', 'student_photo');
+    }
+
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceStudent::class);
+    }
+
+    public function getFullNameAttribute()
+    {
+        return trim(($this->first_name ?? '') . ' ' . ($this->last_name ?? ''));
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcademicSetupController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
@@ -25,6 +26,8 @@ Route::middleware('auth')->group(function () {
 
     // student route
     Route::resource('/students', StudentController::class);
+    // attendance routes
+    Route::resource('attendances', AttendanceController::class);
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

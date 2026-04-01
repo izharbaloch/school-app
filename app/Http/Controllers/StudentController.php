@@ -17,7 +17,7 @@ class StudentController extends Controller
             'studentClass',
             'section',
             'profilePhoto',
-        ])->latest()->get();
+        ])->orderBy('student_class_id')->orderBy('section_id')->get();
 
         return view('students.index', compact('students'));
     }

@@ -22,4 +22,9 @@ class StudentClass extends Model
     {
         return $this->belongsToMany(Subject::class, 'class_subject');
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'student_class_id');
+    }
 }
