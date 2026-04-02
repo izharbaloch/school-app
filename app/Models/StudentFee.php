@@ -52,4 +52,18 @@ class StudentFee extends Model
     {
         return $this->payable_amount - $this->paid_amount;
     }
+
+    public function getMonthNameAttribute()
+    {
+        if (!$this->month) {
+            return '-';
+        }
+
+        return date('F', mktime(0, 0, 0, $this->month, 1));
+    }
+
+    public function getSlipNoAttribute()
+    {
+        return 'FEE-' . str_pad($this->id, 5, '0', STR_PAD_LEFT);
+    }
 }

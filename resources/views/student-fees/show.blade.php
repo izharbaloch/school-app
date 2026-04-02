@@ -15,21 +15,26 @@
 
             <div class="card">
                 <div class="card-body">
-                    <p><strong>Student:</strong> {{ $studentFee->student->full_name ?? $studentFee->student->name }}</p>
+                    <p><strong>Slip No:</strong> {{ $studentFee->slip_no }}</p>
+                    <p><strong>Student:</strong>
+                        {{ $studentFee->student->full_name ?: $studentFee->student->name ?? '-' }}</p>
                     <p><strong>Class:</strong> {{ $studentFee->student->studentClass->name ?? '-' }}</p>
                     <p><strong>Section:</strong> {{ $studentFee->student->section->name ?? '-' }}</p>
                     <p><strong>Fee Type:</strong> {{ $studentFee->feeType->name ?? '-' }}</p>
-                    <p><strong>Month/Year:</strong> {{ $studentFee->month ?? '-' }}/{{ $studentFee->year ?? '-' }}</p>
+                    <p><strong>Month/Year:</strong> {{ $studentFee->month_name }}/{{ $studentFee->year ?? '-' }}</p>
                     <p><strong>Amount:</strong> {{ number_format($studentFee->amount, 2) }}</p>
                     <p><strong>Discount:</strong> {{ number_format($studentFee->discount, 2) }}</p>
                     <p><strong>Fine:</strong> {{ number_format($studentFee->fine, 2) }}</p>
                     <p><strong>Payable:</strong> {{ number_format($studentFee->payable_amount, 2) }}</p>
                     <p><strong>Paid:</strong> {{ number_format($studentFee->paid_amount, 2) }}</p>
                     <p><strong>Remaining:</strong> {{ number_format($studentFee->remaining_amount, 2) }}</p>
+                    <p><strong>Due Date:</strong> {{ $studentFee->due_date?->format('d-m-Y') ?? '-' }}</p>
                     <p><strong>Status:</strong> {{ ucfirst($studentFee->status) }}</p>
 
                     <a href="{{ route('student-fees.payment.create', $studentFee->id) }}"
                         class="btn btn-success mb-3">Collect Fee</a>
+                    <a href="{{ route('student-fees.print-slip', $studentFee->id) }}" target="_blank"
+                        class="btn btn-secondary mb-3">Print Slip</a>
 
                     <h5>Payment History</h5>
                     <table class="table table-bordered">

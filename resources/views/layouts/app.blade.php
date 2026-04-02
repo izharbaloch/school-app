@@ -362,17 +362,17 @@
                             </a>
                         </li>
 
-                        <li class="{{ request()->routeIs('fee-structures.*') ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ route('fee-structures.index') }}">
-                                <i class="fas fa-layer-group"></i>
-                                <span>Fee Structure</span>
-                            </a>
-                        </li>
-
                         <li class="{{ request()->routeIs('student-fees.*') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('student-fees.index') }}">
                                 <i class="fas fa-money-bill-wave"></i>
                                 <span>Student Fees</span>
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->routeIs('student-fees.bulk-create') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('student-fees.bulk-create') }}">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <span>Generate Class Fee</span>
                             </a>
                         </li>
                     </ul>
