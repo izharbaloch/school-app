@@ -23,8 +23,18 @@ class StudentClass extends Model
         return $this->belongsToMany(Subject::class, 'class_subject');
     }
 
+    public function students()
+    {
+        return $this->hasMany(Student::class, 'student_class_id');
+    }
+
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'student_class_id');
+    }
+
+    public function feeStructures()
+    {
+        return $this->hasMany(FeeStructure::class, 'student_class_id');
     }
 }

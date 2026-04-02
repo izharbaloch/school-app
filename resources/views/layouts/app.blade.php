@@ -354,6 +354,27 @@
                                 </li>
                             </ul>
                         </li>
+
+                        <li class="{{ request()->routeIs('fee-types.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('fee-types.index') }}">
+                                <i class="fas fa-tags"></i>
+                                <span>Fee Types</span>
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->routeIs('fee-structures.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('fee-structures.index') }}">
+                                <i class="fas fa-layer-group"></i>
+                                <span>Fee Structure</span>
+                            </a>
+                        </li>
+
+                        <li class="{{ request()->routeIs('student-fees.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('student-fees.index') }}">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span>Student Fees</span>
+                            </a>
+                        </li>
                     </ul>
 
                     <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
