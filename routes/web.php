@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AcademicSetupController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ExamMarkController;
 use App\Http\Controllers\FeePaymentController;
 use App\Http\Controllers\FeeStructureController;
 use App\Http\Controllers\FeeTypeController;
@@ -9,6 +11,7 @@ use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentFeeController;
+use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -49,6 +52,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('student-fees/{studentFee}/payment', [FeePaymentController::class, 'create'])->name('student-fees.payment.create');
     Route::post('student-fees/{studentFee}/payment', [FeePaymentController::class, 'store'])->name('student-fees.payment.store');
+
+    // Exam routes
+    Route::resource('exams', ExamController::class)->except(['show']);
+    Route::get('exam-marks/create', [ExamMarkController::class, 'create'])->name('exam-marks.create');
+    Route::get('exam-marks/subjects/{classId}', [ExamMarkController::class, 'getSubjects'])->name('exam-marks.get-subjects');
+    Route::post('exam-marks', [ExamMarkController::class, 'store'])->name('exam-marks.store');
+
+    Route::get('results', [ResultController::class, 'index'])->name('results.index');
+    Route::get('results/{exam}/{student}', [ResultController::class, 'show'])->name('results.show');
+    Route::get('results/{exam}/{student}/print', [ResultController::class, 'print'])->name('results.print');
 });
 
 require __DIR__ . '/auth.php';

@@ -375,6 +375,24 @@
                                 <span>Generate Class Fee</span>
                             </a>
                         </li>
+                        <li class="{{ request()->routeIs('exams.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('exams.index') }}">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Exams Types</span>
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('exam-marks.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('exam-marks.create') }}">
+                                <i class="fas fa-edit"></i>
+                                <span>Exam Marks Entry</span>
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('results.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('results.index') }}">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Class Results</span>
+                            </a>
+                        </li>
                     </ul>
 
                     <div class="mt-4 mb-4 p-3 hide-sidebar-mini">

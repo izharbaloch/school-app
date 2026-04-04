@@ -269,6 +269,24 @@
                         </div>
 
                         <div class="form-group">
+                            <label>Total Marks</label>
+                            <input type="number" class="form-control @error('subject_total_marks') is-invalid @enderror"
+                                wire:model.defer="subject_total_marks" placeholder="Enter total marks">
+                            @error('subject_total_marks')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label>Passing Marks</label>
+                            <input type="number" class="form-control @error('subject_passing_marks') is-invalid @enderror"
+                                wire:model.defer="subject_passing_marks" placeholder="Enter passing marks">
+                            @error('subject_passing_marks')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
                             <label>Status</label>
                             <select class="form-control @error('subject_status') is-invalid @enderror"
                                 wire:model.defer="subject_status">
@@ -302,6 +320,8 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Name</th>
+                                    <th>Total Marks</th>
+                                    <th>Passing Marks</th>
                                     <th>Status</th>
                                     <th width="120">Action</th>
                                 </tr>
@@ -311,6 +331,8 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $subject->name }}</td>
+                                        <td>{{ $subject->total_marks }}</td>
+                                        <td>{{ $subject->passing_marks }}</td>
                                         <td>
                                             @if ($subject->status)
                                                 <span class="badge badge-success">Active</span>

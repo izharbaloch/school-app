@@ -4,20 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Subject extends Model
+class Exam extends Model
 {
     protected $fillable = [
         'name',
-        'code',
-        'total_marks',
-        'passing_marks',
+        'start_date',
+        'end_date',
         'status',
+        'remarks',
     ];
 
-    public function classes()
-    {
-        return $this->belongsToMany(StudentClass::class, 'class_subject');
-    }
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
 
     public function examResults()
     {

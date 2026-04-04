@@ -37,4 +37,9 @@ class StudentClass extends Model
     {
         return $this->hasMany(FeeStructure::class, 'student_class_id');
     }
+
+    public function classSubjects()
+    {
+        return $this->hasMany(ClassSubject::class, 'student_class_id');
+    }
 }

@@ -31,6 +31,8 @@ class AcademicSetup extends Component
     // Subject Properties
     // =========================
     public string $subject_name = '';
+    public string $subject_total_marks = '';
+    public string $subject_passing_marks = '';
     public $subject_status = 1;
     public $subjects = [];
     public $subjectEditId = null;
@@ -265,11 +267,15 @@ class AcademicSetup extends Component
     {
         $validated = $this->validate([
             'subject_name' => 'required|string|max:255|unique:subjects,name',
+            'subject_total_marks' => 'required|integer|min:0',
+            'subject_passing_marks' => 'required|integer|min:0',
             'subject_status' => 'required|boolean',
         ]);
 
         Subject::create([
             'name' => $validated['subject_name'],
+            'total_marks' => $validated['subject_total_marks'],
+            'passing_marks' => $validated['subject_passing_marks'],
             'status' => (bool) $validated['subject_status'],
         ]);
 
