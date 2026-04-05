@@ -15,6 +15,12 @@ class ResultIndex extends Component
     public $student_class_id = '';
     public $section_id = '';
 
+    protected $queryString = [
+        'exam_id' => ['except' => ''],
+        'student_class_id' => ['except' => ''],
+        'section_id' => ['except' => ''],
+    ];
+
     public function updatedStudentClassId()
     {
         $this->section_id = '';

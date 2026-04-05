@@ -21,6 +21,13 @@ class ExamMarkEntry extends Component
     public $students = [];
     public $subject = null;
 
+    protected $queryString = [
+        'exam_id' => ['except' => ''],
+        'student_class_id' => ['except' => ''],
+        'section_id' => ['except' => ''],
+        'subject_id' => ['except' => ''],
+    ];
+
     public function rules()
     {
         return [
