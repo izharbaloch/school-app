@@ -49,11 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::get('student-fees/{studentFee}/payment', [FeePaymentController::class, 'create'])->name('student-fees.payment.create');
 
     // Exam routes
-    Route::resource('exams', ExamController::class)->except(['show']);
+    Route::get('exams', [ExamController::class, 'index'])->name('exams.index');
     Route::get('exam-marks/create', [ExamMarkController::class, 'create'])->name('exam-marks.create');
-    Route::get('exam-marks/subjects/{classId}', [ExamMarkController::class, 'getSubjects'])->name('exam-marks.get-subjects');
-    Route::post('exam-marks', [ExamMarkController::class, 'store'])->name('exam-marks.store');
 
+    // Result routes
     Route::get('results', [ResultController::class, 'index'])->name('results.index');
     Route::get('results/{exam}/{student}', [ResultController::class, 'show'])->name('results.show');
     Route::get('results/{exam}/{student}/print', [ResultController::class, 'print'])->name('results.print');
