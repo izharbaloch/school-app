@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
 
     // fee routes
     Route::get('fee-types', [FeeTypeController::class, 'index'])->name('fee-types.index');
-    Route::resource('fee-structures', FeeStructureController::class)->except(['show']);
+    Route::get('fee-structures', [FeeStructureController::class, 'index'])->name('fee-structures.index');
 
     Route::get('student-fees', [StudentFeeController::class, 'index'])->name('student-fees.index');
     Route::get('student-fees/create', [StudentFeeController::class, 'create'])->name('student-fees.create');

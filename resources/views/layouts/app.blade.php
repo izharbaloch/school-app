@@ -332,6 +332,7 @@
                                 </li>
                             </ul>
                         </li>
+                        
                         <li class="dropdown {{ request()->routeIs('attendances.*') ? 'active' : '' }}">
                             <a href="#"
                                 class="nav-link has-dropdown {{ request()->routeIs('attendances.*') ? 'toggled' : '' }}">
@@ -355,43 +356,64 @@
                             </ul>
                         </li>
 
-                        <li class="{{ request()->routeIs('fee-types.*') ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ route('fee-types.index') }}">
-                                <i class="fas fa-tags"></i>
-                                <span>Fee Types</span>
+                        {{-- // fee management --}}
+                        <li class="dropdown {{ request()->routeIs('fee.*') ? 'active' : '' }}">
+                            <a href="#"
+                                class="nav-link has-dropdown {{ request()->routeIs('fee.*') ? 'toggled' : '' }}">
+                                <i class="fas fa-th"></i>
+                                <span>Fee Management</span>
                             </a>
+
+                            <ul class="dropdown-menu"
+                                style="{{ request()->routeIs('fee-types.index.*') ? 'display: block;' : '' }}">
+                                <li class="{{ request()->routeIs('fee-types.index') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('fee-types.index') }}">
+                                        Fee Type
+                                    </a>
+                                </li>
+
+                                <li class="{{ request()->routeIs('fee-structures.index') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('fee-structures.index') }}">
+                                        Fee Structure
+                                    </a>
+                                </li>
+
+                                <li class="{{ request()->routeIs('student-fees.index') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('student-fees.index') }}">
+                                        Student Fees
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
-                        <li class="{{ request()->routeIs('student-fees.*') ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ route('student-fees.index') }}">
-                                <i class="fas fa-money-bill-wave"></i>
-                                <span>Student Fees</span>
+                        {{-- // Exam management --}}
+                        <li class="dropdown {{ request()->routeIs('exams.*') ? 'active' : '' }}">
+                            <a href="#"
+                                class="nav-link has-dropdown {{ request()->routeIs('exams.*') ? 'toggled' : '' }}">
+                                <i class="fas fa-th"></i>
+                                <span>Exam Management</span>
                             </a>
-                        </li>
 
-                        <li class="{{ request()->routeIs('student-fees.bulk-create') ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ route('student-fees.bulk-create') }}">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                                <span>Generate Class Fee</span>
-                            </a>
-                        </li>
-                        <li class="{{ request()->routeIs('exams.*') ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ route('exams.index') }}">
-                                <i class="fas fa-file-alt"></i>
-                                <span>Exams Types</span>
-                            </a>
-                        </li>
-                        <li class="{{ request()->routeIs('exam-marks.*') ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ route('exam-marks.create') }}">
-                                <i class="fas fa-edit"></i>
-                                <span>Exam Marks Entry</span>
-                            </a>
-                        </li>
-                        <li class="{{ request()->routeIs('results.*') ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ route('results.index') }}">
-                                <i class="fas fa-chart-bar"></i>
-                                <span>Class Results</span>
-                            </a>
+                            <ul class="dropdown-menu"
+                                style="{{ request()->routeIs('exam-marks.*') ? 'display: block;' : '' }}">
+                                <li class="{{ request()->routeIs('exams.index') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('exams.index') }}">
+                                        Exam Type
+                                    </a>
+                                </li>
+
+                                <li class="{{ request()->routeIs('exam-marks.create') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('exam-marks.create') }}">
+                                        Exam Marks Entry
+                                    </a>
+                                </li>
+
+                                <li class="{{ request()->routeIs('results.index') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('results.index') }}">
+                                        Class Results
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
 
