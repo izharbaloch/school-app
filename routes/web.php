@@ -42,16 +42,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('student-fees', [StudentFeeController::class, 'index'])->name('student-fees.index');
     Route::get('student-fees/create', [StudentFeeController::class, 'create'])->name('student-fees.create');
-    Route::post('student-fees', [StudentFeeController::class, 'store'])->name('student-fees.store');
     Route::get('student-fees/{studentFee}', [StudentFeeController::class, 'show'])->name('student-fees.show');
 
     Route::get('student-fees-bulk-generate', [StudentFeeController::class, 'bulkCreate'])->name('student-fees.bulk-create');
-    Route::post('student-fees-bulk-generate', [StudentFeeController::class, 'bulkStore'])->name('student-fees.bulk-store');
-
     Route::get('student-fees/{studentFee}/print-slip', [StudentFeeController::class, 'printSlip'])->name('student-fees.print-slip');
-
     Route::get('student-fees/{studentFee}/payment', [FeePaymentController::class, 'create'])->name('student-fees.payment.create');
-    Route::post('student-fees/{studentFee}/payment', [FeePaymentController::class, 'store'])->name('student-fees.payment.store');
 
     // Exam routes
     Route::resource('exams', ExamController::class)->except(['show']);
