@@ -17,6 +17,16 @@
     <link rel="stylesheet"
         href="{{ asset('assets/dashboard/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css') }}">
 
+    <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/bootstrap-daterangepicker/daterangepicker.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/dashboard/modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/select2/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/jquery-selectric/selectric.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/dashboard/modules/bootstrap-timepicker/css/bootstrap-timepicker.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets/dashboard/modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+
     <!-- Template CSS -->
     <link rel="stylesheet" href="{{ asset('assets/dashboard/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/dashboard/css/components.css') }}">
@@ -295,25 +305,28 @@
                         <li class="menu-header">Starter</li>
 
                         @hasallroles('super admin')
+                            {{-- Academic Setup --}}
                             <li class="{{ request()->routeIs('academic.setup.view') ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ route('academic.setup.view') }}">
-                                    <i class="far fa-square"></i>
+                                    <i class="fas fa-school"></i> {{-- changed --}}
                                     <span>Academic Setup</span>
                                 </a>
                             </li>
 
+                            {{-- Access Management --}}
                             <li class="{{ request()->routeIs('access.management.view') ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ route('access.management.view') }}">
-                                    <i class="far fa-square"></i>
+                                    <i class="fas fa-user-shield"></i> {{-- changed --}}
                                     <span>Access Management</span>
                                 </a>
                             </li>
                         @endhasallroles
 
+                        {{-- Students --}}
                         <li class="dropdown {{ request()->routeIs('students.*') ? 'active' : '' }}">
                             <a href="#"
                                 class="nav-link has-dropdown {{ request()->routeIs('students.*') ? 'toggled' : '' }}">
-                                <i class="fas fa-th"></i>
+                                <i class="fas fa-user-graduate"></i>
                                 <span>Students</span>
                             </a>
 
@@ -332,11 +345,12 @@
                                 </li>
                             </ul>
                         </li>
-                        
+
+                        {{-- Attendance --}}
                         <li class="dropdown {{ request()->routeIs('attendances.*') ? 'active' : '' }}">
                             <a href="#"
                                 class="nav-link has-dropdown {{ request()->routeIs('attendances.*') ? 'toggled' : '' }}">
-                                <i class="fas fa-th"></i>
+                                <i class="fas fa-calendar-check"></i>
                                 <span>Attendance</span>
                             </a>
 
@@ -356,16 +370,21 @@
                             </ul>
                         </li>
 
-                        {{-- // fee management --}}
-                        <li class="dropdown {{ request()->routeIs('fee.*') ? 'active' : '' }}">
-                            <a href="#"
-                                class="nav-link has-dropdown {{ request()->routeIs('fee.*') ? 'toggled' : '' }}">
-                                <i class="fas fa-th"></i>
+                        {{-- Fee Management --}}
+                        @php
+                            $feeMenuActive =
+                                request()->routeIs('fee-types.*') ||
+                                request()->routeIs('fee-structures.*') ||
+                                request()->routeIs('student-fees.*');
+                        @endphp
+
+                        <li class="dropdown {{ $feeMenuActive ? 'active' : '' }}">
+                            <a href="#" class="nav-link has-dropdown {{ $feeMenuActive ? 'toggled' : '' }}">
+                                <i class="fas fa-money-bill-wave"></i>
                                 <span>Fee Management</span>
                             </a>
 
-                            <ul class="dropdown-menu"
-                                style="{{ request()->routeIs('fee-types.index.*') ? 'display: block;' : '' }}">
+                            <ul class="dropdown-menu" style="{{ $feeMenuActive ? 'display: block;' : '' }}">
                                 <li class="{{ request()->routeIs('fee-types.index') ? 'active' : '' }}">
                                     <a class="nav-link" href="{{ route('fee-types.index') }}">
                                         Fee Type
@@ -383,19 +402,36 @@
                                         Student Fees
                                     </a>
                                 </li>
+
+                                <li class="{{ request()->routeIs('student-fees.create') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('student-fees.create') }}">
+                                        Generate Student Fee
+                                    </a>
+                                </li>
+
+                                <li class="{{ request()->routeIs('student-fees.bulk-create') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('student-fees.bulk-create') }}">
+                                        Bulk Generate Fee
+                                    </a>
+                                </li>
                             </ul>
                         </li>
 
-                        {{-- // Exam management --}}
-                        <li class="dropdown {{ request()->routeIs('exams.*') ? 'active' : '' }}">
-                            <a href="#"
-                                class="nav-link has-dropdown {{ request()->routeIs('exams.*') ? 'toggled' : '' }}">
-                                <i class="fas fa-th"></i>
+                        {{-- Exam Management --}}
+                        @php
+                            $examMenuActive =
+                                request()->routeIs('exams.*') ||
+                                request()->routeIs('exam-marks.*') ||
+                                request()->routeIs('results.*');
+                        @endphp
+
+                        <li class="dropdown {{ $examMenuActive ? 'active' : '' }}">
+                            <a href="#" class="nav-link has-dropdown {{ $examMenuActive ? 'toggled' : '' }}">
+                                <i class="fas fa-file-alt"></i>
                                 <span>Exam Management</span>
                             </a>
 
-                            <ul class="dropdown-menu"
-                                style="{{ request()->routeIs('exam-marks.*') ? 'display: block;' : '' }}">
+                            <ul class="dropdown-menu" style="{{ $examMenuActive ? 'display: block;' : '' }}">
                                 <li class="{{ request()->routeIs('exams.index') ? 'active' : '' }}">
                                     <a class="nav-link" href="{{ route('exams.index') }}">
                                         Exam Type
@@ -457,6 +493,17 @@
     </script>
     <script src="{{ asset('assets/dashboard/modules/datatables/Select-1.2.4/js/dataTables.select.min.js') }}"></script>
     <script src="{{ asset('assets/dashboard/modules/jquery-ui/jquery-ui.min.js') }}"></script>
+
+    <script src="{{ asset('assets/dashboard/modules/cleave-js/dist/cleave.min.js') }}"></script>
+    <script src="{{ asset('assets/dashboard/modules/cleave-js/dist/addons/cleave-phone.us.js') }}"></script>
+    <script src="{{ asset('assets/dashboard/modules/jquery-pwstrength/jquery.pwstrength.min.js') }}"></script>
+    <script src="{{ asset('assets/dashboard/modules/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/dashboard/modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js') }}">
+    </script>
+    <script src="{{ asset('assets/dashboard/modules/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/dashboard/modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
+    <script src="{{ asset('assets/dashboard/modules/select2/dist/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('assets/dashboard/modules/jquery-selectric/jquery.selectric.min.js') }}"></script>
 
     <!-- Page Specific JS File -->
     <script src="{{ asset('assets/dashboard/js/page/modules-datatables.js') }}"></script>
