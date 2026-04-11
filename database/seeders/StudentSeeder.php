@@ -17,7 +17,6 @@ class StudentSeeder extends Seeder
         foreach ($classes as $class) {
             foreach ($sections as $section) {
 
-                // har class + section mein 10 students
                 Student::factory()->count(10)->create([
                     'student_class_id' => $class->id,
                     'section_id'       => $section->id,

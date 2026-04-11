@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('student_class_id')->constrained('student_classes')->cascadeOnDelete();
             $table->foreignId('fee_type_id')->constrained('fee_types')->cascadeOnDelete();
             $table->decimal('amount', 10, 2)->default(0);
-            $table->boolean('status')->default(true);
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

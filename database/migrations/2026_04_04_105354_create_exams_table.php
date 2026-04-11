@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->boolean('status')->default(true);
+            $table->boolean('status')->default(1);
             $table->text('remarks')->nullable();
             $table->timestamps();
         });

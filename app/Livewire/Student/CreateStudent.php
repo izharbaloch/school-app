@@ -2,12 +2,14 @@
 
 namespace App\Livewire\Student;
 
+use App\Models\Guardian;
 use Livewire\Component;
 use App\Models\Student;
 use App\Models\Section;
 use App\Models\StudentClass;
 use Livewire\WithFileUploads;
 use App\Models\StudentAttachment;
+use App\Models\User;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +31,7 @@ class CreateStudent extends Component
     public string $mother_name = '';
     public string $guardian_phone = '';
     public string $guardian_cnic_no = '';
+    public string $guardian_email = '';
 
     public string $address = '';
     public string $admission_date = '';
@@ -78,7 +81,7 @@ class CreateStudent extends Component
 
         $this->sections = $studentClass ? $studentClass->sections : collect();
 
-        if (!collect($this->sections)->pluck('id')->map(fn ($id) => (string) $id)->contains((string) $this->section_id)) {
+        if (!collect($this->sections)->pluck('id')->map(fn($id) => (string) $id)->contains((string) $this->section_id)) {
             $this->section_id = '';
         }
     }
@@ -98,6 +101,7 @@ class CreateStudent extends Component
             'mother_name' => 'nullable|string|max:255',
             'guardian_phone' => 'nullable|string|max:255',
             'guardian_cnic_no' => 'nullable|string|max:255',
+            'guardian_email' => 'nullable|email|max:255',
 
             'address' => 'nullable|string',
             'admission_date' => 'nullable|date',
@@ -137,10 +141,33 @@ class CreateStudent extends Component
         $validated = $this->validate();
 
         DB::transaction(function () use ($validated) {
+            $guardian = $this->findOrCreateGuardian($validated);
+
+            $user = null;
+            if (!empty($validated['email'])) {
+                $user = User::firstOrCreate(
+                    ['email' => $validated['email']],
+                    [
+                        'name' => trim($validated['first_name'] . ' ' . ($validated['last_name'] ?? '')),
+                        'password' => bcrypt('password'),
+                    ]
+                );
+
+                if (!$user->hasRole('student')) {
+                    $user->assignRole('student');
+                }
+
+                $user->update([
+                    'name' => trim($validated['first_name'] . ' ' . ($validated['last_name'] ?? '')),
+                ]);
+            }
+
             $admissionNo = $this->generateAdmissionNo();
             $rollNo = $this->generateRollNo($validated['student_class_id']);
 
             $student = Student::create([
+                'user_id' => $user ? $user->id : null,
+                'guardian_id' => $guardian->id,
                 'admission_no' => $admissionNo,
                 'roll_no' => $rollNo,
                 'first_name' => $validated['first_name'],
@@ -155,6 +182,7 @@ class CreateStudent extends Component
                 'mother_name' => $this->emptyToNull($validated['mother_name'] ?? null),
                 'guardian_phone' => $this->emptyToNull($validated['guardian_phone'] ?? null),
                 'guardian_cnic_no' => $this->emptyToNull($validated['guardian_cnic_no'] ?? null),
+                'guardian_email' => $this->emptyToNull($validated['guardian_email'] ?? null),
 
                 'address' => $this->emptyToNull($validated['address'] ?? null),
                 'admission_date' => $this->emptyToNull($validated['admission_date'] ?? null),
@@ -238,6 +266,74 @@ class CreateStudent extends Component
             'file_name' => $uploadedFile->getClientOriginalName(),
             'file_extension' => $uploadedFile->getClientOriginalExtension(),
             'file_size' => $uploadedFile->getSize(),
+            'status' => 1,
+        ]);
+    }
+
+    public function findOrCreateGuardian($validated): Guardian
+    {
+        $cnic = $this->emptyToNull($validated['guardian_cnic_no'] ?? null);
+        $phone = $this->emptyToNull($validated['guardian_phone'] ?? null);
+        $email = $this->emptyToNull($validated['guardian_email'] ?? null);
+        $fatherName = $validated['father_name'];
+
+        $guardian = null;
+
+        if ($cnic) {
+            $guardian = Guardian::where('guardian_cnic_no', $cnic)->first();
+        }
+
+        if (!$guardian && $phone) {
+            $guardian = Guardian::where('guardian_phone', $phone)->first();
+        }
+
+        if (!$guardian && $email) {
+            $guardian = Guardian::where('email', $email)->first();
+        }
+
+        $user = null;
+
+        if ($email) {
+            $user = User::firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $fatherName,
+                    'password' => bcrypt('password'),
+                ]
+            );
+
+            $user->update([
+                'name' => $fatherName,
+            ]);
+
+            if (!$user->hasRole('parent')) {
+                $user->assignRole('parent');
+            }
+        }
+
+        if ($guardian) {
+            $guardian->update([
+                'user_id' => $user ? $user->id : $guardian->user_id,
+                'father_name' => $fatherName,
+                'mother_name' => $this->emptyToNull($validated['mother_name'] ?? null),
+                'guardian_phone' => $phone,
+                'guardian_cnic_no' => $cnic,
+                'email' => $email,
+                'address' => $this->emptyToNull($validated['address'] ?? null),
+                'status' => 1,
+            ]);
+
+            return $guardian;
+        }
+
+        return Guardian::create([
+            'user_id' => $user ? $user->id : null,
+            'father_name' => $fatherName,
+            'mother_name' => $this->emptyToNull($validated['mother_name'] ?? null),
+            'guardian_phone' => $phone,
+            'guardian_cnic_no' => $cnic,
+            'email' => $email,
+            'address' => $this->emptyToNull($validated['address'] ?? null),
             'status' => 1,
         ]);
     }

@@ -14,6 +14,8 @@ class Student extends Model
      */
     use HasFactory;
     protected $fillable = [
+        'user_id',
+        'guardian_id',
         'admission_no',
         'roll_no',
         'first_name',
@@ -78,5 +80,10 @@ class Student extends Model
     public function examResults()
     {
         return $this->hasMany(ExamResult::class);
+    }
+
+    public function guardian()
+    {
+        return $this->belongsTo(Guardian::class);
     }
 }

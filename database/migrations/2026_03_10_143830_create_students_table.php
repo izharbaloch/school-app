@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('guardian_id')->constrained('guardians')->onDelete('cascade');
             $table->string('admission_no')->unique();
             $table->string('roll_no')->nullable();
 
@@ -27,7 +29,8 @@ return new class extends Migration
             $table->string('father_name');
             $table->string('mother_name')->nullable();
             $table->string('guardian_phone')->nullable();
-            $table->string('guardian_cnic_no')->nullable();
+            $table->string('guardian_cnic_no')->unique()->nullable();
+            $table->string('guardian_email')->nullable();
 
             $table->text('address')->nullable();
             $table->date('admission_date')->nullable();

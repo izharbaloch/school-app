@@ -13,8 +13,8 @@ class FeeType extends Component
     protected $paginationTheme = 'bootstrap';
 
     public $name = '';
-    public $is_monthly = false;
-    public $status = true;
+    public $is_monthly = '0';
+    public $status = '1';
 
     public $editId = null;
     public $showForm = false;
@@ -60,8 +60,8 @@ class FeeType extends Component
 
         FeeTypeModel::create([
             'name' => $this->name,
-            'is_monthly' => (bool) $this->is_monthly,
-            'status' => (bool) $this->status,
+            'is_monthly' =>  $this->is_monthly,
+            'status' =>  $this->status,
         ]);
 
         session()->flash('success', 'Fee type created successfully.');
@@ -77,8 +77,8 @@ class FeeType extends Component
 
         $this->editId = $feeType->id;
         $this->name = $feeType->name;
-        $this->is_monthly = (bool) $feeType->is_monthly;
-        $this->status = (bool) $feeType->status;
+        $this->is_monthly =  $feeType->is_monthly;
+        $this->status =  $feeType->status;
         $this->showForm = true;
 
         $this->resetValidation();
@@ -92,8 +92,8 @@ class FeeType extends Component
 
         $feeType->update([
             'name' => $this->name,
-            'is_monthly' => (bool) $this->is_monthly,
-            'status' => (bool) $this->status,
+            'is_monthly' =>  $this->is_monthly,
+            'status' =>  $this->status,
         ]);
 
         session()->flash('success', 'Fee type updated successfully.');
@@ -132,8 +132,8 @@ class FeeType extends Component
             'editId',
         ]);
 
-        $this->is_monthly = false;
-        $this->status = true;
+        $this->is_monthly = '0';
+        $this->status = '1';
 
         $this->resetValidation();
     }

@@ -119,6 +119,15 @@
                     </div>
 
                     <div class="form-group col-md-3">
+                        <label>Guardian Email</label>
+                        <input type="email" class="form-control @error('guardian_email') is-invalid @enderror"
+                            wire:model.defer="guardian_email" placeholder="Enter guardian email">
+                        @error('guardian_email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group col-md-3">
                         <label>Admission Date</label>
                         <input type="date" class="form-control @error('admission_date') is-invalid @enderror"
                             wire:model.defer="admission_date">
@@ -145,8 +154,8 @@
 
                     <div class="form-group col-md-4">
                         <label>Section <span class="text-danger">*</span></label>
-                        <select class="form-control @error('section_id') is-invalid @enderror" wire:model="section_id"
-                            {{ count($sections) ? '' : 'disabled' }}>
+                        <select class="form-control @error('section_id') is-invalid @enderror"
+                            wire:model="section_id" {{ count($sections) ? '' : 'disabled' }}>
                             <option value="">Select Section</option>
                             @foreach ($sections as $section)
                                 <option value="{{ $section->id }}">{{ $section->name }}</option>

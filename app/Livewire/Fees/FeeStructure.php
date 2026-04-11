@@ -17,7 +17,7 @@ class FeeStructure extends Component
     public $student_class_id = '';
     public $fee_type_id = '';
     public $amount = '';
-    public $status = true;
+    public $status = '1';
 
     public $editId = null;
     public $showForm = false;
@@ -88,7 +88,7 @@ class FeeStructure extends Component
             'student_class_id' => $this->student_class_id,
             'fee_type_id' => $this->fee_type_id,
             'amount' => $this->amount,
-            'status' => (bool) $this->status,
+            'status' =>  $this->status,
         ]);
 
         session()->flash('success', 'Fee structure created successfully.');
@@ -106,7 +106,7 @@ class FeeStructure extends Component
         $this->student_class_id = $feeStructure->student_class_id;
         $this->fee_type_id = $feeStructure->fee_type_id;
         $this->amount = $feeStructure->amount;
-        $this->status = (bool) $feeStructure->status;
+        $this->status =  $feeStructure->status;
         $this->showForm = true;
 
         $this->resetValidation();
@@ -132,7 +132,7 @@ class FeeStructure extends Component
             'student_class_id' => $this->student_class_id,
             'fee_type_id' => $this->fee_type_id,
             'amount' => $this->amount,
-            'status' => (bool) $this->status,
+            'status' =>  $this->status,
         ]);
 
         session()->flash('success', 'Fee structure updated successfully.');
@@ -172,7 +172,7 @@ class FeeStructure extends Component
             'editId',
         ]);
 
-        $this->status = true;
+        $this->status = '1';
 
         $this->resetValidation();
     }

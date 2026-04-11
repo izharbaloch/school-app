@@ -24,7 +24,7 @@
         <div class="card-body">
 
             @if ($showForm)
-                <div class="mb-4 p-3 border rounded bg-light">
+                <div class="border rounded p-3 mb-4">
                     <h5 class="mb-3">
                         {{ $editId ? 'Edit Fee Type' : 'Create Fee Type' }}
                     </h5>
@@ -40,7 +40,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-4">
                                 <label>Monthly</label>
                                 <select class="form-control @error('is_monthly') is-invalid @enderror"
                                     wire:model.defer="is_monthly">
@@ -52,7 +52,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-4">
                                 <label>Status</label>
                                 <select class="form-control @error('status') is-invalid @enderror"
                                     wire:model.defer="status">

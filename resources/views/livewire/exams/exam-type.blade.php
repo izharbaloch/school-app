@@ -24,7 +24,7 @@
         <div class="card-body">
 
             @if ($showForm)
-                <div class="mb-4 p-3 border rounded bg-light">
+                <div class="border rounded p-3 mb-4">
                     <h5 class="mb-3">
                         {{ $editId ? 'Edit Exam' : 'Create Exam' }}
                     </h5>
@@ -72,7 +72,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="form-group col-md-10">
+                            <div class="form-group col-md-12">
                                 <label>Remarks</label>
                                 <textarea class="form-control @error('remarks') is-invalid @enderror" wire:model.defer="remarks" rows="3"
                                     placeholder="Enter remarks">{{ $remarks }}</textarea>
@@ -130,7 +130,7 @@
                                 <td>{{ $exam->end_date ? $exam->end_date->format('d-m-Y') : '-' }}</td>
                                 <td>
                                     @if ($exam->status)
-                                        <span class="badge badge-primary">Active</span>
+                                        <span class="badge badge-success">Active</span>
                                     @else
                                         <span class="badge badge-danger">Inactive</span>
                                     @endif

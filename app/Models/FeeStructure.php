@@ -13,6 +13,11 @@ class FeeStructure extends Model
         'status',
     ];
 
+    // // casts
+    // protected $casts = [
+    //     'status' => 'boolean',
+    // ];
+
     public function studentClass()
     {
         return $this->belongsTo(StudentClass::class, 'student_class_id');

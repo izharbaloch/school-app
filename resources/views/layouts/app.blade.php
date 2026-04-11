@@ -261,9 +261,9 @@
                     </li>
                     <li class="dropdown"><a href="#" data-toggle="dropdown"
                             class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-                            <img alt="image" src="{{ asset('assets/img/avatar/avatar-1.png') }}"
+                            <img alt="image" src="{{ asset('assets/dashboard/img/avatar/avatar-1.png') }}"
                                 class="rounded-circle mr-1">
-                            <div class="d-sm-none d-lg-inline-block">Hi, Ujang Maman</div>
+                            <div class="d-sm-none d-lg-inline-block">{{ Auth::user()->name }}</div>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <div class="dropdown-title">Logged in 5 min ago</div>
@@ -450,6 +450,13 @@
                                     </a>
                                 </li>
                             </ul>
+                        </li>
+                        {{-- Guardian Management --}}
+                        <li class="{{ request()->routeIs('guardians.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('guardians.index') }}">
+                                <i class="fas fa-users"></i>
+                                <span>Guardian Management</span>
+                            </a>
                         </li>
                     </ul>
 

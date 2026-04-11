@@ -7,6 +7,7 @@ use App\Http\Controllers\ExamMarkController;
 use App\Http\Controllers\FeePaymentController;
 use App\Http\Controllers\FeeStructureController;
 use App\Http\Controllers\FeeTypeController;
+use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
 
     // student route
     Route::resource('/students', StudentController::class);
+    // guardian route
+    Route::get('/guardians', [GuardianController::class, 'index'])->name('guardians.index');
     // attendance routes
     Route::resource('attendances', AttendanceController::class);
 

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('fee_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->boolean('is_monthly')->default(false);
-            $table->boolean('status')->default(true);
+            $table->boolean('is_monthly')->default(0);
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

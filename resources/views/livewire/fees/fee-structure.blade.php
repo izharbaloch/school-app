@@ -24,7 +24,7 @@
         <div class="card-body">
 
             @if ($showForm)
-                <div class="mb-4 p-3 border rounded bg-light">
+                <div class="border rounded p-3 mb-4">
                     <h5 class="mb-3">
                         {{ $editId ? 'Edit Fee Structure' : 'Create Fee Structure' }}
                     </h5>
@@ -59,7 +59,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-3">
                                 <label>Amount</label>
                                 <input type="number" step="0.01"
                                     class="form-control @error('amount') is-invalid @enderror" wire:model.defer="amount"
@@ -69,7 +69,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-3">
                                 <label>Status</label>
                                 <select class="form-control @error('status') is-invalid @enderror"
                                     wire:model.defer="status">

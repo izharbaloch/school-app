@@ -16,7 +16,7 @@ class ExamType extends Component
     public $start_date = '';
     public $end_date = '';
     public $remarks = '';
-    public $status = true;
+    public $status = '1';
 
     public $editId = null;
     public $showForm = false;
@@ -68,7 +68,7 @@ class ExamType extends Component
             'start_date' => $this->start_date ?: null,
             'end_date' => $this->end_date ?: null,
             'remarks' => $this->remarks,
-            'status' => (bool) $this->status,
+            'status' =>  $this->status,
         ]);
 
         session()->flash('success', 'Exam created successfully.');
@@ -87,7 +87,7 @@ class ExamType extends Component
         $this->start_date = $exam->start_date ? $exam->start_date->format('Y-m-d') : '';
         $this->end_date = $exam->end_date ? $exam->end_date->format('Y-m-d') : '';
         $this->remarks = $exam->remarks;
-        $this->status = (bool) $exam->status;
+        $this->status =  $exam->status;
         $this->showForm = true;
 
         $this->resetValidation();
@@ -104,7 +104,7 @@ class ExamType extends Component
             'start_date' => $this->start_date ?: null,
             'end_date' => $this->end_date ?: null,
             'remarks' => $this->remarks,
-            'status' => (bool) $this->status,
+            'status' =>  $this->status,
         ]);
 
         session()->flash('success', 'Exam updated successfully.');
@@ -144,7 +144,7 @@ class ExamType extends Component
             'editId',
         ]);
 
-        $this->status = true;
+        $this->status = '1';
         $this->start_date = '';
         $this->end_date = '';
         $this->remarks = '';
