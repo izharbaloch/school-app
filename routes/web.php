@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentFeeController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -36,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('/students', StudentController::class);
     // guardian route
     Route::get('/guardians', [GuardianController::class, 'index'])->name('guardians.index');
+    // teacher route
+    Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers.index');
     // attendance routes
     Route::resource('attendances', AttendanceController::class);
 
