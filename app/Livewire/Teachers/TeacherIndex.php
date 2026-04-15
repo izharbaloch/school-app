@@ -286,10 +286,15 @@ class TeacherIndex extends Component
 
     public function render()
     {
-        $classes = StudentClass::orderBy('name')->get();
+        $classes = StudentClass::select('id', 'name')->orderBy('name')->get();
 
         $teachers = Teacher::query()
-            ->with(['studentClass', 'section', 'user'])
+            ->select('id', 'user_id', 'employee_no', 'name', 'email', 'phone', 'cnic', 'designation', 'student_class_id', 'section_id', 'status')
+            ->with([
+                'studentClass:id,name',
+                'section:id,name',
+                'user:id,name,email',
+            ])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('employee_no', 'like', '%' . $this->search . '%')
@@ -300,8 +305,8 @@ class TeacherIndex extends Component
                         ->orWhere('designation', 'like', '%' . $this->search . '%');
                 });
             })
-            ->latest()
-            ->paginate(10);
+            ->latest('id')
+            ->paginate(15);
 
         return view('livewire.teachers.teacher-index', compact('teachers', 'classes'));
     }

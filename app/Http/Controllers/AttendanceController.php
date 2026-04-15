@@ -36,10 +36,11 @@ class AttendanceController extends Controller
     public function show(Attendance $attendance)
     {
         $attendance->load([
-            'studentClass',
-            'section',
-            'takenBy',
-            'attendanceStudents.student',
+            'studentClass:id,name',
+            'section:id,name',
+            'takenBy:id,name',
+            'attendanceStudents:id,attendance_id,student_id,status,remarks',
+            'attendanceStudents.student:id,roll_no,first_name,last_name',
         ]);
 
         return view('attendances.show', compact('attendance'));

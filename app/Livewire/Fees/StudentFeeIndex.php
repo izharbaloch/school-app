@@ -83,7 +83,9 @@ class StudentFeeIndex extends Component
 
     public function render()
     {
-        $studentFees = StudentFee::with([
+        $studentFees = StudentFee::select('id', 'student_id', 'fee_type_id', 'month', 'year', 'amount', 'paid_amount', 'status', 'created_at')
+            ->with([
+                'student:id,first_name,last_name,student_class_id,section_id',
                 'student.studentClass:id,name',
                 'student.section:id,name',
                 'feeType:id,name',
@@ -93,8 +95,8 @@ class StudentFeeIndex extends Component
             ->when($this->month, fn ($q) => $q->where('month', $this->month))
             ->when($this->year, fn ($q) => $q->where('year', $this->year))
             ->when($this->status, fn ($q) => $q->where('status', $this->status))
-            ->latest()
-            ->paginate(15);
+            ->latest('id')
+            ->paginate(20);
 
         $students = Student::select('id', 'first_name', 'last_name')
             ->orderBy('first_name')

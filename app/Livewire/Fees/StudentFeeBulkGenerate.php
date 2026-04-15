@@ -85,7 +85,7 @@ class StudentFeeBulkGenerate extends Component
 
     public function getClassesProperty()
     {
-        return StudentClass::orderBy('name')->get();
+        return StudentClass::select('id', 'name')->orderBy('name')->get();
     }
 
     public function getSectionsProperty()
@@ -94,14 +94,15 @@ class StudentFeeBulkGenerate extends Component
             return collect();
         }
 
-        return Section::whereHas('classes', function ($query) {
-            $query->where('student_classes.id', $this->student_class_id);
-        })->orderBy('name')->get();
+        return Section::select('id', 'name')
+            ->whereHas('classes', function ($query) {
+                $query->where('student_classes.id', $this->student_class_id);
+            })->orderBy('name')->get();
     }
 
     public function getFeeTypesProperty()
     {
-        return FeeType::where('status', true)->orderBy('name')->get();
+        return FeeType::select('id', 'name')->where('status', true)->orderBy('name')->get();
     }
 
     public function getStudentsProperty()
@@ -110,7 +111,11 @@ class StudentFeeBulkGenerate extends Component
             return collect();
         }
 
-        $query = Student::with(['studentClass', 'section'])
+        $query = Student::select('id', 'roll_no', 'first_name', 'last_name', 'student_class_id', 'section_id')
+            ->with([
+                'studentClass:id,name',
+                'section:id,name',
+            ])
             ->where('student_class_id', $this->student_class_id);
 
         if ($this->section_id) {
@@ -126,7 +131,8 @@ class StudentFeeBulkGenerate extends Component
             return;
         }
 
-        $structure = FeeStructure::where('student_class_id', $this->student_class_id)
+        $structure = FeeStructure::select('amount')
+            ->where('student_class_id', $this->student_class_id)
             ->where('fee_type_id', $this->fee_type_id)
             ->first();
 

@@ -77,7 +77,7 @@ class StudentFeeCreate extends Component
 
     public function getClassesProperty()
     {
-        return StudentClass::orderBy('name')->get();
+        return StudentClass::select('id', 'name')->orderBy('name')->get();
     }
 
     public function getSectionsProperty()
@@ -86,9 +86,10 @@ class StudentFeeCreate extends Component
             return collect();
         }
 
-        return Section::whereHas('classes', function ($query) {
-            $query->where('student_classes.id', $this->student_class_id);
-        })
+        return Section::select('id', 'name')
+            ->whereHas('classes', function ($query) {
+                $query->where('student_classes.id', $this->student_class_id);
+            })
             ->orderBy('name')
             ->get();
     }
@@ -99,7 +100,11 @@ class StudentFeeCreate extends Component
             return collect();
         }
 
-        return Student::with(['studentClass', 'section'])
+        return Student::select('id', 'roll_no', 'first_name', 'last_name', 'student_class_id', 'section_id')
+            ->with([
+                'studentClass:id,name',
+                'section:id,name',
+            ])
             ->where('student_class_id', $this->student_class_id)
             ->where('section_id', $this->section_id)
             ->orderBy('roll_no')
@@ -109,7 +114,8 @@ class StudentFeeCreate extends Component
 
     public function getFeeTypesProperty()
     {
-        return FeeType::where('status', true)
+        return FeeType::select('id', 'name')
+            ->where('status', true)
             ->orderBy('name')
             ->get();
     }

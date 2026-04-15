@@ -14,10 +14,15 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::with([
-            'studentClass',
-            'section',
-            'profilePhoto',
-        ])->orderBy('student_class_id')->orderBy('section_id')->get();
+            'studentClass:id,name',
+            'section:id,name',
+            'profilePhoto:id,student_id,file_path',
+        ])
+        ->select('id', 'roll_no', 'first_name', 'last_name', 'father_name', 'student_class_id', 'section_id', 'status')
+        ->orderBy('student_class_id')
+        ->orderBy('section_id')
+        ->orderBy('first_name')
+        ->paginate(25);
 
         return view('students.index', compact('students'));
     }
@@ -36,10 +41,10 @@ class StudentController extends Controller
     public function show(Student $student)
     {
         $student->load([
-            'studentClass',
-            'section',
-            'attachments',
-            'profilePhoto',
+            'studentClass:id,name',
+            'section:id,name',
+            'attachments:id,student_id,document_type,file_path',
+            'profilePhoto:id,student_id,file_path',
         ]);
 
         $attachments = $student->attachments->groupBy('document_type');

@@ -155,12 +155,13 @@ class ExamType extends Component
     public function render()
     {
         $exams = Exam::query()
+            ->select('id', 'name', 'start_date', 'end_date', 'remarks', 'status')
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%')
                     ->orWhere('remarks', 'like', '%' . $this->search . '%');
             })
-            ->latest()
-            ->paginate(10);
+            ->latest('id')
+            ->paginate(15);
 
         return view('livewire.exams.exam-type', compact('exams'));
     }

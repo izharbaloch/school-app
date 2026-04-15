@@ -15,6 +15,8 @@ class StudentFactory extends Factory
     {
         return [
             // like this formate ADM-0001-year
+            'user_id'     => null, // will be set in seeder
+            'guardian_id' => null, // will be set in seeder
             'admission_no' => 'ADM-' . $this->faker->unique()->numerify('####') . '-' . now()->year,
             'roll_no'      => $this->faker->numberBetween(1, 50),
 

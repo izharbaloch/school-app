@@ -55,12 +55,13 @@ class FeeStructure extends Component
 
     public function getClassesProperty()
     {
-        return StudentClass::orderBy('name')->get();
+        return StudentClass::select('id', 'name')->orderBy('name')->get();
     }
 
     public function getFeeTypesProperty()
     {
-        return FeeType::where('status', true)
+        return FeeType::select('id', 'name')
+            ->where('status', true)
             ->orderBy('name')
             ->get();
     }
@@ -179,7 +180,8 @@ class FeeStructure extends Component
 
     public function render()
     {
-        $feeStructures = FeeStructureModel::with(['studentClass:id,name', 'feeType:id,name'])
+        $feeStructures = FeeStructureModel::select('id', 'student_class_id', 'fee_type_id', 'amount', 'status')
+            ->with(['studentClass:id,name', 'feeType:id,name'])
             ->when($this->search, function ($query) {
                 $query->whereHas('studentClass', function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%');
@@ -187,8 +189,8 @@ class FeeStructure extends Component
                     $q->where('name', 'like', '%' . $this->search . '%');
                 })->orWhere('amount', 'like', '%' . $this->search . '%');
             })
-            ->latest()
-            ->paginate(10);
+            ->latest('id')
+            ->paginate(15);
 
         return view('livewire.fees.fee-structure', [
             'feeStructures' => $feeStructures,

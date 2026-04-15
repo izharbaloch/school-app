@@ -196,7 +196,8 @@ class GuardianIndex extends Component
     public function render()
     {
         $parents = Guardian::query()
-            ->with('user')
+            ->select('id', 'user_id', 'father_name', 'mother_name', 'guardian_phone', 'guardian_cnic_no', 'email', 'address', 'status')
+            ->with('user:id,name,email')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('father_name', 'like', '%' . $this->search . '%')
@@ -206,8 +207,8 @@ class GuardianIndex extends Component
                         ->orWhere('email', 'like', '%' . $this->search . '%');
                 });
             })
-            ->latest()
-            ->paginate(10);
+            ->latest('id')
+            ->paginate(15);
 
         return view('livewire.guardian-index', compact('parents'));
     }

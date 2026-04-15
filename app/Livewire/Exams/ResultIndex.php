@@ -70,7 +70,11 @@ class ResultIndex extends Component
             return [];
         }
 
-        $studentsQuery = Student::with(['studentClass', 'section'])
+        $studentsQuery = Student::with([
+                'studentClass:id,name',
+                'section:id,name',
+            ])
+            ->select('id', 'first_name', 'last_name', 'roll_no', 'student_class_id', 'section_id')
             ->where('student_class_id', $this->student_class_id);
 
         if ($this->section_id) {
@@ -82,18 +86,22 @@ class ResultIndex extends Component
             ->orderBy('first_name')
             ->get();
 
+        // Get all exam results in one query for efficiency
+        $examResults = ExamResult::with('subject:id,name')
+            ->where('exam_id', $this->exam_id)
+            ->whereIn('student_id', $students->pluck('id'))
+            ->select('id', 'exam_id', 'student_id', 'subject_id', 'obtained_marks', 'total_marks', 'passing_marks')
+            ->get()
+            ->groupBy('student_id');
+
         $results = [];
 
         foreach ($students as $student) {
-            $examResults = ExamResult::with('subject')
-                ->where('exam_id', $this->exam_id)
-                ->where('student_id', $student->id)
-                ->get();
-
-            $totalObtained = $examResults->sum('obtained_marks');
-            $totalMarks = $examResults->sum('total_marks');
+            $studentResults = $examResults->get($student->id, collect());
+            $totalObtained = $studentResults->sum('obtained_marks');
+            $totalMarks = $studentResults->sum('total_marks');
             $percentage = $totalMarks > 0 ? ($totalObtained / $totalMarks) * 100 : 0;
-            $failedSubjects = $examResults->filter(fn($item) => $item->obtained_marks < $item->passing_marks)->count();
+            $failedSubjects = $studentResults->filter(fn($item) => $item->obtained_marks < $item->passing_marks)->count();
 
             $results[] = [
                 'student' => $student,

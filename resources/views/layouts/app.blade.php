@@ -458,6 +458,14 @@
                                 <span>Guardian Management</span>
                             </a>
                         </li>
+
+                        {{-- /// Teacher Management --}}
+                        <li class="{{ request()->routeIs('teachers.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('teachers.index') }}">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span>Teacher Management</span>
+                            </a>
+                        </li>
                     </ul>
 
                     <div class="mt-4 mb-4 p-3 hide-sidebar-mini">

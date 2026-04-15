@@ -91,6 +91,7 @@ class AttendanceIndex extends Component
     public function render()
     {
         $attendances = Attendance::query()
+            ->select('id', 'attendance_date', 'student_class_id', 'section_id', 'taken_by', 'remarks', 'created_at')
             ->with([
                 'studentClass:id,name',
                 'section:id,name',
@@ -120,7 +121,7 @@ class AttendanceIndex extends Component
                 $query->where('section_id', $this->section_id);
             })
             ->latest('attendance_date')
-            ->paginate(10);
+            ->paginate(20);
 
         return view('livewire.attendance.attendance-index', [
             'attendances' => $attendances,

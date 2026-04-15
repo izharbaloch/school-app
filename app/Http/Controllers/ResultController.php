@@ -15,11 +15,15 @@ class ResultController extends Controller
 
     public function show(Exam $exam, Student $student)
     {
-        $student->load(['studentClass', 'section']);
+        $student->load([
+            'studentClass:id,name',
+            'section:id,name',
+        ]);
 
-        $results = ExamResult::with('subject')
+        $results = ExamResult::with('subject:id,name')
             ->where('exam_id', $exam->id)
             ->where('student_id', $student->id)
+            ->select('id', 'exam_id', 'student_id', 'subject_id', 'obtained_marks', 'total_marks', 'passing_marks')
             ->get();
 
         $totalObtained = $results->sum('obtained_marks');
@@ -44,11 +48,15 @@ class ResultController extends Controller
 
     public function print(Exam $exam, Student $student)
     {
-        $student->load(['studentClass', 'section']);
+        $student->load([
+            'studentClass:id,name',
+            'section:id,name',
+        ]);
 
-        $results = ExamResult::with('subject')
+        $results = ExamResult::with('subject:id,name')
             ->where('exam_id', $exam->id)
             ->where('student_id', $student->id)
+            ->select('id', 'exam_id', 'student_id', 'subject_id', 'obtained_marks', 'total_marks', 'passing_marks')
             ->get();
 
         $totalObtained = $results->sum('obtained_marks');

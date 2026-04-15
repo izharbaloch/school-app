@@ -34,9 +34,10 @@ class AttendanceForm extends Component
             $this->isEdit = true;
 
             $attendance->load([
-                'attendanceStudents.student',
-                'studentClass',
-                'section',
+                'attendanceStudents:id,attendance_id,student_id,status,remarks',
+                'attendanceStudents.student:id,roll_no,first_name,last_name',
+                'studentClass:id,name',
+                'section:id,name',
             ]);
 
             $this->attendance_date = $attendance->attendance_date->format('Y-m-d');
@@ -103,7 +104,7 @@ class AttendanceForm extends Component
 
     public function getClassesProperty()
     {
-        return StudentClass::orderBy('name')->get();
+        return StudentClass::select('id', 'name')->orderBy('name')->get();
     }
 
     public function getSectionsProperty()
@@ -112,9 +113,10 @@ class AttendanceForm extends Component
             return collect();
         }
 
-        return Section::whereHas('classes', function ($query) {
-            $query->where('student_classes.id', $this->student_class_id);
-        })
+        return Section::select('id', 'name')
+            ->whereHas('classes', function ($query) {
+                $query->where('student_classes.id', $this->student_class_id);
+            })
             ->orderBy('name')
             ->get();
     }

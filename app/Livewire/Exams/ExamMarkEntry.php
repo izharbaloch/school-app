@@ -97,12 +97,12 @@ class ExamMarkEntry extends Component
 
     public function getExamsProperty()
     {
-        return Exam::where('status', true)->orderBy('name')->get();
+        return Exam::select('id', 'name')->where('status', true)->orderBy('name')->get();
     }
 
     public function getClassesProperty()
     {
-        return StudentClass::orderBy('name')->get();
+        return StudentClass::select('id', 'name')->orderBy('name')->get();
     }
 
     public function getSectionsProperty()
@@ -111,9 +111,10 @@ class ExamMarkEntry extends Component
             return collect();
         }
 
-        return Section::whereHas('classes', function ($query) {
-            $query->where('student_classes.id', $this->student_class_id);
-        })->orderBy('name')->get();
+        return Section::select('id', 'name')
+            ->whereHas('classes', function ($query) {
+                $query->where('student_classes.id', $this->student_class_id);
+            })->orderBy('name')->get();
     }
 
     public function getSubjectsProperty()
@@ -122,7 +123,7 @@ class ExamMarkEntry extends Component
             return collect();
         }
 
-        $class = StudentClass::with('subjects')->find($this->student_class_id);
+        $class = StudentClass::with('subjects:id,name')->select('id')->find($this->student_class_id);
 
         return $class ? $class->subjects->sortBy('name')->values() : collect();
     }
@@ -135,7 +136,11 @@ class ExamMarkEntry extends Component
             return;
         }
 
-        $studentsQuery = Student::with(['studentClass', 'section'])
+        $studentsQuery = Student::select('id', 'roll_no', 'first_name', 'last_name', 'student_class_id', 'section_id')
+            ->with([
+                'studentClass:id,name',
+                'section:id,name',
+            ])
             ->where('student_class_id', $this->student_class_id);
 
         if ($this->section_id) {
@@ -147,12 +152,13 @@ class ExamMarkEntry extends Component
             ->orderBy('first_name')
             ->get();
 
-        $this->subject = Subject::find($this->subject_id);
+        $this->subject = Subject::select('id', 'name', 'total_marks', 'passing_marks')->find($this->subject_id);
 
         $existingResults = collect();
 
         if ($studentCollection->count()) {
-            $existingResults = ExamResult::where('exam_id', $this->exam_id)
+            $existingResults = ExamResult::select('student_id', 'obtained_marks', 'remarks')
+                ->where('exam_id', $this->exam_id)
                 ->where('subject_id', $this->subject_id)
                 ->whereIn('student_id', $studentCollection->pluck('id'))
                 ->get()
@@ -165,7 +171,7 @@ class ExamMarkEntry extends Component
             return [
                 'student_id' => $student->id,
                 'roll_no' => $student->roll_no ?? '-',
-                'name' => $student->full_name ?: ($student->name ?? '-'),
+                'name' => $student->full_name ?: ($student->first_name . ' ' . $student->last_name ?? '-'),
                 'obtained_marks' => $existing->obtained_marks ?? 0,
                 'remarks' => $existing->remarks ?? '',
             ];

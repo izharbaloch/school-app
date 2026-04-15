@@ -20,9 +20,9 @@ class FeePaymentCreate extends Component
     public function mount(StudentFee $studentFee)
     {
         $this->studentFee = $studentFee->load([
-            'student.studentClass',
-            'student.section',
-            'feeType',
+            'student.studentClass:id,name',
+            'student.section:id,name',
+            'feeType:id,name',
         ]);
 
         $this->payment_date = now()->toDateString();

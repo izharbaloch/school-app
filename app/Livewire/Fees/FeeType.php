@@ -141,11 +141,12 @@ class FeeType extends Component
     public function render()
     {
         $feeTypes = FeeTypeModel::query()
+            ->select('id', 'name', 'is_monthly', 'status')
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
             })
-            ->latest()
-            ->paginate(10);
+            ->latest('id')
+            ->paginate(15);
 
         return view('livewire.fees.fee-type', compact('feeTypes'));
     }
