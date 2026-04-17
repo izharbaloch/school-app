@@ -38,7 +38,8 @@ return new class extends Migration
             $table->foreignId('student_class_id')->constrained('student_classes')->onDelete('cascade');
             $table->foreignId('section_id')->constrained('sections')->onDelete('cascade');
 
-            $table->boolean('status')->default(1);
+            $table->enum('status', ['active', 'inactive', 'pass_out', 'dropped', 'failed'])->default('active');
+            $table->boolean('is_failed')->default(0);
             $table->timestamps();
         });
     }

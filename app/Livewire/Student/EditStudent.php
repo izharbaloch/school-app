@@ -41,7 +41,8 @@ class EditStudent extends Component
     public string $student_class_id = '';
     public string $section_id = '';
 
-    public $status = 1;
+    public $status = 'active';
+    public $is_failed = 0;
 
     public $student_photo = null;
     public $student_bform = null;
@@ -166,7 +167,8 @@ class EditStudent extends Component
             'other_documents' => 'nullable|array',
             'other_documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:4096',
 
-            'status' => 'required|boolean',
+            'status' => 'required|in:active,inactive,pass_out,dropped,failed',
+            'is_failed' => 'boolean',
         ];
     }
 
@@ -204,7 +206,8 @@ class EditStudent extends Component
 
                 'student_class_id' => $validated['student_class_id'],
                 'section_id' => $validated['section_id'],
-                'status' => (bool) $validated['status'],
+                'status' =>  $validated['status'],
+                'is_failed' => (bool) $validated['is_failed'],
             ]);
 
             $this->replaceSingleAttachment($student->id, 'student_photo', 'Student Photo', $this->student_photo);

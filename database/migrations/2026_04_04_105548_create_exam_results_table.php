@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('exam_id')->constrained('exams')->cascadeOnDelete();
             $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->foreignId('subject_id')->constrained('subjects')->cascadeOnDelete();
+            $table->foreignId('student_class_id')->constrained('student_classes')->cascadeOnDelete();
             $table->decimal('obtained_marks', 8, 2)->default(0);
             $table->unsignedInteger('total_marks')->default(100);
             $table->unsignedInteger('passing_marks')->default(33);

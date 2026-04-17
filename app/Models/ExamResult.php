@@ -10,6 +10,7 @@ class ExamResult extends Model
         'exam_id',
         'student_id',
         'subject_id',
+        'student_class_id',
         'obtained_marks',
         'total_marks',
         'passing_marks',

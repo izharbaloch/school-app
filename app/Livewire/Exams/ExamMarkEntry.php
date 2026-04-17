@@ -7,6 +7,7 @@ use App\Models\ExamResult;
 use App\Models\Section;
 use App\Models\Student;
 use App\Models\StudentClass;
+use App\Models\StudentPromotion;
 use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -16,202 +17,195 @@ class ExamMarkEntry extends Component
     public $exam_id = '';
     public $student_class_id = '';
     public $section_id = '';
-    public $subject_id = '';
 
     public $students = [];
-    public $subject = null;
+    public $subjects = [];
+
+    public $is_promoted = false; // 🔥 NEW
 
     protected $queryString = [
         'exam_id' => ['except' => ''],
         'student_class_id' => ['except' => ''],
         'section_id' => ['except' => ''],
-        'subject_id' => ['except' => ''],
     ];
-
-    public function rules()
-    {
-        return [
-            'exam_id' => ['required', 'exists:exams,id'],
-            'student_class_id' => ['required', 'exists:student_classes,id'],
-            'section_id' => ['nullable', 'exists:sections,id'],
-            'subject_id' => ['required', 'exists:subjects,id'],
-            'students' => ['required', 'array', 'min:1'],
-            'students.*.student_id' => ['required', 'exists:students,id'],
-            'students.*.obtained_marks' => ['required', 'numeric', 'min:0'],
-            'students.*.remarks' => ['nullable', 'string'],
-        ];
-    }
-
-    public function validationAttributes()
-    {
-        return [
-            'exam_id' => 'exam',
-            'student_class_id' => 'class',
-            'section_id' => 'section',
-            'subject_id' => 'subject',
-        ];
-    }
 
     public function mount()
     {
         $this->students = [];
+
+        if ($this->exam_id && $this->student_class_id) {
+            $this->loadData();
+        }
     }
 
     public function updatedStudentClassId()
     {
         $this->section_id = '';
-        $this->subject_id = '';
         $this->students = [];
-        $this->subject = null;
+
+        if ($this->exam_id) {
+            $this->loadData();
+        }
     }
 
     public function updatedSectionId()
     {
         $this->students = [];
-        $this->subject = null;
 
-        if ($this->exam_id && $this->student_class_id && $this->subject_id) {
-            $this->loadStudentsAndResults();
+        if ($this->exam_id && $this->student_class_id) {
+            $this->loadData();
         }
     }
 
     public function updatedExamId()
     {
         $this->students = [];
-        $this->subject = null;
 
-        if ($this->exam_id && $this->student_class_id && $this->subject_id) {
-            $this->loadStudentsAndResults();
-        }
-    }
-
-    public function updatedSubjectId()
-    {
-        $this->students = [];
-        $this->subject = null;
-
-        if ($this->exam_id && $this->student_class_id && $this->subject_id) {
-            $this->loadStudentsAndResults();
+        if ($this->student_class_id) {
+            $this->loadData();
         }
     }
 
     public function getExamsProperty()
     {
-        return Exam::select('id', 'name')->where('status', true)->orderBy('name')->get();
+        return Exam::where('status', true)->orderBy('name')->get();
     }
 
     public function getClassesProperty()
     {
-        return StudentClass::select('id', 'name')->orderBy('name')->get();
+        return StudentClass::orderBy('name')->get();
     }
 
     public function getSectionsProperty()
     {
-        if (!$this->student_class_id) {
-            return collect();
-        }
+        if (!$this->student_class_id) return collect();
 
-        return Section::select('id', 'name')
-            ->whereHas('classes', function ($query) {
-                $query->where('student_classes.id', $this->student_class_id);
-            })->orderBy('name')->get();
+        return Section::whereHas('classes', function ($q) {
+            $q->where('student_classes.id', $this->student_class_id);
+        })->get();
     }
 
-    public function getSubjectsProperty()
+    public function loadData()
     {
-        if (!$this->student_class_id) {
-            return collect();
-        }
+        $this->subjects = Subject::whereHas('classes', function ($q) {
+            $q->where('student_classes.id', $this->student_class_id);
+        })->get();
 
-        $class = StudentClass::with('subjects:id,name')->select('id')->find($this->student_class_id);
-
-        return $class ? $class->subjects->sortBy('name')->values() : collect();
-    }
-
-    public function loadStudentsAndResults()
-    {
-        if (!$this->exam_id || !$this->student_class_id || !$this->subject_id) {
-            $this->students = [];
-            $this->subject = null;
-            return;
-        }
-
-        $studentsQuery = Student::select('id', 'roll_no', 'first_name', 'last_name', 'student_class_id', 'section_id')
-            ->with([
-                'studentClass:id,name',
-                'section:id,name',
-            ])
-            ->where('student_class_id', $this->student_class_id);
-
-        if ($this->section_id) {
-            $studentsQuery->where('section_id', $this->section_id);
-        }
-
-        $studentCollection = $studentsQuery
+        $students = Student::where('student_class_id', $this->student_class_id)
+            ->when($this->section_id, fn($q) => $q->where('section_id', $this->section_id))
             ->orderBy('roll_no')
-            ->orderBy('first_name')
             ->get();
 
-        $this->subject = Subject::select('id', 'name', 'total_marks', 'passing_marks')->find($this->subject_id);
+        $results = ExamResult::where('exam_id', $this->exam_id)
+            ->where('student_class_id', $this->student_class_id)
+            ->whereIn('student_id', $students->pluck('id'))
+            ->get()
+            ->groupBy(fn($item) => $item->student_id . '_' . $item->subject_id);
 
-        $existingResults = collect();
+        $this->students = $students->map(function ($student) use ($results) {
 
-        if ($studentCollection->count()) {
-            $existingResults = ExamResult::select('student_id', 'obtained_marks', 'remarks')
-                ->where('exam_id', $this->exam_id)
-                ->where('subject_id', $this->subject_id)
-                ->whereIn('student_id', $studentCollection->pluck('id'))
-                ->get()
-                ->keyBy('student_id');
-        }
+            $subjectData = [];
 
-        $this->students = $studentCollection->map(function ($student) use ($existingResults) {
-            $existing = $existingResults[$student->id] ?? null;
+            foreach ($this->subjects as $subject) {
+
+                $key = $student->id . '_' . $subject->id;
+                $existing = $results[$key][0] ?? null;
+
+                $subjectData[$subject->id] = [
+                    'obtained_marks' => $existing->obtained_marks ?? 0,
+                    'remarks' => $existing->remarks ?? '',
+                ];
+            }
 
             return [
                 'student_id' => $student->id,
-                'roll_no' => $student->roll_no ?? '-',
-                'name' => $student->full_name ?: ($student->first_name . ' ' . $student->last_name ?? '-'),
-                'obtained_marks' => $existing->obtained_marks ?? 0,
-                'remarks' => $existing->remarks ?? '',
+                'roll_no' => $student->roll_no,
+                'name' => $student->full_name,
+                'subjects' => $subjectData,
             ];
         })->toArray();
     }
 
     public function save()
     {
-        $this->validate();
+        DB::transaction(function () {
 
-        $subject = Subject::findOrFail($this->subject_id);
+            $exam = Exam::find($this->exam_id);
 
-        foreach ($this->students as $index => $studentData) {
-            if ($studentData['obtained_marks'] > $subject->total_marks) {
-                $this->addError("students.{$index}.obtained_marks", "Obtained marks cannot be greater than total marks ({$subject->total_marks}).");
-                return;
-            }
-        }
+            foreach ($this->students as $student) {
 
-        DB::transaction(function () use ($subject) {
-            foreach ($this->students as $studentData) {
-                ExamResult::updateOrCreate(
-                    [
-                        'exam_id' => $this->exam_id,
-                        'student_id' => $studentData['student_id'],
-                        'subject_id' => $this->subject_id,
-                    ],
-                    [
-                        'obtained_marks' => $studentData['obtained_marks'],
-                        'total_marks' => $subject->total_marks,
-                        'passing_marks' => $subject->passing_marks,
-                        'remarks' => $studentData['remarks'] ?? null,
-                    ]
-                );
+                $isFail = false;
+
+                foreach ($student['subjects'] as $subject_id => $marks) {
+
+                    $subject = Subject::find($subject_id);
+
+                    if ($marks['obtained_marks'] > $subject->total_marks) {
+                        $this->addError('error', "Marks exceed for {$subject->name}");
+                        return;
+                    }
+
+                    ExamResult::updateOrCreate(
+                        [
+                            'exam_id' => $this->exam_id,
+                            'student_id' => $student['student_id'],
+                            'subject_id' => $subject_id,
+                            'student_class_id' => $this->student_class_id,
+                        ],
+                        [
+                            'student_class_id' => $this->student_class_id,
+                            'obtained_marks' => $marks['obtained_marks'],
+                            'total_marks' => $subject->total_marks,
+                            'passing_marks' => $subject->passing_marks,
+                            'remarks' => $marks['remarks'],
+                        ]
+                    );
+
+                    if ($marks['obtained_marks'] < $subject->passing_marks) {
+                        $isFail = true;
+                    }
+                }
+
+                // 🔥 ONLY IF CHECKBOX TRUE
+                if ($this->is_promoted && $exam && stripos($exam->name, 'final') !== false) {
+
+                    $studentModel = Student::find($student['student_id']);
+
+                    if ($isFail) {
+                        $studentModel->update([
+                            'is_failed' => 1,
+                        ]);
+                    } else {
+
+                        $nextClass = StudentClass::where('id', '>', $studentModel->student_class_id)
+                            ->orderBy('id')
+                            ->first();
+
+                        if ($nextClass) {
+
+                            StudentPromotion::create([
+                                'student_id' => $studentModel->id,
+                                'from_class_id' => $studentModel->student_class_id,
+                                'to_class_id' => $nextClass->id,
+                                'from_section_id' => $studentModel->section_id,
+                                'to_section_id' => $studentModel->section_id,
+                                'exam_id' => $this->exam_id,
+                            ]);
+
+                            $studentModel->update([
+                                'student_class_id' => $nextClass->id,
+                                'status' => 'pass_out',
+                                'is_failed' => 0,
+                            ]);
+                        }
+                    }
+                }
             }
         });
 
-        session()->flash('success', 'Marks saved successfully.');
+        session()->flash('success', 'Marks saved successfully ✅');
 
-        $this->loadStudentsAndResults();
+        $this->loadData();
     }
 
     public function render()
@@ -220,7 +214,6 @@ class ExamMarkEntry extends Component
             'exams' => $this->exams,
             'classes' => $this->classes,
             'sections' => $this->sections,
-            'subjects' => $this->subjects,
         ]);
     }
 }

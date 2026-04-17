@@ -82,6 +82,14 @@
                                             target="_blank" class="btn btn-sm btn-secondary">
                                             Print
                                         </a>
+                                        <a href="{{ route('exam-marks.create', [
+                                            'exam_id' => $exam_id,
+                                            'student_class_id' => $student_class_id,
+                                            'section_id' => $row['student']->section_id,
+                                        ]) }}"
+                                            class="btn btn-sm btn-warning">
+                                            Edit
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

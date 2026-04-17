@@ -43,8 +43,7 @@
 
                             <div class="form-group col-md-2">
                                 <label>Fee</label>
-                                <input type="number"
-                                    class="form-control @error('class_fee') is-invalid @enderror"
+                                <input type="number" class="form-control @error('class_fee') is-invalid @enderror"
                                     wire:model.defer="class_fee" placeholder="Enter Class Fee">
                                 @error('class_fee')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -270,7 +269,8 @@
 
                         <div class="form-group">
                             <label>Total Marks</label>
-                            <input type="number" class="form-control @error('subject_total_marks') is-invalid @enderror"
+                            <input type="number"
+                                class="form-control @error('subject_total_marks') is-invalid @enderror"
                                 wire:model.defer="subject_total_marks" placeholder="Enter total marks">
                             @error('subject_total_marks')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -279,7 +279,8 @@
 
                         <div class="form-group">
                             <label>Passing Marks</label>
-                            <input type="number" class="form-control @error('subject_passing_marks') is-invalid @enderror"
+                            <input type="number"
+                                class="form-control @error('subject_passing_marks') is-invalid @enderror"
                                 wire:model.defer="subject_passing_marks" placeholder="Enter passing marks">
                             @error('subject_passing_marks')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -416,20 +417,22 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
                         <div class="form-group">
-                            <label>Section</label>
-                            <select class="form-control @error('assign_section_id') is-invalid @enderror"
-                                wire:model.defer="assign_section_id">
-                                <option value="">Select section</option>
-                                @foreach ($sections as $section)
-                                    <option value="{{ $section->id }}">
+                            <label>Select Sections</label>
+
+                            @foreach ($sections as $section)
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" value="{{ $section->id }}"
+                                        wire:model="assign_section_ids">
+
+                                    <label class="form-check-label">
                                         {{ $section->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('assign_section_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                    </label>
+                                </div>
+                            @endforeach
+
+                            @error('assign_section_ids')
+                                <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -527,20 +530,22 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
                         <div class="form-group">
-                            <label>Subject</label>
-                            <select class="form-control @error('assign_subject_id') is-invalid @enderror"
-                                wire:model.defer="assign_subject_id">
-                                <option value="">Select subject</option>
-                                @foreach ($subjects as $subject)
-                                    <option value="{{ $subject->id }}">
+                            <label>Select Subjects</label>
+
+                            @foreach ($subjects as $subject)
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" value="{{ $subject->id }}"
+                                        wire:model="assign_subject_ids">
+
+                                    <label class="form-check-label">
                                         {{ $subject->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('assign_subject_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                    </label>
+                                </div>
+                            @endforeach
+
+                            @error('assign_subject_ids')
+                                <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
 

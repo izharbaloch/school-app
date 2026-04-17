@@ -172,8 +172,11 @@
                         <label>Status</label>
                         <select class="form-control @error('status') is-invalid @enderror" wire:model.defer="status">
                             <option value="">Select status</option>
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="pass_out">Pass Out</option>
+                            <option value="dropped">Dropped</option>
+                            <option value="failed">Failed</option>
                         </select>
                         @error('status')
                             <div class="invalid-feedback">{{ $message }}</div>
