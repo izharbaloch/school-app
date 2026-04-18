@@ -39,6 +39,14 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            <div class="form-group col-md-4">
+                                <label>Academic Year</label>
+                                <input type="text" class="form-control @error('academic_year') is-invalid @enderror"
+                                    wire:model.defer="academic_year" placeholder="Enter academic year">
+                                @error('academic_year')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
                             <div class="form-group col-md-3">
                                 <label>Start Date</label>

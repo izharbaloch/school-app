@@ -67,7 +67,7 @@
                                         <td>{{ $student->studentClass->name ?? '-' }}</td>
                                         <td>{{ $student->section->name ?? '-' }}</td>
                                         <td>
-                                            @if ($student->status)
+                                            @if ($student->status == 'active')
                                                 <span class="badge badge-success">Active</span>
                                             @else
                                                 <span class="badge badge-danger">Inactive</span>

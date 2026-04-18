@@ -14,6 +14,7 @@ class ExamResult extends Model
         'obtained_marks',
         'total_marks',
         'passing_marks',
+        'academic_year',
         'remarks',
     ];
 

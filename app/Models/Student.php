@@ -38,7 +38,6 @@ class Student extends Model
     protected $casts = [
         'date_of_birth' => 'date',
         'admission_date' => 'date',
-        'status' => 'boolean',
     ];
 
     public function studentClass()

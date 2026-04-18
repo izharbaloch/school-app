@@ -86,6 +86,7 @@
                                             'exam_id' => $exam_id,
                                             'student_class_id' => $student_class_id,
                                             'section_id' => $row['student']->section_id,
+                                            'student_id' => $row['student']->id,
                                         ]) }}"
                                             class="btn btn-sm btn-warning">
                                             Edit

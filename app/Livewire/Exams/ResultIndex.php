@@ -49,72 +49,13 @@ class ResultIndex extends Component
 
     private function getGrade($percentage): string
     {
-        if ($percentage >= 90) {
-            return 'A+';
-        } elseif ($percentage >= 80) {
-            return 'A';
-        } elseif ($percentage >= 70) {
-            return 'B';
-        } elseif ($percentage >= 60) {
-            return 'C';
-        } elseif ($percentage >= 50) {
-            return 'D';
-        }
-
+        if ($percentage >= 90) return 'A+';
+        if ($percentage >= 80) return 'A';
+        if ($percentage >= 70) return 'B';
+        if ($percentage >= 60) return 'C';
+        if ($percentage >= 50) return 'D';
         return 'F';
     }
-
-    // public function getResultsProperty()
-    // {
-    //     if (!$this->exam_id || !$this->student_class_id) {
-    //         return [];
-    //     }
-
-    //     $studentsQuery = Student::with([
-    //             'studentClass:id,name',
-    //             'section:id,name',
-    //         ])
-    //         ->select('id', 'first_name', 'last_name', 'roll_no', 'student_class_id', 'section_id')
-    //         ->where('student_class_id', $this->student_class_id);
-
-    //     if ($this->section_id) {
-    //         $studentsQuery->where('section_id', $this->section_id);
-    //     }
-
-    //     $students = $studentsQuery
-    //         ->orderBy('roll_no')
-    //         ->orderBy('first_name')
-    //         ->get();
-
-    //     // Get all exam results in one query for efficiency
-    //     $examResults = ExamResult::with('subject:id,name')
-    //         ->where('exam_id', $this->exam_id)
-    //         ->whereIn('student_id', $students->pluck('id'))
-    //         ->select('id', 'exam_id', 'student_id', 'subject_id', 'obtained_marks', 'total_marks', 'passing_marks')
-    //         ->get()
-    //         ->groupBy('student_id');
-
-    //     $results = [];
-
-    //     foreach ($students as $student) {
-    //         $studentResults = $examResults->get($student->id, collect());
-    //         $totalObtained = $studentResults->sum('obtained_marks');
-    //         $totalMarks = $studentResults->sum('total_marks');
-    //         $percentage = $totalMarks > 0 ? ($totalObtained / $totalMarks) * 100 : 0;
-    //         $failedSubjects = $studentResults->filter(fn($item) => $item->obtained_marks < $item->passing_marks)->count();
-
-    //         $results[] = [
-    //             'student' => $student,
-    //             'total_obtained' => $totalObtained,
-    //             'total_marks' => $totalMarks,
-    //             'percentage' => round($percentage, 2),
-    //             'grade' => $this->getGrade($percentage),
-    //             'status' => $failedSubjects > 0 ? 'Fail' : 'Pass',
-    //         ];
-    //     }
-
-    //     return $results;
-    // }
 
     public function getResultsProperty()
     {
@@ -122,12 +63,20 @@ class ResultIndex extends Component
             return [];
         }
 
-        // 🔥 ONLY THOSE STUDENTS WHO HAVE RESULT IN THIS CLASS
+        $exam = Exam::find($this->exam_id);
+
+        if (!$exam) {
+            return [];
+        }
+
+        // 🔥 STEP 1: Get result students only from same academic year + class
         $studentIds = ExamResult::where('exam_id', $this->exam_id)
             ->where('student_class_id', $this->student_class_id)
+            ->where('academic_year', $exam->academic_year)
             ->pluck('student_id')
             ->unique();
 
+        // 🔥 STEP 2: Students load
         $students = Student::with([
             'studentClass:id,name',
             'section:id,name',
@@ -144,10 +93,11 @@ class ResultIndex extends Component
             ->orderBy('first_name')
             ->get();
 
-        // 🔥 RESULTS
+        // 🔥 STEP 3: Results load (SYNC FIX)
         $examResults = ExamResult::with('subject:id,name')
             ->where('exam_id', $this->exam_id)
             ->where('student_class_id', $this->student_class_id)
+            ->where('academic_year', $exam->academic_year)
             ->whereIn('student_id', $students->pluck('id'))
             ->get()
             ->groupBy('student_id');

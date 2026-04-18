@@ -183,7 +183,6 @@ class EditStudent extends Component
     public function updateStudent()
     {
         $validated = $this->validate();
-
         DB::transaction(function () use ($validated) {
             $student = Student::findOrFail($this->editId);
 

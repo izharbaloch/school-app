@@ -13,6 +13,7 @@ class ExamType extends Component
     protected $paginationTheme = 'bootstrap';
 
     public $name = '';
+    public $academic_year = '';
     public $start_date = '';
     public $end_date = '';
     public $remarks = '';
@@ -30,6 +31,7 @@ class ExamType extends Component
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'academic_year' => ['required', 'string', 'max:255'],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'remarks' => ['nullable', 'string'],
@@ -41,6 +43,7 @@ class ExamType extends Component
     {
         return [
             'name' => 'exam name',
+            'academic_year' => 'academic year',
             'start_date' => 'start date',
             'end_date' => 'end date',
             'remarks' => 'remarks',
@@ -65,6 +68,7 @@ class ExamType extends Component
 
         Exam::create([
             'name' => $this->name,
+            'academic_year' => $this->academic_year,
             'start_date' => $this->start_date ?: null,
             'end_date' => $this->end_date ?: null,
             'remarks' => $this->remarks,
@@ -84,6 +88,7 @@ class ExamType extends Component
 
         $this->editId = $exam->id;
         $this->name = $exam->name;
+        $this->academic_year = $exam->academic_year;
         $this->start_date = $exam->start_date ? $exam->start_date->format('Y-m-d') : '';
         $this->end_date = $exam->end_date ? $exam->end_date->format('Y-m-d') : '';
         $this->remarks = $exam->remarks;
@@ -101,6 +106,7 @@ class ExamType extends Component
 
         $exam->update([
             'name' => $this->name,
+            'academic_year' => $this->academic_year,
             'start_date' => $this->start_date ?: null,
             'end_date' => $this->end_date ?: null,
             'remarks' => $this->remarks,

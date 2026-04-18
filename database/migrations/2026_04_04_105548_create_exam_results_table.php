@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('obtained_marks', 8, 2)->default(0);
             $table->unsignedInteger('total_marks')->default(100);
             $table->unsignedInteger('passing_marks')->default(33);
+            $table->string('academic_year');
             $table->text('remarks')->nullable();
             $table->timestamps();
 

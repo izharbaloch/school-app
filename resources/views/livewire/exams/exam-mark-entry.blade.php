@@ -11,7 +11,8 @@
         <div class="card-body">
             <div class="row">
 
-                <div class="col-md-4">
+                {{-- EXAM --}}
+                <div class="col-md-3">
                     <label>Exam</label>
                     <select wire:model.live="exam_id" class="form-control">
                         <option value="">Select Exam</option>
@@ -21,7 +22,8 @@
                     </select>
                 </div>
 
-                <div class="col-md-4">
+                {{-- CLASS --}}
+                <div class="col-md-3">
                     <label>Class</label>
                     <select wire:model.live="student_class_id" class="form-control">
                         <option value="">Select Class</option>
@@ -31,12 +33,26 @@
                     </select>
                 </div>
 
-                <div class="col-md-4">
+                {{-- SECTION --}}
+                <div class="col-md-3">
                     <label>Section</label>
                     <select wire:model.live="section_id" class="form-control">
                         <option value="">All Sections</option>
                         @foreach ($sections as $section)
                             <option value="{{ $section->id }}">{{ $section->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- 🔥 STUDENT DROPDOWN --}}
+                <div class="col-md-3">
+                    <label>Student</label>
+                    <select wire:model.live="student_id" class="form-control">
+                        <option value="">All Students</option>
+                        @foreach ($filteredStudents as $stu)
+                            <option value="{{ $stu->id }}">
+                                {{ $stu->roll_no }} - {{ $stu->full_name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -57,10 +73,9 @@
 
                 <form wire:submit.prevent="save">
 
-                    {{-- 🔥 PROMOTION CHECKBOX --}}
                     <div class="form-check mb-3">
-                        <input type="checkbox" wire:model="is_promoted" class="form-check-input" id="promoteCheck">
-                        <label class="form-check-label" for="promoteCheck">
+                        <input type="checkbox" wire:model="is_promoted" class="form-check-input">
+                        <label class="form-check-label">
                             Promote Students (Final Term Only)
                         </label>
                     </div>
@@ -86,14 +101,13 @@
                             <tbody>
                                 @foreach ($students as $i => $student)
                                     <tr>
-
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $student['roll_no'] }}</td>
                                         <td>{{ $student['name'] }}</td>
 
                                         @foreach ($subjects as $subject)
                                             <td>
-                                                <input type="number" min="0" max="{{ $subject->total_marks }}"
+                                                <input type="number"
                                                     wire:model.defer="students.{{ $i }}.subjects.{{ $subject->id }}.obtained_marks"
                                                     class="form-control mb-1">
 
@@ -102,7 +116,6 @@
                                                     class="form-control">
                                             </td>
                                         @endforeach
-
                                     </tr>
                                 @endforeach
                             </tbody>

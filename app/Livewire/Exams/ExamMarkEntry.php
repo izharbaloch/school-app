@@ -17,22 +17,23 @@ class ExamMarkEntry extends Component
     public $exam_id = '';
     public $student_class_id = '';
     public $section_id = '';
+    public $student_id = '';
 
     public $students = [];
     public $subjects = [];
+    public $filteredStudents = [];
 
-    public $is_promoted = false; // 🔥 NEW
+    public $is_promoted = false;
 
     protected $queryString = [
         'exam_id' => ['except' => ''],
         'student_class_id' => ['except' => ''],
         'section_id' => ['except' => ''],
+        'student_id' => ['except' => ''],
     ];
 
     public function mount()
     {
-        $this->students = [];
-
         if ($this->exam_id && $this->student_class_id) {
             $this->loadData();
         }
@@ -41,34 +42,33 @@ class ExamMarkEntry extends Component
     public function updatedStudentClassId()
     {
         $this->section_id = '';
+        $this->student_id = '';
         $this->students = [];
-
-        if ($this->exam_id) {
-            $this->loadData();
-        }
+        $this->loadData();
     }
 
     public function updatedSectionId()
     {
+        $this->student_id = '';
         $this->students = [];
+        $this->loadData();
+    }
 
-        if ($this->exam_id && $this->student_class_id) {
-            $this->loadData();
-        }
+    public function updatedStudentId()
+    {
+        $this->students = [];
+        $this->loadData();
     }
 
     public function updatedExamId()
     {
         $this->students = [];
-
-        if ($this->student_class_id) {
-            $this->loadData();
-        }
+        $this->loadData();
     }
 
     public function getExamsProperty()
     {
-        return Exam::where('status', true)->orderBy('name')->get();
+        return Exam::where('status', true)->get();
     }
 
     public function getClassesProperty()
@@ -87,17 +87,32 @@ class ExamMarkEntry extends Component
 
     public function loadData()
     {
+        $exam = Exam::find($this->exam_id);
+
+        if (!$exam) return;
+
+        // SUBJECTS
         $this->subjects = Subject::whereHas('classes', function ($q) {
             $q->where('student_classes.id', $this->student_class_id);
         })->get();
 
-        $students = Student::where('student_class_id', $this->student_class_id)
+        // DROPDOWN STUDENTS
+        $this->filteredStudents = Student::where('student_class_id', $this->student_class_id)
             ->when($this->section_id, fn($q) => $q->where('section_id', $this->section_id))
             ->orderBy('roll_no')
             ->get();
 
+        // TABLE STUDENTS
+        $students = Student::where('student_class_id', $this->student_class_id)
+            ->when($this->section_id, fn($q) => $q->where('section_id', $this->section_id))
+            ->when($this->student_id, fn($q) => $q->where('id', $this->student_id))
+            ->orderBy('roll_no')
+            ->get();
+
+        // 🔥 RESULT LOAD WITH ACADEMIC YEAR
         $results = ExamResult::where('exam_id', $this->exam_id)
             ->where('student_class_id', $this->student_class_id)
+            ->where('academic_year', $exam->academic_year)
             ->whereIn('student_id', $students->pluck('id'))
             ->get()
             ->groupBy(fn($item) => $item->student_id . '_' . $item->subject_id);
@@ -140,20 +155,15 @@ class ExamMarkEntry extends Component
 
                     $subject = Subject::find($subject_id);
 
-                    if ($marks['obtained_marks'] > $subject->total_marks) {
-                        $this->addError('error', "Marks exceed for {$subject->name}");
-                        return;
-                    }
-
                     ExamResult::updateOrCreate(
                         [
                             'exam_id' => $this->exam_id,
                             'student_id' => $student['student_id'],
                             'subject_id' => $subject_id,
-                            'student_class_id' => $this->student_class_id,
                         ],
                         [
                             'student_class_id' => $this->student_class_id,
+                            'academic_year' => $exam->academic_year, // 🔥 MAIN FIX
                             'obtained_marks' => $marks['obtained_marks'],
                             'total_marks' => $subject->total_marks,
                             'passing_marks' => $subject->passing_marks,
@@ -166,15 +176,13 @@ class ExamMarkEntry extends Component
                     }
                 }
 
-                // 🔥 ONLY IF CHECKBOX TRUE
+                // PROMOTION
                 if ($this->is_promoted && $exam && stripos($exam->name, 'final') !== false) {
 
                     $studentModel = Student::find($student['student_id']);
 
                     if ($isFail) {
-                        $studentModel->update([
-                            'is_failed' => 1,
-                        ]);
+                        $studentModel->update(['is_failed' => 1]);
                     } else {
 
                         $nextClass = StudentClass::where('id', '>', $studentModel->student_class_id)
@@ -204,7 +212,6 @@ class ExamMarkEntry extends Component
         });
 
         session()->flash('success', 'Marks saved successfully ✅');
-
         $this->loadData();
     }
 
