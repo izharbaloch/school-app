@@ -87,7 +87,7 @@
             </tr>
             <tr>
                 <td><strong>Class</strong></td>
-                <td>{{ $student->studentClass->name ?? '-' }}</td>
+                <td>{{ $studentClass->name ?? '-' }}</td>
                 <td><strong>Section</strong></td>
                 <td>{{ $student->section->name ?? '-' }}</td>
             </tr>

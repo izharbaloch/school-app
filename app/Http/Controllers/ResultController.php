@@ -15,16 +15,16 @@ class ResultController extends Controller
 
     public function show(Exam $exam, Student $student)
     {
-        $student->load([
-            'studentClass:id,name',
-            'section:id,name',
-        ]);
+        $student->load('section:id,name');
 
-        $results = ExamResult::with('subject:id,name')
+        $results = ExamResult::with(['subject:id,name', 'studentClass:id,name'])
             ->where('exam_id', $exam->id)
             ->where('student_id', $student->id)
-            ->select('id', 'exam_id', 'student_id', 'subject_id', 'obtained_marks', 'total_marks', 'passing_marks')
+            ->select('id', 'exam_id', 'student_id', 'subject_id', 'student_class_id', 'obtained_marks', 'total_marks', 'passing_marks')
             ->get();
+
+        // Get the class from exam results (the class during exam time)
+        $studentClass = $results->first()?->studentClass;
 
         $totalObtained = $results->sum('obtained_marks');
         $totalMarks = $results->sum('total_marks');
@@ -37,6 +37,7 @@ class ResultController extends Controller
         return view('results.show', compact(
             'exam',
             'student',
+            'studentClass',
             'results',
             'totalObtained',
             'totalMarks',
@@ -48,16 +49,16 @@ class ResultController extends Controller
 
     public function print(Exam $exam, Student $student)
     {
-        $student->load([
-            'studentClass:id,name',
-            'section:id,name',
-        ]);
+        $student->load('section:id,name');
 
-        $results = ExamResult::with('subject:id,name')
+        $results = ExamResult::with(['subject:id,name', 'studentClass:id,name'])
             ->where('exam_id', $exam->id)
             ->where('student_id', $student->id)
-            ->select('id', 'exam_id', 'student_id', 'subject_id', 'obtained_marks', 'total_marks', 'passing_marks')
+            ->select('id', 'exam_id', 'student_id', 'subject_id', 'student_class_id', 'obtained_marks', 'total_marks', 'passing_marks')
             ->get();
+
+        // Get the class from exam results (the class during exam time)
+        $studentClass = $results->first()?->studentClass;
 
         $totalObtained = $results->sum('obtained_marks');
         $totalMarks = $results->sum('total_marks');
@@ -70,6 +71,7 @@ class ResultController extends Controller
         return view('results.print', compact(
             'exam',
             'student',
+            'studentClass',
             'results',
             'totalObtained',
             'totalMarks',

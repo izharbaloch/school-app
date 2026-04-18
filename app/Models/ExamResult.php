@@ -33,6 +33,11 @@ class ExamResult extends Model
         return $this->belongsTo(Subject::class);
     }
 
+    public function studentClass()
+    {
+        return $this->belongsTo(StudentClass::class, 'student_class_id');
+    }
+
     public function getIsPassAttribute()
     {
         return $this->obtained_marks >= $this->passing_marks;

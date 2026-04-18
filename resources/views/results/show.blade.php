@@ -13,7 +13,7 @@
             <div class="card-body">
                 <p><strong>Exam:</strong> {{ $exam->name }}</p>
                 <p><strong>Student:</strong> {{ $student->full_name ?: ($student->name ?? '-') }}</p>
-                <p><strong>Class:</strong> {{ $student->studentClass->name ?? '-' }}</p>
+                <p><strong>Class:</strong> {{ $studentClass->name ?? '-' }}</p>
                 <p><strong>Section:</strong> {{ $student->section->name ?? '-' }}</p>
                 <p><strong>Roll No:</strong> {{ $student->roll_no ?? '-' }}</p>
 
