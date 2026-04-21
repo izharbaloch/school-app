@@ -24,7 +24,10 @@ return new class extends Migration
             $table->text('remarks')->nullable();
             $table->timestamps();
 
-            $table->unique(['exam_id', 'student_id', 'subject_id']);
+            $table->unique(
+                ['exam_id', 'student_id', 'subject_id', 'student_class_id', 'academic_year'],
+                'exam_results_unique'
+            );
         });
     }
 

@@ -41,16 +41,13 @@ class ExamMarkEntry extends Component
 
     public function updatedStudentClassId()
     {
-        $this->section_id = '';
-        $this->student_id = '';
-        $this->students = [];
+        $this->reset(['section_id', 'student_id', 'students']);
         $this->loadData();
     }
 
     public function updatedSectionId()
     {
-        $this->student_id = '';
-        $this->students = [];
+        $this->reset(['student_id', 'students']);
         $this->loadData();
     }
 
@@ -88,28 +85,27 @@ class ExamMarkEntry extends Component
     public function loadData()
     {
         $exam = Exam::find($this->exam_id);
-
         if (!$exam) return;
 
-        // SUBJECTS
+        // Subjects
         $this->subjects = Subject::whereHas('classes', function ($q) {
             $q->where('student_classes.id', $this->student_class_id);
         })->get();
 
-        // DROPDOWN STUDENTS
+        // Students dropdown
         $this->filteredStudents = Student::where('student_class_id', $this->student_class_id)
             ->when($this->section_id, fn($q) => $q->where('section_id', $this->section_id))
             ->orderBy('roll_no')
             ->get();
 
-        // TABLE STUDENTS
+        // Students table
         $students = Student::where('student_class_id', $this->student_class_id)
             ->when($this->section_id, fn($q) => $q->where('section_id', $this->section_id))
             ->when($this->student_id, fn($q) => $q->where('id', $this->student_id))
             ->orderBy('roll_no')
             ->get();
 
-        // 🔥 RESULT LOAD WITH ACADEMIC YEAR
+        // Results (IMPORTANT FIX)
         $results = ExamResult::where('exam_id', $this->exam_id)
             ->where('student_class_id', $this->student_class_id)
             ->where('academic_year', $exam->academic_year)
@@ -146,6 +142,10 @@ class ExamMarkEntry extends Component
         DB::transaction(function () {
 
             $exam = Exam::find($this->exam_id);
+            if (!$exam) return;
+
+            // preload subjects (optimization)
+            $subjects = Subject::whereIn('id', collect($this->subjects)->pluck('id'))->get()->keyBy('id');
 
             foreach ($this->students as $student) {
 
@@ -153,33 +153,51 @@ class ExamMarkEntry extends Component
 
                 foreach ($student['subjects'] as $subject_id => $marks) {
 
-                    $subject = Subject::find($subject_id);
+                    $subject = $subjects[$subject_id] ?? null;
+                    if (!$subject) continue;
 
-                    ExamResult::updateOrCreate(
-                        [
-                            'exam_id' => $this->exam_id,
-                            'student_id' => $student['student_id'],
-                            'subject_id' => $subject_id,
-                        ],
-                        [
-                            'student_class_id' => $this->student_class_id,
-                            'academic_year' => $exam->academic_year, // 🔥 MAIN FIX
+                    // 🔥 SMART CHECK (NO OVERWRITE ISSUE)
+                    $existingResult = ExamResult::where('exam_id', $this->exam_id)
+                        ->where('student_id', $student['student_id'])
+                        ->where('subject_id', $subject_id)
+                        ->where('academic_year', $exam->academic_year)
+                        ->where('student_class_id', $this->student_class_id)
+                        ->first();
+
+                    if ($existingResult) {
+                        // UPDATE
+                        $existingResult->update([
                             'obtained_marks' => $marks['obtained_marks'],
                             'total_marks' => $subject->total_marks,
                             'passing_marks' => $subject->passing_marks,
                             'remarks' => $marks['remarks'],
-                        ]
-                    );
+                        ]);
+                    } else {
+                        // CREATE NEW (history safe)
+                        ExamResult::create([
+                            'exam_id' => $this->exam_id,
+                            'student_id' => $student['student_id'],
+                            'subject_id' => $subject_id,
+                            'student_class_id' => $this->student_class_id,
+                            'academic_year' => $exam->academic_year,
+                            'obtained_marks' => $marks['obtained_marks'],
+                            'total_marks' => $subject->total_marks,
+                            'passing_marks' => $subject->passing_marks,
+                            'remarks' => $marks['remarks'],
+                        ]);
+                    }
 
+                    // Fail check
                     if ($marks['obtained_marks'] < $subject->passing_marks) {
                         $isFail = true;
                     }
                 }
 
-                // PROMOTION
-                if ($this->is_promoted && $exam && stripos($exam->name, 'final') !== false) {
+                // 🔥 PROMOTION LOGIC (FINAL TERM ONLY)
+                if ($this->is_promoted && stripos($exam->name, 'final') !== false) {
 
                     $studentModel = Student::find($student['student_id']);
+                    if (!$studentModel) continue;
 
                     if ($isFail) {
                         $studentModel->update(['is_failed' => 1]);
@@ -191,20 +209,28 @@ class ExamMarkEntry extends Component
 
                         if ($nextClass) {
 
-                            StudentPromotion::create([
-                                'student_id' => $studentModel->id,
-                                'from_class_id' => $studentModel->student_class_id,
-                                'to_class_id' => $nextClass->id,
-                                'from_section_id' => $studentModel->section_id,
-                                'to_section_id' => $studentModel->section_id,
-                                'exam_id' => $this->exam_id,
-                            ]);
+                            // prevent duplicate promotion
+                            $alreadyPromoted = StudentPromotion::where('student_id', $studentModel->id)
+                                ->where('exam_id', $this->exam_id)
+                                ->exists();
 
-                            $studentModel->update([
-                                'student_class_id' => $nextClass->id,
-                                'status' => 'pass_out',
-                                'is_failed' => 0,
-                            ]);
+                            if (!$alreadyPromoted) {
+
+                                StudentPromotion::create([
+                                    'student_id' => $studentModel->id,
+                                    'from_class_id' => $studentModel->student_class_id,
+                                    'to_class_id' => $nextClass->id,
+                                    'from_section_id' => $studentModel->section_id,
+                                    'to_section_id' => $studentModel->section_id,
+                                    'exam_id' => $this->exam_id,
+                                ]);
+
+                                $studentModel->update([
+                                    'student_class_id' => $nextClass->id,
+                                    // 'status' => 'pass_out',
+                                    'is_failed' => 0,
+                                ]);
+                            }
                         }
                     }
                 }
