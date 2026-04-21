@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Guardian extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['user_id', 'father_name', 'mother_name', 'guardian_phone', 'guardian_cnic_no', 'email', 'address', 'status'];
 
     public function user()

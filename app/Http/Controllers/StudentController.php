@@ -21,7 +21,6 @@ class StudentController extends Controller
         ->select('id', 'roll_no', 'first_name', 'last_name', 'father_name', 'student_class_id', 'section_id', 'status')
         ->orderBy('student_class_id')
         ->orderBy('section_id')
-        ->orderBy('first_name')
         ->paginate(25);
 
         return view('students.index', compact('students'));

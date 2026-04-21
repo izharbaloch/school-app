@@ -428,6 +428,10 @@
                         </table>
                     </div>
 
+                    <div>
+                        {{ $users->links() }}
+                    </div>
+
                 </div>
             </div>
         </div>

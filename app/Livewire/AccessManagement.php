@@ -6,11 +6,16 @@ use App\Models\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Livewire\WithPagination;
+use Livewire\Attributes\Computed;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class AccessManagement extends Component
 {
+    use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
     // =========================
     // Role Properties
     // =========================
@@ -39,14 +44,12 @@ class AccessManagement extends Component
     public string $user_email = '';
     public string $user_password = '';
     public $selected_user_role = '';
-    public $users = [];
     public $userEditId = null;
 
     public function mount()
     {
         $this->loadRoles();
         $this->loadPermissions();
-        $this->loadUsers();
         $this->loadRolePermissionAssignments();
     }
 
@@ -63,9 +66,10 @@ class AccessManagement extends Component
         $this->permissions = Permission::latest()->get();
     }
 
-    public function loadUsers()
+    #[Computed]
+    public function users()
     {
-        $this->users = User::with('roles')->latest()->get();
+        return User::with('roles')->latest()->paginate(10);
     }
 
     public function loadRolePermissionAssignments()
@@ -123,7 +127,6 @@ class AccessManagement extends Component
         $this->resetRoleForm();
         $this->loadRoles();
         $this->loadRolePermissionAssignments();
-        $this->loadUsers();
 
         session()->flash('role_success', 'Role updated successfully.');
     }
@@ -315,7 +318,6 @@ class AccessManagement extends Component
         $user->assignRole($role->name);
 
         $this->resetUserForm();
-        $this->loadUsers();
 
         session()->flash('user_success', 'User added successfully.');
     }
@@ -366,7 +368,6 @@ class AccessManagement extends Component
         $user->syncRoles([$role->name]);
 
         $this->resetUserForm();
-        $this->loadUsers();
 
         session()->flash('user_success', 'User updated successfully.');
     }
@@ -378,8 +379,6 @@ class AccessManagement extends Component
         if ($this->userEditId == $id) {
             $this->resetUserForm();
         }
-
-        $this->loadUsers();
 
         session()->flash('user_success', 'User deleted successfully.');
     }
@@ -401,6 +400,8 @@ class AccessManagement extends Component
 
     public function render()
     {
-        return view('livewire.access-management');
+        return view('livewire.access-management', [
+            'users' => $this->users,
+        ]);
     }
 }
