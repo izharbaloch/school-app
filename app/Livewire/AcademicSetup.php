@@ -345,36 +345,6 @@ class AcademicSetup extends Component
         $this->subject_status = 1;
     }
 
-    // =========================
-    // Class Section Assignment
-    // =========================
-    // public function assignSectionToClass()
-    // {
-    //     $validated = $this->validate([
-    //         'assign_class_id' => 'required|exists:student_classes,id',
-    //         'assign_section_id' => 'required|exists:sections,id',
-    //     ], [
-    //         'assign_class_id.required' => 'Please select a class.',
-    //         'assign_section_id.required' => 'Please select a section.',
-    //     ]);
-
-    //     $class = StudentClass::findOrFail($validated['assign_class_id']);
-
-    //     if ($class->sections()->where('sections.id', $validated['assign_section_id'])->exists()) {
-    //         session()->flash('assignment_section_error', 'This section is already assigned to the selected class.');
-    //         return;
-    //     }
-
-    //     $class->sections()->attach($validated['assign_section_id']);
-
-    //     $this->assign_class_id = '';
-    //     $this->assign_section_id = '';
-
-    //     $this->loadAssignments();
-
-    //     session()->flash('assignment_section_success', 'Section assigned to class successfully.');
-    // }
-
     public function assignSectionToClass()
     {
         $validated = $this->validate([
@@ -410,36 +380,6 @@ class AcademicSetup extends Component
 
         session()->flash('assignment_section_success', 'Section assignment removed successfully.');
     }
-
-    // =========================
-    // Class Subject Assignment
-    // =========================
-    // public function assignSubjectToClass()
-    // {
-    //     $validated = $this->validate([
-    //         'assign_subject_class_id' => 'required|exists:student_classes,id',
-    //         'assign_subject_id' => 'required|exists:subjects,id',
-    //     ], [
-    //         'assign_subject_class_id.required' => 'Please select a class.',
-    //         'assign_subject_id.required' => 'Please select a subject.',
-    //     ]);
-
-    //     $class = StudentClass::findOrFail($validated['assign_subject_class_id']);
-
-    //     if ($class->subjects()->where('subjects.id', $validated['assign_subject_id'])->exists()) {
-    //         session()->flash('assignment_subject_error', 'This subject is already assigned to the selected class.');
-    //         return;
-    //     }
-
-    //     $class->subjects()->attach($validated['assign_subject_id']);
-
-    //     $this->assign_subject_class_id = '';
-    //     $this->assign_subject_id = '';
-
-    //     $this->loadAssignments();
-
-    //     session()->flash('assignment_subject_success', 'Subject assigned to class successfully.');
-    // }
 
     public function assignSubjectToClass()
     {
