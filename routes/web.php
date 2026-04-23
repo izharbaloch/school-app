@@ -14,6 +14,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentFeeController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TeacherAttendanceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,8 +38,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/guardians', [GuardianController::class, 'index'])->name('guardians.index');
     // teacher route
     Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers.index');
+
     // attendance routes
     Route::resource('attendances', AttendanceController::class);
+
+    // teacher attendance routes
+    Route::get('teacher-attendances', [TeacherAttendanceController::class, 'index'])->name('teacher-attendances.index');
+    Route::get('teacher-attendances/create', [TeacherAttendanceController::class, 'create'])->name('teacher-attendances.create');
+    Route::get('teacher-attendances/{teacherAttendanceDate}', [TeacherAttendanceController::class, 'show'])->name('teacher-attendances.show');
+    Route::get('teacher-attendances/{teacherAttendanceDate}/edit', [TeacherAttendanceController::class, 'edit'])->name('teacher-attendances.edit');
 
     // fee routes
     Route::get('fee-types', [FeeTypeController::class, 'index'])->name('fee-types.index');
