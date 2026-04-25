@@ -347,24 +347,39 @@
                         </li>
 
                         {{-- Attendance --}}
-                        <li class="dropdown {{ request()->routeIs('attendances.*') ? 'active' : '' }}">
+                        @php
+                            $attendanceMenuActive =
+                                request()->routeIs('attendances.*') || request()->routeIs('teacher-attendances.*');
+                        @endphp
+                        <li class="dropdown {{ $attendanceMenuActive ? 'active' : '' }}">
                             <a href="#"
-                                class="nav-link has-dropdown {{ request()->routeIs('attendances.*') ? 'toggled' : '' }}">
+                                class="nav-link has-dropdown {{ $attendanceMenuActive ? 'toggled' : '' }}">
                                 <i class="fas fa-calendar-check"></i>
                                 <span>Attendance</span>
                             </a>
 
-                            <ul class="dropdown-menu"
-                                style="{{ request()->routeIs('attendances.*') ? 'display: block;' : '' }}">
+                            <ul class="dropdown-menu" style="{{ $attendanceMenuActive ? 'display: block;' : '' }}">
                                 <li class="{{ request()->routeIs('attendances.create') ? 'active' : '' }}">
                                     <a class="nav-link" href="{{ route('attendances.create') }}">
-                                        Mark Attendance
+                                        Mark Student Attendance
                                     </a>
                                 </li>
 
                                 <li class="{{ request()->routeIs('attendances.index') ? 'active' : '' }}">
                                     <a class="nav-link" href="{{ route('attendances.index') }}">
-                                        View Attendance
+                                        View Student Attendance
+                                    </a>
+                                </li>
+
+                                <li class="{{ request()->routeIs('teacher-attendances.create') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('teacher-attendances.create') }}">
+                                        Mark Teacher Attendance
+                                    </a>
+                                </li>
+
+                                <li class="{{ request()->routeIs('teacher-attendances.index') ? 'active' : '' }}">
+                                    <a class="nav-link" href="{{ route('teacher-attendances.index') }}">
+                                        View Teacher Attendance
                                     </a>
                                 </li>
                             </ul>
