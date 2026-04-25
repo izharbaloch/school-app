@@ -132,6 +132,44 @@ class ResultIndex extends Component
         return $results;
     }
 
+    public function getStatsProperty()
+    {
+        $results = collect($this->results);
+        
+        if ($results->isEmpty()) {
+            return [
+                'pass_percentage' => 0,
+                'fail_percentage' => 0,
+                'first_position' => '-',
+                'second_position' => '-',
+                'third_position' => '-',
+            ];
+        }
+
+        $totalStudents = $results->count();
+        $passedCount = $results->where('status', 'Pass')->count();
+        $failedCount = $results->where('status', 'Fail')->count();
+
+        $passPercentage = $totalStudents > 0 ? round(($passedCount / $totalStudents) * 100, 1) : 0;
+        $failPercentage = $totalStudents > 0 ? round(($failedCount / $totalStudents) * 100, 1) : 0;
+
+        $ranked = $results->where('status', 'Pass')
+            ->sortByDesc('percentage')
+            ->values();
+
+        $firstPosition = $ranked->get(0) ? ($ranked->get(0)['student']->full_name ?: ($ranked->get(0)['student']->name ?? '-')) : '-';
+        $secondPosition = $ranked->get(1) ? ($ranked->get(1)['student']->full_name ?: ($ranked->get(1)['student']->name ?? '-')) : '-';
+        $thirdPosition = $ranked->get(2) ? ($ranked->get(2)['student']->full_name ?: ($ranked->get(2)['student']->name ?? '-')) : '-';
+
+        return [
+            'pass_percentage' => $passPercentage,
+            'fail_percentage' => $failPercentage,
+            'first_position' => $firstPosition,
+            'second_position' => $secondPosition,
+            'third_position' => $thirdPosition,
+        ];
+    }
+
     public function render()
     {
         return view('livewire.exams.result-index', [
@@ -139,6 +177,7 @@ class ResultIndex extends Component
             'classes' => $this->classes,
             'sections' => $this->sections,
             'results' => $this->results,
+            'stats' => $this->stats,
         ]);
     }
 }

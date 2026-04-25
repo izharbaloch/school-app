@@ -40,6 +40,84 @@
     </div>
 
     @if (count($results))
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="card card-statistic-1 shadow-sm">
+                    <div class="card-icon bg-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="card-header">
+                            <h4>Pass Percentage</h4>
+                        </div>
+                        <div class="card-body">
+                            {{ $stats['pass_percentage'] ?? 0 }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="card card-statistic-1 shadow-sm">
+                    <div class="card-icon bg-danger">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="card-header">
+                            <h4>Fail Percentage</h4>
+                        </div>
+                        <div class="card-body">
+                            {{ $stats['fail_percentage'] ?? 0 }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-12 col-12">
+                <div class="card card-statistic-1 shadow-sm">
+                    <div class="card-icon bg-warning">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="card-header">
+                            <h4>1st Position</h4>
+                        </div>
+                        <div class="card-body" style="font-size: 14px; padding-top: 10px; line-height: 1.2;">
+                            {{ $stats['first_position'] ?? '-' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-12 col-12">
+                <div class="card card-statistic-1 shadow-sm">
+                    <div class="card-icon bg-info">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="card-header">
+                            <h4>2nd Position</h4>
+                        </div>
+                        <div class="card-body" style="font-size: 14px; padding-top: 10px; line-height: 1.2;">
+                            {{ $stats['second_position'] ?? '-' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-12 col-12">
+                <div class="card card-statistic-1 shadow-sm">
+                    <div class="card-icon bg-primary">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="card-header">
+                            <h4>3rd Position</h4>
+                        </div>
+                        <div class="card-body" style="font-size: 14px; padding-top: 10px; line-height: 1.2;">
+                            {{ $stats['third_position'] ?? '-' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-header">
                 <h4>Class Result Summary</h4>
