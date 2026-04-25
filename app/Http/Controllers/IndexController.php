@@ -17,45 +17,104 @@ class IndexController extends Controller
 {
     public function dashboard()
     {
-        $currentMonth = now()->month;
-        $currentYear = now()->year;
         $today = now()->toDateString();
 
-        // Get this month's fees
-        $thisMonthFees = StudentFee::where('month', $currentMonth)
-            ->where('year', $currentYear)
-            ->get();
+        // 1. Top Summary Cards
+        $totalStudents = Student::count();
+        $totalTeachers = Teacher::count();
+        $totalClasses = \App\Models\StudentClass::count();
+        $totalFeeCollected = FeePayment::sum('amount');
+        
+        // Pending fees: total payable - paid amount
+        $stats = StudentFee::selectRaw('
+            SUM(amount + COALESCE(fine, 0) - COALESCE(discount, 0)) as all_amount,
+            SUM(paid_amount) as paid_amount
+        ')->first();
+        
+        $pendingFees = max(0, ($stats->all_amount ?? 0) - ($stats->paid_amount ?? 0));
 
-        $monthlyPendingAmount = $thisMonthFees->where('status', StudentFee::UNPAID)
-            ->sum('amount');
+        // 2. Charts Data (Last 6 Months)
+        $months = [];
+        $admissionsData = [];
+        $feeData = [];
 
-        $monthlyPaidAmount = $thisMonthFees->where('status', StudentFee::PAID)
-            ->sum('paid_amount');
+        for ($i = 5; $i >= 0; $i--) {
+            $monthDate = now()->subMonths($i);
+            $months[] = $monthDate->format('M');
+            
+            $admissionsData[] = Student::whereMonth('created_at', $monthDate->month)
+                                       ->whereYear('created_at', $monthDate->year)
+                                       ->count();
 
-        // Get today's attendance
-        $todayAttendance = AttendanceStudent::whereHas('attendance', function ($query) use ($today) {
-            $query->whereDate('attendance_date', $today);
+            $feeData[] = FeePayment::whereMonth('payment_date', $monthDate->month)
+                                   ->whereYear('payment_date', $monthDate->year)
+                                   ->sum('amount');
+        }
+
+        // Attendance Overview Chart (Today)
+        $todayAttendance = AttendanceStudent::whereHas('attendance', function ($q) use ($today) {
+            $q->whereDate('attendance_date', $today);
         })->get();
 
-        $todayPresent = $todayAttendance->where('status', AttendanceStudent::PRESENT)->count();
-        $todayAbsent = $todayAttendance->where('status', AttendanceStudent::ABSENT)->count();
+        $attendancePresent = $todayAttendance->where('status', AttendanceStudent::PRESENT)->count();
+        $attendanceAbsent = $todayAttendance->where('status', AttendanceStudent::ABSENT)->count();
+        $attendanceLeave = $todayAttendance->whereIn('status', [AttendanceStudent::LEAVE, AttendanceStudent::LATE])->count();
+        
+        // 3. Data Tables
+        $recentStudents = Student::with('studentClass')->latest()->take(5)->get();
+        $teacherRoster = Teacher::latest()->take(5)->get();
 
-        // Total student fees amount
-        $totalStudentFeesAmount = StudentFee::sum(DB::raw('amount + fine - discount'));
+        // 4. Notifications & Activity
+        $pendingFeesAlert = StudentFee::where('status', '!=', StudentFee::PAID)
+            ->where('due_date', '<', now())
+            ->count();
+            
+        $newAdmissionsAlert = Student::whereDate('created_at', '>=', now()->subDays(7))->count();
+
+        // Combine latest FeePayments and Students for recent activity
+        $latestPayments = FeePayment::with('studentFee.student')->latest()->take(3)->get()->map(function($p) {
+            return [
+                'type' => 'payment',
+                'title' => $p->studentFee->student->full_name ?? ($p->studentFee->student->name ?? 'Student'),
+                'description' => 'Paid fee of $' . number_format($p->amount, 2),
+                'time_str' => $p->created_at->diffForHumans(),
+                'timestamp' => $p->created_at->timestamp,
+            ];
+        });
+        
+        $latestAdmissions = Student::latest()->take(3)->get()->map(function($s) {
+            return [
+                'type' => 'admission',
+                'title' => $s->full_name ?: ($s->name ?? 'Student'),
+                'description' => 'Added to student roster',
+                'time_str' => $s->created_at->diffForHumans(),
+                'timestamp' => $s->created_at->timestamp,
+            ];
+        });
+
+        $recentActivities = $latestPayments->concat($latestAdmissions)->sortByDesc('timestamp')->take(5);
 
         $data = [
-            'totalStudents' => Student::select('id')->count(),
-            'totalTeachers' => Teacher::select('id')->count(),
-            'totalGuardians' => Guardian::select('id')->count(),
-            'totalExams' => Exam::select('id')->count(),
-            'totalFees' => StudentFee::select('id')->count(),
-            'feesPaid' => FeePayment::select('id')->count(),
-            'totalAttendances' => Attendance::select('id')->count(),
-            'monthlyPendingAmount' => $monthlyPendingAmount,
-            'monthlyPaidAmount' => $monthlyPaidAmount,
-            'totalStudentFeesAmount' => $totalStudentFeesAmount,
-            'todayPresent' => $todayPresent,
-            'todayAbsent' => $todayAbsent,
+            'totalStudents' => $totalStudents,
+            'totalTeachers' => $totalTeachers,
+            'totalClasses' => $totalClasses,
+            'totalFeeCollected' => $totalFeeCollected,
+            'pendingFees' => $pendingFees,
+            
+            'chartMonths' => $months,
+            'admissionsData' => $admissionsData,
+            'feeData' => $feeData,
+            
+            'attendancePresent' => $attendancePresent,
+            'attendanceAbsent' => $attendanceAbsent,
+            'attendanceLeave' => $attendanceLeave,
+            
+            'recentStudents' => $recentStudents,
+            'teacherRoster' => $teacherRoster,
+            
+            'pendingFeesAlert' => $pendingFeesAlert,
+            'newAdmissionsAlert' => $newAdmissionsAlert,
+            'recentActivities' => $recentActivities,
         ];
 
         return view('dashboard', $data);
