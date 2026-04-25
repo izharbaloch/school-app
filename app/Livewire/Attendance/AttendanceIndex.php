@@ -88,6 +88,36 @@ class AttendanceIndex extends Component
         $this->resetPage();
     }
 
+    public function getReportStats()
+    {
+        $date = $this->attendance_date ?: \Carbon\Carbon::today()->toDateString();
+
+        $query = \App\Models\AttendanceStudent::whereHas('attendance', function ($q) use ($date) {
+            $q->whereDate('attendance_date', $date);
+            
+            if ($this->student_class_id) {
+                $q->where('student_class_id', $this->student_class_id);
+            }
+            if ($this->section_id) {
+                $q->where('section_id', $this->section_id);
+            }
+        });
+
+        $total = $query->count();
+        $present = (clone $query)->where('status', \App\Models\AttendanceStudent::PRESENT)->count();
+        $absent = (clone $query)->where('status', \App\Models\AttendanceStudent::ABSENT)->count();
+
+        $percentage = $total > 0 ? round(($present / $total) * 100, 1) : 0;
+
+        return [
+            'total' => $total,
+            'present' => $present,
+            'absent' => $absent,
+            'percentage' => $percentage,
+            'date' => $date
+        ];
+    }
+
     public function render()
     {
         $attendances = Attendance::query()
@@ -127,6 +157,7 @@ class AttendanceIndex extends Component
             'attendances' => $attendances,
             'classes' => $this->classes,
             'sections' => $this->sections,
+            'reportStats' => $this->getReportStats(),
         ]);
     }
 }

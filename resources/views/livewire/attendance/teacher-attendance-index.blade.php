@@ -1,4 +1,67 @@
 <div>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card card-statistic-1">
+                <div class="card-icon bg-primary">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header">
+                        <h4>Total Teachers</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ $reportStats['total'] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card card-statistic-1">
+                <div class="card-icon bg-success">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header">
+                        <h4>Present</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ $reportStats['present'] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card card-statistic-1">
+                <div class="card-icon bg-danger">
+                    <i class="fas fa-user-times"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header">
+                        <h4>Absent</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ $reportStats['absent'] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="card card-statistic-1">
+                <div class="card-icon bg-info">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="card-wrap">
+                    <div class="card-header">
+                        <h4>Percentage</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ $reportStats['percentage'] }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header">
             <h4>Teacher Attendance Records</h4>
@@ -10,6 +73,19 @@
                     <input type="date" class="form-control @error('attendance_date') is-invalid @enderror"
                         wire:model.live="attendance_date">
                     @error('attendance_date')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="col-md-3">
+                    <label>Teacher</label>
+                    <select class="form-control @error('teacher_id') is-invalid @enderror"
+                        wire:model.live="teacher_id">
+                        <option value="">All Teachers</option>
+                        @foreach ($teachers as $teacher)
+                            <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('teacher_id')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
                 </div>
