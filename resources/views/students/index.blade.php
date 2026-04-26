@@ -33,78 +33,7 @@
                 </div>
 
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Photo</th>
-                                    <th>Roll No</th>
-                                    <th>Name</th>
-                                    <th>Father Name</th>
-                                    <th>Class</th>
-                                    <th>Section</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($students as $student)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>
-                                            @if ($student->profilePhoto)
-                                                <img src="{{ asset('storage/' . $student->profilePhoto->file_path) }}"
-                                                    alt="Student Photo" width="45" height="45"
-                                                    class="rounded border">
-                                            @else
-                                                <span class="text-muted">No Photo</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $student->roll_no ?? '-' }}</td>
-                                        <td>{{ $student->first_name }} {{ $student->last_name }}</td>
-                                        <td>{{ $student->father_name }}</td>
-                                        <td>{{ $student->studentClass->name ?? '-' }}</td>
-                                        <td>{{ $student->section->name ?? '-' }}</td>
-                                        <td>
-                                            @if ($student->status == 'active')
-                                                <span class="badge badge-success">Active</span>
-                                            @else
-                                                <span class="badge badge-danger">Inactive</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('students.show', $student->id) }}"
-                                                class="btn btn-sm btn-info" title="View">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-
-                                            <a href="{{ route('students.edit', $student->id) }}"
-                                                class="btn btn-sm btn-primary" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-
-                                            <form action="{{ route('students.destroy', $student->id) }}" method="POST"
-                                                class="d-inline" onsubmit="return confirm('Delete this student?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Delete">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center">No students found.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                        {{ $students->links() }}
-                    </div>
+                    <livewire:student.student-index />
                 </div>
             </div>
         </div>

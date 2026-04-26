@@ -13,17 +13,7 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::with([
-            'studentClass:id,name',
-            'section:id,name',
-            'profilePhoto:id,student_id,file_path',
-        ])
-        ->select('id', 'roll_no', 'first_name', 'last_name', 'father_name', 'student_class_id', 'section_id', 'status')
-        ->orderBy('student_class_id')
-        ->orderBy('section_id')
-        ->paginate(25);
-
-        return view('students.index', compact('students'));
+        return view('students.index');
     }
 
     /**
