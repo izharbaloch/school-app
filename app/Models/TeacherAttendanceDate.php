@@ -45,4 +45,19 @@ class TeacherAttendanceDate extends Model
     {
         return $this->attendanceTeachers()->where('status', AttendanceTeacher::LATE)->count();
     }
+
+    public function scopeAllowedForUser($query, $user)
+    {
+        if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal')) {
+            return $query;
+        }
+
+        if ($user->hasRole('teacher')) {
+            return $query->whereHas('attendanceTeachers', function ($q) use ($user) {
+                $q->allowedForUser($user);
+            });
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
 }

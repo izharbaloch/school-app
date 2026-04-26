@@ -37,4 +37,19 @@ class AttendanceTeacher extends Model
     {
         return $this->belongsTo(Teacher::class);
     }
+
+    public function scopeAllowedForUser($query, $user)
+    {
+        if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal')) {
+            return $query;
+        }
+
+        if ($user->hasRole('teacher')) {
+            return $query->whereHas('teacher', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
 }

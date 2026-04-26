@@ -66,4 +66,15 @@ class StudentFee extends Model
     {
         return 'FEE-' . str_pad($this->id, 5, '0', STR_PAD_LEFT);
     }
+
+    public function scopeAllowedForUser($query, $user)
+    {
+        if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal') || $user->hasRole('accountant')) {
+            return $query;
+        }
+
+        return $query->whereHas('student', function ($q) use ($user) {
+            $q->allowedForUser($user);
+        });
+    }
 }

@@ -57,4 +57,27 @@ class Attendance extends Model
     {
         return $this->attendanceStudents()->where('status', AttendanceStudent::LATE)->count();
     }
+
+    public function scopeAllowedForUser($query, $user)
+    {
+        if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal')) {
+            return $query;
+        }
+
+        if ($user->hasRole('teacher')) {
+            $teacher = $user->teacher;
+            if ($teacher) {
+                return $query->where('student_class_id', $teacher->student_class_id)
+                             ->where('section_id', $teacher->section_id);
+            }
+        }
+
+        if ($user->hasRole('parent') || $user->hasRole('student')) {
+            return $query->whereHas('attendanceStudents', function ($q) use ($user) {
+                $q->allowedForUser($user);
+            });
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
 }

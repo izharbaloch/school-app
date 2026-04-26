@@ -29,4 +29,15 @@ class FeePayment extends Model
     {
         return $this->belongsTo(User::class, 'received_by');
     }
+
+    public function scopeAllowedForUser($query, $user)
+    {
+        if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal') || $user->hasRole('accountant')) {
+            return $query;
+        }
+
+        return $query->whereHas('studentFee', function ($q) use ($user) {
+            $q->allowedForUser($user);
+        });
+    }
 }

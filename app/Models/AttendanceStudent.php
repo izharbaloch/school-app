@@ -37,4 +37,15 @@ class AttendanceStudent extends Model
     {
         return $this->belongsTo(Student::class);
     }
+
+    public function scopeAllowedForUser($query, $user)
+    {
+        if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal')) {
+            return $query;
+        }
+
+        return $query->whereHas('student', function ($q) use ($user) {
+            $q->allowedForUser($user);
+        });
+    }
 }

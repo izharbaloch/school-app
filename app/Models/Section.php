@@ -20,4 +20,26 @@ class Section extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function scopeAllowedForUser($query, $user)
+    {
+        if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal')) {
+            return $query;
+        }
+
+        if ($user->hasRole('teacher')) {
+            $teacher = $user->teacher;
+            if ($teacher) {
+                return $query->where('id', $teacher->section_id);
+            }
+        }
+
+        if ($user->hasRole('parent') || $user->hasRole('student')) {
+            return $query->whereHas('attendances', function ($q) use ($user) {
+                $q->allowedForUser($user);
+            });
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
 }

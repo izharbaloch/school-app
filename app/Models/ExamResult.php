@@ -42,4 +42,15 @@ class ExamResult extends Model
     {
         return $this->obtained_marks >= $this->passing_marks;
     }
+
+    public function scopeAllowedForUser($query, $user)
+    {
+        if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal')) {
+            return $query;
+        }
+
+        return $query->whereHas('student', function ($q) use ($user) {
+            $q->allowedForUser($user);
+        });
+    }
 }

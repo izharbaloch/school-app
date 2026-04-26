@@ -85,4 +85,35 @@ class Student extends Model
     {
         return $this->belongsTo(Guardian::class);
     }
+
+    public function scopeAllowedForUser($query, $user)
+    {
+        if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal')) {
+            return $query;
+        }
+
+        if ($user->hasRole('teacher')) {
+            $teacher = $user->teacher;
+            if ($teacher) {
+                return $query->where('student_class_id', $teacher->student_class_id)
+                             ->where('section_id', $teacher->section_id);
+            }
+        }
+
+        if ($user->hasRole('parent')) {
+            $guardian = $user->guardian;
+            if ($guardian) {
+                return $query->where('guardian_id', $guardian->id);
+            }
+        }
+
+        if ($user->hasRole('student')) {
+            $student = $user->student;
+            if ($student) {
+                return $query->where('id', $student->id);
+            }
+        }
+
+        return $query->whereRaw('1 = 0'); // Deny if no conditions matched
+    }
 }
