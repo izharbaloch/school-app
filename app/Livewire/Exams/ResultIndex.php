@@ -33,7 +33,7 @@ class ResultIndex extends Component
 
     public function getClassesProperty()
     {
-        return StudentClass::orderBy('name')->get();
+        return StudentClass::allowedForUser(auth()->user())->orderBy('name')->get();
     }
 
     public function getSectionsProperty()
@@ -42,9 +42,10 @@ class ResultIndex extends Component
             return collect();
         }
 
-        return Section::whereHas('classes', function ($query) {
-            $query->where('student_classes.id', $this->student_class_id);
-        })->orderBy('name')->get();
+        return Section::allowedForUser(auth()->user())
+            ->whereHas('classes', function ($query) {
+                $query->where('student_classes.id', $this->student_class_id);
+            })->orderBy('name')->get();
     }
 
     private function getGrade($percentage): string
@@ -76,11 +77,12 @@ class ResultIndex extends Component
             ->pluck('student_id')
             ->unique();
 
-        // 🔥 STEP 2: Students load
-        $students = Student::with([
-            'studentClass:id,name',
-            'section:id,name',
-        ])
+        // 🔥 STEP 2: Students load (role-filtered)
+        $students = Student::allowedForUser(auth()->user())
+            ->with([
+                'studentClass:id,name',
+                'section:id,name',
+            ])
             ->select('id', 'first_name', 'last_name', 'roll_no', 'student_class_id', 'section_id')
             ->whereIn('id', $studentIds);
 

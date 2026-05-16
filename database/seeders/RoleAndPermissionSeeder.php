@@ -308,11 +308,13 @@ class RoleAndPermissionSeeder extends Seeder
         Role::findByName('student')->syncPermissions([
             'dashboard.view',
 
+            'students.view',
             'subjects.view',
             'timetable.view',
             'attendance.view',
             'exams.view',
             'marks.view',
+            'fees.view',
             'library.view',
             'notices.view',
 

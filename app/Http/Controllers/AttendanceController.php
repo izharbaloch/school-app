@@ -35,6 +35,8 @@ class AttendanceController extends Controller
      */
     public function show(Attendance $attendance)
     {
+        $this->authorize('view', $attendance);
+
         $attendance->load([
             'studentClass:id,name',
             'section:id,name',
@@ -51,6 +53,8 @@ class AttendanceController extends Controller
      */
     public function edit(Attendance $attendance)
     {
+        $this->authorize('update', $attendance);
+
         return view('attendances.edit', compact('attendance'));
     }
 

@@ -33,7 +33,8 @@ class StudentIndex extends Component
     {
         $user = auth()->user();
 
-        $students = Student::with([
+        $students = Student::allowedForUser($user)
+            ->with([
                 'studentClass:id,name',
                 'section:id,name',
                 'profilePhoto:id,student_id,file_path',

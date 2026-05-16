@@ -29,6 +29,8 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
+        $this->authorize('view', $student);
+
         $student->load([
             'studentClass:id,name',
             'section:id,name',
@@ -46,6 +48,8 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
+        $this->authorize('update', $student);
+
         return view('students.edit', compact('student'));
     }
 
@@ -54,6 +58,8 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
+        $this->authorize('delete', $student);
+
         $student->load('attachments');
 
         foreach ($student->attachments as $attachment) {

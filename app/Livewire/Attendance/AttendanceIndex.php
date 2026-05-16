@@ -5,12 +5,13 @@ namespace App\Livewire\Attendance;
 use App\Models\Attendance;
 use App\Models\Section;
 use App\Models\StudentClass;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class AttendanceIndex extends Component
 {
-    use WithPagination;
+    use WithPagination, AuthorizesRequests;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -44,7 +45,7 @@ class AttendanceIndex extends Component
 
     public function getClassesProperty()
     {
-        return StudentClass::orderBy('name')->get();
+        return StudentClass::allowedForUser(auth()->user())->orderBy('name')->get();
     }
 
     public function getSectionsProperty()
@@ -53,9 +54,10 @@ class AttendanceIndex extends Component
             return collect();
         }
 
-        return Section::whereHas('classes', function ($query) {
-            $query->where('student_classes.id', $this->student_class_id);
-        })
+        return Section::allowedForUser(auth()->user())
+            ->whereHas('classes', function ($query) {
+                $query->where('student_classes.id', $this->student_class_id);
+            })
             ->orderBy('name')
             ->get();
     }
@@ -71,9 +73,10 @@ class AttendanceIndex extends Component
             return;
         }
 
-        $attendance = Attendance::find($this->deleteId);
+        $attendance = Attendance::allowedForUser(auth()->user())->find($this->deleteId);
 
         if ($attendance) {
+            $this->authorize('delete', $attendance);
             $attendance->delete();
         }
 
@@ -92,16 +95,17 @@ class AttendanceIndex extends Component
     {
         $date = $this->attendance_date ?: \Carbon\Carbon::today()->toDateString();
 
-        $query = \App\Models\AttendanceStudent::whereHas('attendance', function ($q) use ($date) {
-            $q->whereDate('attendance_date', $date);
-            
-            if ($this->student_class_id) {
-                $q->where('student_class_id', $this->student_class_id);
-            }
-            if ($this->section_id) {
-                $q->where('section_id', $this->section_id);
-            }
-        });
+        $query = \App\Models\AttendanceStudent::allowedForUser(auth()->user())
+            ->whereHas('attendance', function ($q) use ($date) {
+                $q->whereDate('attendance_date', $date);
+
+                if ($this->student_class_id) {
+                    $q->where('student_class_id', $this->student_class_id);
+                }
+                if ($this->section_id) {
+                    $q->where('section_id', $this->section_id);
+                }
+            });
 
         $total = $query->count();
         $present = (clone $query)->where('status', \App\Models\AttendanceStudent::PRESENT)->count();
@@ -120,7 +124,7 @@ class AttendanceIndex extends Component
 
     public function render()
     {
-        $attendances = Attendance::query()
+        $attendances = Attendance::allowedForUser(auth()->user())
             ->select('id', 'attendance_date', 'student_class_id', 'section_id', 'taken_by', 'remarks', 'created_at')
             ->with([
                 'studentClass:id,name',

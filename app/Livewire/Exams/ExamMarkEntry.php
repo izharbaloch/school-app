@@ -70,16 +70,17 @@ class ExamMarkEntry extends Component
 
     public function getClassesProperty()
     {
-        return StudentClass::orderBy('name')->get();
+        return StudentClass::allowedForUser(auth()->user())->orderBy('name')->get();
     }
 
     public function getSectionsProperty()
     {
         if (!$this->student_class_id) return collect();
 
-        return Section::whereHas('classes', function ($q) {
-            $q->where('student_classes.id', $this->student_class_id);
-        })->get();
+        return Section::allowedForUser(auth()->user())
+            ->whereHas('classes', function ($q) {
+                $q->where('student_classes.id', $this->student_class_id);
+            })->get();
     }
 
     public function loadData()
@@ -92,14 +93,16 @@ class ExamMarkEntry extends Component
             $q->where('student_classes.id', $this->student_class_id);
         })->get();
 
-        // Students dropdown
-        $this->filteredStudents = Student::where('student_class_id', $this->student_class_id)
+        // Students dropdown (role-filtered)
+        $this->filteredStudents = Student::allowedForUser(auth()->user())
+            ->where('student_class_id', $this->student_class_id)
             ->when($this->section_id, fn($q) => $q->where('section_id', $this->section_id))
             ->orderBy('roll_no')
             ->get();
 
-        // Students table
-        $students = Student::where('student_class_id', $this->student_class_id)
+        // Students table (role-filtered)
+        $students = Student::allowedForUser(auth()->user())
+            ->where('student_class_id', $this->student_class_id)
             ->when($this->section_id, fn($q) => $q->where('section_id', $this->section_id))
             ->when($this->student_id, fn($q) => $q->where('id', $this->student_id))
             ->orderBy('roll_no')

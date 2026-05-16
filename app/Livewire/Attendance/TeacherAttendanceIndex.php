@@ -61,16 +61,17 @@ class TeacherAttendanceIndex extends Component
 
     public function getTeachersProperty()
     {
-        return \App\Models\Teacher::orderBy('name')->get();
+        return \App\Models\Teacher::allowedForUser(auth()->user())->orderBy('name')->get();
     }
 
     public function getReportStats()
     {
         $date = $this->attendance_date ?: \Carbon\Carbon::today()->toDateString();
 
-        $query = \App\Models\AttendanceTeacher::whereHas('attendanceDate', function ($q) use ($date) {
-            $q->whereDate('attendance_date', $date);
-        });
+        $query = \App\Models\AttendanceTeacher::allowedForUser(auth()->user())
+            ->whereHas('attendanceDate', function ($q) use ($date) {
+                $q->whereDate('attendance_date', $date);
+            });
 
         if ($this->teacher_id) {
             $query->where('teacher_id', $this->teacher_id);
@@ -93,7 +94,7 @@ class TeacherAttendanceIndex extends Component
 
     public function render()
     {
-        $attendances = TeacherAttendanceDate::query()
+        $attendances = TeacherAttendanceDate::allowedForUser(auth()->user())
             ->select('id', 'attendance_date', 'taken_by', 'remarks', 'created_at')
             ->withCount([
                 'attendanceTeachers as total_teachers' => function($q) {

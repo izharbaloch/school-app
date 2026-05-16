@@ -15,6 +15,9 @@ class ResultController extends Controller
 
     public function show(Exam $exam, Student $student)
     {
+        // Verify the authenticated user is allowed to view this student's data
+        Student::allowedForUser(auth()->user())->where('id', $student->id)->firstOrFail();
+
         $student->load('section:id,name');
 
         $results = ExamResult::with(['subject:id,name', 'studentClass:id,name'])
@@ -49,6 +52,9 @@ class ResultController extends Controller
 
     public function print(Exam $exam, Student $student)
     {
+        // Verify the authenticated user is allowed to view this student's data
+        Student::allowedForUser(auth()->user())->where('id', $student->id)->firstOrFail();
+
         $student->load('section:id,name');
 
         $results = ExamResult::with(['subject:id,name', 'studentClass:id,name'])

@@ -7,12 +7,13 @@ use App\Models\Student;
 use App\Models\StudentFee;
 use App\Models\StudentClass;
 use App\Models\Section;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class StudentFeeIndex extends Component
 {
-    use WithPagination;
+    use WithPagination, AuthorizesRequests;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -89,7 +90,9 @@ class StudentFeeIndex extends Component
 
     public function delete($id)
     {
-        $fee = StudentFee::findOrFail($id);
+        $fee = StudentFee::allowedForUser(auth()->user())->findOrFail($id);
+
+        $this->authorize('delete', $fee);
 
         if ($fee->paid_amount > 0) {
             session()->flash('error', 'Paid or partially paid fee cannot be deleted.');
@@ -104,7 +107,7 @@ class StudentFeeIndex extends Component
 
     public function getClassesProperty()
     {
-        return StudentClass::orderBy('name')->get();
+        return StudentClass::allowedForUser(auth()->user())->orderBy('name')->get();
     }
 
     public function getSectionsProperty()
@@ -113,16 +116,17 @@ class StudentFeeIndex extends Component
             return collect();
         }
 
-        return Section::whereHas('classes', function ($query) {
-            $query->where('student_classes.id', $this->student_class_id);
-        })
+        return Section::allowedForUser(auth()->user())
+            ->whereHas('classes', function ($query) {
+                $query->where('student_classes.id', $this->student_class_id);
+            })
             ->orderBy('name')
             ->get();
     }
 
     public function getReportStats()
     {
-        $query = StudentFee::query();
+        $query = StudentFee::allowedForUser(auth()->user());
 
         if ($this->student_class_id || $this->section_id) {
             $query->whereHas('student', function ($q) {
@@ -169,7 +173,8 @@ class StudentFeeIndex extends Component
 
     public function render()
     {
-        $studentFees = StudentFee::select('id', 'student_id', 'fee_type_id', 'month', 'year', 'amount', 'paid_amount', 'status', 'created_at')
+        $studentFees = StudentFee::allowedForUser(auth()->user())
+            ->select('id', 'student_id', 'fee_type_id', 'month', 'year', 'amount', 'paid_amount', 'status', 'created_at')
             ->with([
                 'student:id,first_name,last_name,student_class_id,section_id',
                 'student.studentClass:id,name',
@@ -194,7 +199,8 @@ class StudentFeeIndex extends Component
             ->latest('id')
             ->paginate(20);
 
-        $students = Student::select('id', 'first_name', 'last_name')
+        $students = Student::allowedForUser(auth()->user())
+            ->select('id', 'first_name', 'last_name')
             ->when($this->student_class_id, fn ($q) => $q->where('student_class_id', $this->student_class_id))
             ->when($this->section_id, fn ($q) => $q->where('section_id', $this->section_id))
             ->orderBy('first_name')

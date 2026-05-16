@@ -77,8 +77,7 @@ class GuardianIndex extends Component
 
     public function edit(int $id): void
     {
-        $guardian = Guardian::findOrFail($id);
-
+        $guardian = Guardian::allowedForUser(auth()->user())->findOrFail($id);
         $this->guardianId = $guardian->id;
         $this->father_name = $guardian->father_name;
         $this->mother_name = $guardian->mother_name;
@@ -195,7 +194,7 @@ class GuardianIndex extends Component
 
     public function render()
     {
-        $parents = Guardian::query()
+        $parents = Guardian::allowedForUser(auth()->user())
             ->select('id', 'user_id', 'father_name', 'mother_name', 'guardian_phone', 'guardian_cnic_no', 'email', 'address', 'status')
             ->with('user:id,name,email')
             ->when($this->search, function ($query) {

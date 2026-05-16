@@ -18,6 +18,8 @@ class StudentFeeController extends Controller
 
     public function show(StudentFee $studentFee)
     {
+        $this->authorize('view', $studentFee);
+
         $studentFee->load([
             'student.studentClass',
             'student.section',
@@ -35,6 +37,8 @@ class StudentFeeController extends Controller
 
     public function printSlip(StudentFee $studentFee)
     {
+        $this->authorize('view', $studentFee);
+
         $studentFee->load([
             'student.studentClass',
             'student.section',

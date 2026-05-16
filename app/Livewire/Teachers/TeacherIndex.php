@@ -142,7 +142,7 @@ class TeacherIndex extends Component
 
     public function edit(int $id): void
     {
-        $teacher = Teacher::findOrFail($id);
+        $teacher = Teacher::allowedForUser(auth()->user())->findOrFail($id);
 
         $this->teacherId = $teacher->id;
         $this->employee_no = $teacher->employee_no;
@@ -169,7 +169,7 @@ class TeacherIndex extends Component
             return;
         }
 
-        $teacher = Teacher::findOrFail($this->teacherId);
+        $teacher = Teacher::allowedForUser(auth()->user())->findOrFail($this->teacherId);
 
         DB::transaction(function () use ($validated, $teacher) {
             $user = null;
@@ -248,7 +248,7 @@ class TeacherIndex extends Component
 
     public function delete(int $id): void
     {
-        $teacher = Teacher::findOrFail($id);
+        $teacher = Teacher::allowedForUser(auth()->user())->findOrFail($id);
         $teacher->delete();
 
         session()->flash('success', 'Teacher deleted successfully.');
@@ -288,7 +288,7 @@ class TeacherIndex extends Component
     {
         $classes = StudentClass::select('id', 'name')->orderBy('name')->get();
 
-        $teachers = Teacher::query()
+        $teachers = Teacher::allowedForUser(auth()->user())
             ->select('id', 'user_id', 'employee_no', 'name', 'email', 'phone', 'cnic', 'designation', 'student_class_id', 'section_id', 'status')
             ->with([
                 'studentClass:id,name',
