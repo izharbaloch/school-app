@@ -277,9 +277,14 @@
                                 <i class="fas fa-cog"></i> Settings
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item has-icon text-danger">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </a>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item has-icon text-danger"
+                                    onclick="return confirm('Are you sure you want to logout?')">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </form>
+
                         </div>
                     </li>
                 </ul>
@@ -324,193 +329,193 @@
 
                         {{-- Students --}}
                         @can('students.view')
-                        <li class="dropdown {{ request()->routeIs('students.*') ? 'active' : '' }}">
-                            <a href="#"
-                                class="nav-link has-dropdown {{ request()->routeIs('students.*') ? 'toggled' : '' }}">
-                                <i class="fas fa-user-graduate"></i>
-                                <span>Students</span>
-                            </a>
+                            <li class="dropdown {{ request()->routeIs('students.*') ? 'active' : '' }}">
+                                <a href="#"
+                                    class="nav-link has-dropdown {{ request()->routeIs('students.*') ? 'toggled' : '' }}">
+                                    <i class="fas fa-user-graduate"></i>
+                                    <span>Students</span>
+                                </a>
 
-                            <ul class="dropdown-menu"
-                                style="{{ request()->routeIs('students.*') ? 'display: block;' : '' }}">
-                                @can('students.create')
-                                <li class="{{ request()->routeIs('students.create') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('students.create') }}">
-                                        Create Student
-                                    </a>
-                                </li>
-                                @endcan
+                                <ul class="dropdown-menu"
+                                    style="{{ request()->routeIs('students.*') ? 'display: block;' : '' }}">
+                                    @can('students.create')
+                                        <li class="{{ request()->routeIs('students.create') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('students.create') }}">
+                                                Create Student
+                                            </a>
+                                        </li>
+                                    @endcan
 
-                                <li class="{{ request()->routeIs('students.index') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('students.index') }}">
-                                        View Students
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                                    <li class="{{ request()->routeIs('students.index') ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ route('students.index') }}">
+                                            View Students
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
                         @endcan
 
                         {{-- Attendance --}}
                         @can('attendance.view')
-                        @php
-                            $attendanceMenuActive =
-                                request()->routeIs('attendances.*') || request()->routeIs('teacher-attendances.*');
-                        @endphp
-                        <li class="dropdown {{ $attendanceMenuActive ? 'active' : '' }}">
-                            <a href="#"
-                                class="nav-link has-dropdown {{ $attendanceMenuActive ? 'toggled' : '' }}">
-                                <i class="fas fa-calendar-check"></i>
-                                <span>Attendance</span>
-                            </a>
+                            @php
+                                $attendanceMenuActive =
+                                    request()->routeIs('attendances.*') || request()->routeIs('teacher-attendances.*');
+                            @endphp
+                            <li class="dropdown {{ $attendanceMenuActive ? 'active' : '' }}">
+                                <a href="#"
+                                    class="nav-link has-dropdown {{ $attendanceMenuActive ? 'toggled' : '' }}">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <span>Attendance</span>
+                                </a>
 
-                            <ul class="dropdown-menu" style="{{ $attendanceMenuActive ? 'display: block;' : '' }}">
-                                @can('attendance.mark')
-                                <li class="{{ request()->routeIs('attendances.create') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('attendances.create') }}">
-                                        Mark Student Attendance
-                                    </a>
-                                </li>
-                                @endcan
+                                <ul class="dropdown-menu" style="{{ $attendanceMenuActive ? 'display: block;' : '' }}">
+                                    @can('attendance.mark')
+                                        <li class="{{ request()->routeIs('attendances.create') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('attendances.create') }}">
+                                                Mark Student Attendance
+                                            </a>
+                                        </li>
+                                    @endcan
 
-                                <li class="{{ request()->routeIs('attendances.index') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('attendances.index') }}">
-                                        View Student Attendance
-                                    </a>
-                                </li>
+                                    <li class="{{ request()->routeIs('attendances.index') ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ route('attendances.index') }}">
+                                            View Student Attendance
+                                        </a>
+                                    </li>
 
-                                @can('attendance.mark')
-                                <li class="{{ request()->routeIs('teacher-attendances.create') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('teacher-attendances.create') }}">
-                                        Mark Teacher Attendance
-                                    </a>
-                                </li>
-                                @endcan
+                                    @can('attendance.mark')
+                                        <li class="{{ request()->routeIs('teacher-attendances.create') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('teacher-attendances.create') }}">
+                                                Mark Teacher Attendance
+                                            </a>
+                                        </li>
+                                    @endcan
 
-                                @hasanyrole('super admin|admin|principal')
-                                <li class="{{ request()->routeIs('teacher-attendances.index') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('teacher-attendances.index') }}">
-                                        View Teacher Attendance
-                                    </a>
-                                </li>
-                                @endhasanyrole
-                            </ul>
-                        </li>
+                                    @hasanyrole('super admin|admin|principal')
+                                        <li class="{{ request()->routeIs('teacher-attendances.index') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('teacher-attendances.index') }}">
+                                                View Teacher Attendance
+                                            </a>
+                                        </li>
+                                    @endhasanyrole
+                                </ul>
+                            </li>
                         @endcan
 
                         {{-- Fee Management --}}
                         @can('fees.view')
-                        @php
-                            $feeMenuActive =
-                                request()->routeIs('fee-types.*') ||
-                                request()->routeIs('fee-structures.*') ||
-                                request()->routeIs('student-fees.*');
-                        @endphp
+                            @php
+                                $feeMenuActive =
+                                    request()->routeIs('fee-types.*') ||
+                                    request()->routeIs('fee-structures.*') ||
+                                    request()->routeIs('student-fees.*');
+                            @endphp
 
-                        <li class="dropdown {{ $feeMenuActive ? 'active' : '' }}">
-                            <a href="#" class="nav-link has-dropdown {{ $feeMenuActive ? 'toggled' : '' }}">
-                                <i class="fas fa-money-bill-wave"></i>
-                                <span>Fee Management</span>
-                            </a>
+                            <li class="dropdown {{ $feeMenuActive ? 'active' : '' }}">
+                                <a href="#" class="nav-link has-dropdown {{ $feeMenuActive ? 'toggled' : '' }}">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <span>Fee Management</span>
+                                </a>
 
-                            <ul class="dropdown-menu" style="{{ $feeMenuActive ? 'display: block;' : '' }}">
-                                @hasanyrole('super admin|admin|accountant')
-                                <li class="{{ request()->routeIs('fee-types.index') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('fee-types.index') }}">
-                                        Fee Type
-                                    </a>
-                                </li>
+                                <ul class="dropdown-menu" style="{{ $feeMenuActive ? 'display: block;' : '' }}">
+                                    @hasanyrole('super admin|admin|accountant')
+                                        <li class="{{ request()->routeIs('fee-types.index') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('fee-types.index') }}">
+                                                Fee Type
+                                            </a>
+                                        </li>
 
-                                <li class="{{ request()->routeIs('fee-structures.index') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('fee-structures.index') }}">
-                                        Fee Structure
-                                    </a>
-                                </li>
-                                @endhasanyrole
+                                        <li class="{{ request()->routeIs('fee-structures.index') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('fee-structures.index') }}">
+                                                Fee Structure
+                                            </a>
+                                        </li>
+                                    @endhasanyrole
 
-                                <li class="{{ request()->routeIs('student-fees.index') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('student-fees.index') }}">
-                                        Student Fees
-                                    </a>
-                                </li>
+                                    <li class="{{ request()->routeIs('student-fees.index') ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ route('student-fees.index') }}">
+                                            Student Fees
+                                        </a>
+                                    </li>
 
-                                @can('fees.create')
-                                <li class="{{ request()->routeIs('student-fees.create') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('student-fees.create') }}">
-                                        Generate Student Fee
-                                    </a>
-                                </li>
+                                    @can('fees.create')
+                                        <li class="{{ request()->routeIs('student-fees.create') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('student-fees.create') }}">
+                                                Generate Student Fee
+                                            </a>
+                                        </li>
 
-                                <li class="{{ request()->routeIs('student-fees.bulk-create') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('student-fees.bulk-create') }}">
-                                        Bulk Generate Fee
-                                    </a>
-                                </li>
-                                @endcan
-                            </ul>
-                        </li>
+                                        <li class="{{ request()->routeIs('student-fees.bulk-create') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('student-fees.bulk-create') }}">
+                                                Bulk Generate Fee
+                                            </a>
+                                        </li>
+                                    @endcan
+                                </ul>
+                            </li>
                         @endcan
 
                         {{-- Exam Management --}}
                         @can('exams.view')
-                        @php
-                            $examMenuActive =
-                                request()->routeIs('exams.*') ||
-                                request()->routeIs('exam-marks.*') ||
-                                request()->routeIs('results.*');
-                        @endphp
+                            @php
+                                $examMenuActive =
+                                    request()->routeIs('exams.*') ||
+                                    request()->routeIs('exam-marks.*') ||
+                                    request()->routeIs('results.*');
+                            @endphp
 
-                        <li class="dropdown {{ $examMenuActive ? 'active' : '' }}">
-                            <a href="#" class="nav-link has-dropdown {{ $examMenuActive ? 'toggled' : '' }}">
-                                <i class="fas fa-file-alt"></i>
-                                <span>Exam Management</span>
-                            </a>
+                            <li class="dropdown {{ $examMenuActive ? 'active' : '' }}">
+                                <a href="#" class="nav-link has-dropdown {{ $examMenuActive ? 'toggled' : '' }}">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>Exam Management</span>
+                                </a>
 
-                            <ul class="dropdown-menu" style="{{ $examMenuActive ? 'display: block;' : '' }}">
-                                @hasanyrole('super admin|admin')
-                                <li class="{{ request()->routeIs('exams.index') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('exams.index') }}">
-                                        Exam Type
-                                    </a>
-                                </li>
-                                @endhasanyrole
+                                <ul class="dropdown-menu" style="{{ $examMenuActive ? 'display: block;' : '' }}">
+                                    @hasanyrole('super admin|admin')
+                                        <li class="{{ request()->routeIs('exams.index') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('exams.index') }}">
+                                                Exam Type
+                                            </a>
+                                        </li>
+                                    @endhasanyrole
 
-                                @can('marks.create')
-                                <li class="{{ request()->routeIs('exam-marks.create') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('exam-marks.create') }}">
-                                        Exam Marks Entry
-                                    </a>
-                                </li>
-                                @endcan
+                                    @can('marks.create')
+                                        <li class="{{ request()->routeIs('exam-marks.create') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('exam-marks.create') }}">
+                                                Exam Marks Entry
+                                            </a>
+                                        </li>
+                                    @endcan
 
-                                @can('marks.view')
-                                <li class="{{ request()->routeIs('results.index') ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route('results.index') }}">
-                                        Class Results
-                                    </a>
-                                </li>
-                                @endcan
-                            </ul>
-                        </li>
+                                    @can('marks.view')
+                                        <li class="{{ request()->routeIs('results.index') ? 'active' : '' }}">
+                                            <a class="nav-link" href="{{ route('results.index') }}">
+                                                Class Results
+                                            </a>
+                                        </li>
+                                    @endcan
+                                </ul>
+                            </li>
                         @endcan
 
                         {{-- Guardian Management --}}
                         @can('parents.view')
-                        <li class="{{ request()->routeIs('guardians.*') ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ route('guardians.index') }}">
-                                <i class="fas fa-users"></i>
-                                <span>Guardian Management</span>
-                            </a>
-                        </li>
+                            <li class="{{ request()->routeIs('guardians.*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('guardians.index') }}">
+                                    <i class="fas fa-users"></i>
+                                    <span>Guardian Management</span>
+                                </a>
+                            </li>
                         @endcan
 
                         {{-- Teacher Management --}}
                         @can('teachers.view')
-                        <li class="{{ request()->routeIs('teachers.*') ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ route('teachers.index') }}">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                                <span>Teacher Management</span>
-                            </a>
-                        </li>
+                            <li class="{{ request()->routeIs('teachers.*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('teachers.index') }}">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    <span>Teacher Management</span>
+                                </a>
+                            </li>
                         @endcan
                     </ul>
 

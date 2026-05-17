@@ -64,26 +64,6 @@ class SettingSeeder extends Seeder
                 $subjects[$subject->name] = $subject;
             }
 
-            // /*
-            // |--------------------------------------------------------------------------
-            // | 4) Assign Subjects to Classes
-            // |--------------------------------------------------------------------------
-            // */
-            // $classSubjectData = [
-            //     1 => ['Urdu', 'English', 'Math'],
-            //     2 => ['Urdu', 'English', 'Math', 'Islamiyat'],
-            //     3 => ['Urdu', 'English', 'Math', 'Science'],
-            //     4 => ['Urdu', 'English', 'Math', 'Science', 'Computer'],
-            //     5 => ['Urdu', 'English', 'Math', 'Science', 'Computer', 'Islamiyat'],
-            // ];
-
-            // foreach ($classSubjectData as $classNumeric => $subjectNames) {
-            //     $subjectIds = collect($subjectNames)
-            //         ->map(fn($name) => $subjects[$name]->id)
-            //         ->toArray();
-
-            //     $classes[$classNumeric]->subjects()->syncWithoutDetaching($subjectIds);
-            // }
         });
     }
 }

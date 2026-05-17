@@ -401,5 +401,16 @@ class RoleAndPermissionSeeder extends Seeder
             'profile.view',
             'profile.update',
         ]);
+
+        // create super admin user
+        $superAdmin = \App\Models\User::firstOrCreate(
+            ['email' => 'superadmin@example.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => bcrypt('password'),
+            ]
+        );
+
+        $superAdmin->assignRole('super admin');
     }
 }
