@@ -63,10 +63,6 @@ Route::middleware('auth')->group(function () {
     });
 
     // Attendance routes
-    Route::middleware(['permission:attendance.view'])->group(function () {
-        Route::get('attendances', [AttendanceController::class, 'index'])->name('attendances.index');
-        Route::get('attendances/{attendance}', [AttendanceController::class, 'show'])->name('attendances.show');
-    });
     Route::middleware(['permission:attendance.mark'])->group(function () {
         Route::get('attendances/create', [AttendanceController::class, 'create'])->name('attendances.create');
         Route::post('attendances', [AttendanceController::class, 'store'])->name('attendances.store');
@@ -74,31 +70,36 @@ Route::middleware('auth')->group(function () {
         Route::put('attendances/{attendance}', [AttendanceController::class, 'update'])->name('attendances.update');
         Route::delete('attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy');
     });
+    Route::middleware(['permission:attendance.view'])->group(function () {
+        Route::get('attendances', [AttendanceController::class, 'index'])->name('attendances.index');
+        Route::get('attendances/{attendance}', [AttendanceController::class, 'show'])->name('attendances.show');
+    });
 
     // Teacher attendance routes
-    Route::middleware(['permission:attendance.view'])->group(function () {
-        Route::get('teacher-attendances', [TeacherAttendanceController::class, 'index'])->name('teacher-attendances.index');
-        Route::get('teacher-attendances/{teacherAttendanceDate}', [TeacherAttendanceController::class, 'show'])->name('teacher-attendances.show');
-    });
     Route::middleware(['permission:attendance.mark'])->group(function () {
         Route::get('teacher-attendances/create', [TeacherAttendanceController::class, 'create'])->name('teacher-attendances.create');
         Route::get('teacher-attendances/{teacherAttendanceDate}/edit', [TeacherAttendanceController::class, 'edit'])->name('teacher-attendances.edit');
     });
+    Route::middleware(['permission:attendance.view'])->group(function () {
+        Route::get('teacher-attendances', [TeacherAttendanceController::class, 'index'])->name('teacher-attendances.index');
+        Route::get('teacher-attendances/{teacherAttendanceDate}', [TeacherAttendanceController::class, 'show'])->name('teacher-attendances.show');
+    });
 
     // Fee routes
-    Route::middleware(['permission:fees.view'])->group(function () {
-        Route::get('fee-types', [FeeTypeController::class, 'index'])->name('fee-types.index');
-        Route::get('fee-structures', [FeeStructureController::class, 'index'])->name('fee-structures.index');
-        Route::get('student-fees', [StudentFeeController::class, 'index'])->name('student-fees.index');
-        Route::get('student-fees/{studentFee}', [StudentFeeController::class, 'show'])->name('student-fees.show');
-        Route::get('student-fees/{studentFee}/print-slip', [StudentFeeController::class, 'printSlip'])->name('student-fees.print-slip');
-    });
     Route::middleware(['permission:fees.create'])->group(function () {
         Route::get('student-fees/create', [StudentFeeController::class, 'create'])->name('student-fees.create');
         Route::get('student-fees-bulk-generate', [StudentFeeController::class, 'bulkCreate'])->name('student-fees.bulk-create');
     });
     Route::middleware(['permission:fees.collect'])->group(function () {
         Route::get('student-fees/{studentFee}/payment', [FeePaymentController::class, 'create'])->name('student-fees.payment.create');
+    });
+
+    Route::middleware(['permission:fees.view'])->group(function () {
+        Route::get('fee-types', [FeeTypeController::class, 'index'])->name('fee-types.index');
+        Route::get('fee-structures', [FeeStructureController::class, 'index'])->name('fee-structures.index');
+        Route::get('student-fees', [StudentFeeController::class, 'index'])->name('student-fees.index');
+        Route::get('student-fees/{studentFee}', [StudentFeeController::class, 'show'])->name('student-fees.show');
+        Route::get('student-fees/{studentFee}/print-slip', [StudentFeeController::class, 'printSlip'])->name('student-fees.print-slip');
     });
 
     // Exam routes
