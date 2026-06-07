@@ -1,20 +1,33 @@
 <?php
 
+use App\Http\Controllers\AcademicSessionController;
 use App\Http\Controllers\AcademicSetupController;
+use App\Http\Controllers\AccountingController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamMarkController;
 use App\Http\Controllers\FeePaymentController;
 use App\Http\Controllers\FeeStructureController;
 use App\Http\Controllers\FeeTypeController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\NoticeController;
+use App\Http\Controllers\ParentPortalController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SchoolSettingController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentFeeController;
+use App\Http\Controllers\StudentPromotionController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TeacherAttendanceController;
+use App\Http\Controllers\TimetableController;
+use App\Http\Controllers\TransportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -116,6 +129,79 @@ Route::middleware('auth')->group(function () {
         Route::get('results', [ResultController::class, 'index'])->name('results.index');
         Route::get('results/{exam}/{student}', [ResultController::class, 'show'])->name('results.show');
         Route::get('results/{exam}/{student}/print', [ResultController::class, 'print'])->name('results.print');
+    });
+
+    // Academic Sessions
+    Route::middleware(['permission:settings.view'])->group(function () {
+        Route::get('academic-sessions', [AcademicSessionController::class, 'index'])->name('academic-sessions.index');
+    });
+
+    // Student Promotions
+    Route::middleware(['permission:students.edit'])->group(function () {
+        Route::get('student-promotions', [StudentPromotionController::class, 'index'])->name('student-promotions.index');
+    });
+
+    // Timetable routes
+    Route::middleware(['permission:timetable.view'])->group(function () {
+        Route::get('timetable', [TimetableController::class, 'index'])->name('timetable.index');
+    });
+
+    // Notice Board routes
+    Route::middleware(['permission:notices.view'])->group(function () {
+        Route::get('notices', [NoticeController::class, 'index'])->name('notices.index');
+    });
+
+    // Library routes
+    Route::middleware(['permission:library.view'])->group(function () {
+        Route::get('library', [LibraryController::class, 'index'])->name('library.index');
+    });
+
+    // Transport routes
+    Route::middleware(['permission:settings.view'])->group(function () {
+        Route::get('transport', [TransportController::class, 'index'])->name('transport.index');
+    });
+
+    // Events routes
+    Route::middleware(['permission:notices.view'])->group(function () {
+        Route::get('events', [EventController::class, 'index'])->name('events.index');
+    });
+
+    // Homework routes
+    Route::middleware(['permission:homework.view'])->group(function () {
+        Route::get('homework', [HomeworkController::class, 'index'])->name('homework.index');
+    });
+
+    // Accounting routes
+    Route::middleware(['permission:accounting.view'])->group(function () {
+        Route::get('accounting', [AccountingController::class, 'index'])->name('accounting.index');
+    });
+
+    // System Settings routes
+    Route::middleware(['permission:settings.view'])->group(function () {
+        Route::get('settings', [SchoolSettingController::class, 'index'])->name('settings.index');
+    });
+
+    // Activity Logs routes
+    Route::middleware(['permission:settings.view'])->group(function () {
+        Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    });
+
+    // Parent Portal routes
+    Route::middleware(['role:parent'])->group(function () {
+        Route::get('parent/dashboard', [ParentPortalController::class, 'dashboard'])->name('parent.dashboard');
+    });
+
+    // Certificate routes
+    Route::middleware(['permission:students.view'])->group(function () {
+        Route::get('certificates', [CertificateController::class, 'index'])->name('certificates.index');
+        Route::get('certificates/{student}/character', [CertificateController::class, 'characterCertificate'])->name('certificates.character');
+        Route::get('certificates/{student}/character/print', [CertificateController::class, 'characterCertificatePrint'])->name('certificates.character.print');
+        Route::get('certificates/{student}/leaving', [CertificateController::class, 'leavingCertificate'])->name('certificates.leaving');
+        Route::get('certificates/{student}/leaving/print', [CertificateController::class, 'leavingCertificatePrint'])->name('certificates.leaving.print');
+        Route::get('certificates/{student}/bonafide', [CertificateController::class, 'bonafideCertificate'])->name('certificates.bonafide');
+        Route::get('certificates/{student}/bonafide/print', [CertificateController::class, 'bonafideCertificatePrint'])->name('certificates.bonafide.print');
+        Route::get('certificates/{student}/id-card', [CertificateController::class, 'idCard'])->name('certificates.id-card');
+        Route::get('certificates/{student}/id-card/print', [CertificateController::class, 'idCardPrint'])->name('certificates.id-card.print');
     });
 });
 

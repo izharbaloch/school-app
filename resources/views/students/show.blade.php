@@ -22,7 +22,34 @@
                     </a>
                 </div>
 
+                {{-- Tab Navigation --}}
+                <div class="card-header border-top-0 pt-0 pb-0">
+                    <ul class="nav nav-tabs card-header-tabs" id="studentTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="info-tab" data-toggle="tab" href="#info" role="tab">
+                                <i class="fas fa-user"></i> Personal Info
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="docs-tab" data-toggle="tab" href="#docs" role="tab">
+                                <i class="fas fa-paperclip"></i> Documents
+                            </a>
+                        </li>
+                        @can('students.view')
+                        <li class="nav-item">
+                            <a class="nav-link" id="certs-tab" data-toggle="tab" href="#certs" role="tab">
+                                <i class="fas fa-certificate"></i> Certificates & ID
+                            </a>
+                        </li>
+                        @endcan
+                    </ul>
+                </div>
+
                 <div class="card-body">
+                    <div class="tab-content" id="studentTabContent">
+
+                    {{-- Tab: Personal Info --}}
+                    <div class="tab-pane fade show active" id="info" role="tabpanel">
                     <div class="row mb-4">
                         <div class="col-md-3 text-center">
                             @if ($student->profilePhoto)
@@ -127,9 +154,12 @@
                         </div>
                     </div>
 
-                    <hr>
-                    <h5 class="mb-3">Documents</h5>
+                    </div>{{-- end row (photo + details) --}}
+                    </div>{{-- end tab-pane info --}}
 
+                    {{-- Tab: Documents --}}
+                    <div class="tab-pane fade" id="docs" role="tabpanel">
+                    <h5 class="mb-3">Documents</h5>
                     <div class="row">
                         @forelse ($attachments as $type => $files)
                             @foreach ($files as $file)
@@ -151,6 +181,78 @@
                             </div>
                         @endforelse
                     </div>
+                    </div>{{-- end tab-pane docs --}}
+
+                    {{-- Tab: Certificates & ID Card --}}
+                    @can('students.view')
+                    <div class="tab-pane fade" id="certs" role="tabpanel">
+                        <h5 class="mb-4"><i class="fas fa-certificate text-primary mr-2"></i>Certificates & ID Card</h5>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="card border-primary h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-scroll fa-3x text-primary mb-3"></i>
+                                        <h6>Character Certificate</h6>
+                                        <p class="text-muted small">Official character/conduct certificate</p>
+                                        <a href="{{ route('certificates.character', $student->id) }}" class="btn btn-outline-primary btn-sm mr-1">
+                                            <i class="fas fa-eye"></i> Preview
+                                        </a>
+                                        <a href="{{ route('certificates.character.print', $student->id) }}" target="_blank" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card border-success h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
+                                        <h6>Bonafide Certificate</h6>
+                                        <p class="text-muted small">Confirms student is enrolled in school</p>
+                                        <a href="{{ route('certificates.bonafide', $student->id) }}" class="btn btn-outline-success btn-sm mr-1">
+                                            <i class="fas fa-eye"></i> Preview
+                                        </a>
+                                        <a href="{{ route('certificates.bonafide.print', $student->id) }}" target="_blank" class="btn btn-success btn-sm">
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card border-warning h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-door-open fa-3x text-warning mb-3"></i>
+                                        <h6>School Leaving Certificate</h6>
+                                        <p class="text-muted small">Transfer / leaving certificate with full details</p>
+                                        <a href="{{ route('certificates.leaving', $student->id) }}" class="btn btn-outline-warning btn-sm mr-1">
+                                            <i class="fas fa-eye"></i> Preview
+                                        </a>
+                                        <a href="{{ route('certificates.leaving.print', $student->id) }}" target="_blank" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card border-info h-100">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-id-card fa-3x text-info mb-3"></i>
+                                        <h6>Student ID Card</h6>
+                                        <p class="text-muted small">CR80 format ID card with QR code</p>
+                                        <a href="{{ route('certificates.id-card', $student->id) }}" class="btn btn-outline-info btn-sm mr-1">
+                                            <i class="fas fa-eye"></i> Preview
+                                        </a>
+                                        <a href="{{ route('certificates.id-card.print', $student->id) }}" target="_blank" class="btn btn-info btn-sm">
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endcan
+
+                    </div>{{-- end tab-content --}}
                 </div>
             </div>
         </div>

@@ -208,7 +208,7 @@
                             <div class="form-group col-md-4">
                                 <label>Select Role</label>
                                 <select class="form-control @error('selected_role_id') is-invalid @enderror"
-                                    wire:model="selected_role_id">
+                                    wire:model.live="selected_role_id">
                                     <option value="">Select role</option>
                                     @foreach ($roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }}</option>

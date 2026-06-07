@@ -2,144 +2,166 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
-use App\Models\Teacher;
-use App\Models\Guardian;
-use App\Models\Exam;
-use App\Models\StudentFee;
-use App\Models\FeePayment;
-use App\Models\Attendance;
+use App\Models\ActivityLog;
 use App\Models\AttendanceStudent;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Event;
+use App\Models\Exam;
+use App\Models\FeePayment;
+use App\Models\Notice;
+use App\Models\Student;
+use App\Models\StudentClass;
+use App\Models\StudentFee;
+use App\Models\Teacher;
 
 class IndexController extends Controller
 {
     public function dashboard()
     {
-        $user = auth()->user();
+        $user  = auth()->user();
         $today = now()->toDateString();
 
-        // 1. Top Summary Cards (role-filtered)
-        $totalStudents = Student::allowedForUser($user)->count();
-        $totalTeachers = Teacher::allowedForUser($user)->count();
-        $totalClasses = \App\Models\StudentClass::allowedForUser($user)->count();
-        $totalFeeCollected = FeePayment::allowedForUser($user)->sum('amount');
+        // ── Student stats ──────────────────────────────────────────
+        $totalStudents   = Student::allowedForUser($user)->count();
+        $activeStudents  = Student::allowedForUser($user)->where('status', true)->count();
+        $maleStudents    = Student::allowedForUser($user)->where('gender', 'male')->count();
+        $femaleStudents  = Student::allowedForUser($user)->where('gender', 'female')->count();
 
-        // Pending fees: total payable - paid amount (role-filtered)
-        $stats = StudentFee::allowedForUser($user)->selectRaw('
-            SUM(amount + COALESCE(fine, 0) - COALESCE(discount, 0)) as all_amount,
-            SUM(paid_amount) as paid_amount
-        ')->first();
-
-        $pendingFees = max(0, ($stats->all_amount ?? 0) - ($stats->paid_amount ?? 0));
-
-        // 2. Charts Data (Last 6 Months, role-filtered)
-        $months = [];
-        $admissionsData = [];
-        $feeData = [];
-
-        for ($i = 5; $i >= 0; $i--) {
-            $monthDate = now()->subMonths($i);
-            $months[] = $monthDate->format('M');
-
-            $admissionsData[] = Student::allowedForUser($user)
-                ->whereMonth('created_at', $monthDate->month)
-                ->whereYear('created_at', $monthDate->year)
-                ->count();
-
-            $feeData[] = FeePayment::allowedForUser($user)
-                ->whereMonth('payment_date', $monthDate->month)
-                ->whereYear('payment_date', $monthDate->year)
-                ->sum('amount');
-        }
-
-        // Attendance Overview Chart (Today, role-filtered)
-        $todayAttendance = AttendanceStudent::allowedForUser($user)
-            ->whereHas('attendance', function ($q) use ($today) {
-                $q->whereDate('attendance_date', $today);
-            })->get();
-
-        $attendancePresent = $todayAttendance->where('status', AttendanceStudent::PRESENT)->count();
-        $attendanceAbsent = $todayAttendance->where('status', AttendanceStudent::ABSENT)->count();
-        $attendanceLeave = $todayAttendance->whereIn('status', [AttendanceStudent::LEAVE, AttendanceStudent::LATE])->count();
-
-        // 3. Data Tables (role-filtered)
-        $recentStudents = Student::allowedForUser($user)->with('studentClass')->latest()->take(5)->get();
-        $teacherRoster = Teacher::allowedForUser($user)->latest()->take(5)->get();
-
-        // 4. Notifications & Activity (role-filtered)
-        $pendingFeesAlert = StudentFee::allowedForUser($user)
-            ->where('status', '!=', StudentFee::PAID)
-            ->where('due_date', '<', now())
+        // New admissions this month & last 7 days
+        $newAdmissionsThisMonth = Student::allowedForUser($user)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
             ->count();
-
         $newAdmissionsAlert = Student::allowedForUser($user)
             ->whereDate('created_at', '>=', now()->subDays(7))
             ->count();
 
-        // Combine latest FeePayments and Students for recent activity (role-filtered)
-        $latestPayments = FeePayment::allowedForUser($user)
-            ->with('studentFee.student')
+        // ── Teacher stats ──────────────────────────────────────────
+        $totalTeachers  = Teacher::allowedForUser($user)->count();
+        $activeTeachers = Teacher::allowedForUser($user)->where('status', true)->count();
+
+        // ── Class stats ────────────────────────────────────────────
+        $totalClasses = StudentClass::allowedForUser($user)->count();
+
+        // Students per class (for chart, top 8)
+        $studentsByClass = StudentClass::allowedForUser($user)
+            ->withCount(['students as student_count' => fn($q) => $q->where('status', true)])
+            ->orderByDesc('student_count')
+            ->take(8)
+            ->get();
+
+        // ── Today's attendance ─────────────────────────────────────
+        $todayAttRows = AttendanceStudent::allowedForUser($user)
+            ->whereHas('attendance', fn($q) => $q->whereDate('attendance_date', $today))
+            ->selectRaw('status, count(*) as cnt')
+            ->groupBy('status')
+            ->pluck('cnt', 'status');
+
+        $attendancePresent = (int) ($todayAttRows[AttendanceStudent::PRESENT] ?? 0);
+        $attendanceAbsent  = (int) ($todayAttRows[AttendanceStudent::ABSENT] ?? 0);
+        $attendanceLeave   = (int) (($todayAttRows[AttendanceStudent::LEAVE] ?? 0) + ($todayAttRows[AttendanceStudent::LATE] ?? 0));
+        $attendanceTotal   = $attendancePresent + $attendanceAbsent + $attendanceLeave;
+        $attendancePct     = $attendanceTotal > 0 ? round(($attendancePresent / $attendanceTotal) * 100) : 0;
+
+        // ── Fee stats ──────────────────────────────────────────────
+        $totalFeeCollected = FeePayment::allowedForUser($user)->sum('amount');
+
+        $thisMonthFee = FeePayment::allowedForUser($user)
+            ->whereMonth('payment_date', now()->month)
+            ->whereYear('payment_date', now()->year)
+            ->sum('amount');
+
+        $feeStats = StudentFee::allowedForUser($user)
+            ->selectRaw('
+                SUM(amount + COALESCE(fine,0) - COALESCE(discount,0)) as all_amount,
+                SUM(paid_amount) as paid_amount
+            ')->first();
+        $pendingFees = max(0, ($feeStats->all_amount ?? 0) - ($feeStats->paid_amount ?? 0));
+
+        $feeDefaultersCount = StudentFee::allowedForUser($user)
+            ->where('status', '!=', StudentFee::PAID)
+            ->where('due_date', '<', now())
+            ->count();
+
+        $feeDefaulters = StudentFee::allowedForUser($user)
+            ->with(['student.studentClass'])
+            ->where('status', '!=', StudentFee::PAID)
+            ->where('due_date', '<', now())
+            ->orderBy('due_date')
+            ->take(6)
+            ->get();
+
+        // ── Charts — last 6 months ─────────────────────────────────
+        $chartMonths      = [];
+        $admissionsData   = [];
+        $feeCollectedData = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $m = now()->subMonths($i);
+            $chartMonths[]      = $m->format('M');
+            $admissionsData[]   = Student::allowedForUser($user)
+                ->whereMonth('created_at', $m->month)->whereYear('created_at', $m->year)->count();
+            $feeCollectedData[] = (float) FeePayment::allowedForUser($user)
+                ->whereMonth('payment_date', $m->month)->whereYear('payment_date', $m->year)->sum('amount');
+        }
+
+        // ── Recent lists ───────────────────────────────────────────
+        $recentAdmissions = Student::allowedForUser($user)
+            ->with('studentClass')
             ->latest()
-            ->take(3)
-            ->get()
-            ->map(function($p) {
-                return [
-                    'type' => 'payment',
-                    'title' => $p->studentFee->student->full_name ?? ($p->studentFee->student->name ?? 'Student'),
-                    'description' => 'Paid fee of $' . number_format($p->amount, 2),
-                    'time_str' => $p->created_at->diffForHumans(),
-                    'timestamp' => $p->created_at->timestamp,
-                ];
-            });
+            ->take(7)
+            ->get();
 
-        $latestAdmissions = Student::allowedForUser($user)
+        $recentPayments = FeePayment::allowedForUser($user)
+            ->with(['studentFee.student.studentClass'])
             ->latest()
-            ->take(3)
-            ->get()
-            ->map(function($s) {
-                return [
-                    'type' => 'admission',
-                    'title' => $s->full_name ?: ($s->name ?? 'Student'),
-                    'description' => 'Added to student roster',
-                    'time_str' => $s->created_at->diffForHumans(),
-                    'timestamp' => $s->created_at->timestamp,
-                ];
-            });
+            ->take(6)
+            ->get();
 
-        $recentActivities = $latestPayments->concat($latestAdmissions)->sortByDesc('timestamp')->take(5);
+        $upcomingExams = Exam::where('start_date', '>=', $today)
+            ->orderBy('start_date')
+            ->take(5)
+            ->get();
 
-        $data = [
-            'totalStudents' => $totalStudents,
-            'totalTeachers' => $totalTeachers,
-            'totalClasses' => $totalClasses,
-            'totalFeeCollected' => $totalFeeCollected,
-            'pendingFees' => $pendingFees,
+        $upcomingEvents = Event::where('start_date', '>=', $today)
+            ->where('status', true)
+            ->orderBy('start_date')
+            ->take(5)
+            ->get();
 
-            'chartMonths' => $months,
-            'admissionsData' => $admissionsData,
-            'feeData' => $feeData,
+        $recentNotices = Notice::where('status', true)
+            ->where('publish_date', '<=', now())
+            ->where(fn($q) => $q->whereNull('expiry_date')->orWhere('expiry_date', '>=', now()))
+            ->orderByDesc('is_pinned')
+            ->orderByDesc('publish_date')
+            ->take(5)
+            ->get();
 
-            'attendancePresent' => $attendancePresent,
-            'attendanceAbsent' => $attendanceAbsent,
-            'attendanceLeave' => $attendanceLeave,
+        $recentActivities = ActivityLog::with('user')
+            ->latest()
+            ->take(10)
+            ->get();
 
-            'recentStudents' => $recentStudents,
-            'teacherRoster' => $teacherRoster,
-
-            'pendingFeesAlert' => $pendingFeesAlert,
-            'newAdmissionsAlert' => $newAdmissionsAlert,
-            'recentActivities' => $recentActivities,
-        ];
-
-        return view('dashboard', $data);
+        return view('dashboard', compact(
+            'totalStudents', 'activeStudents', 'maleStudents', 'femaleStudents',
+            'newAdmissionsThisMonth', 'newAdmissionsAlert',
+            'totalTeachers', 'activeTeachers',
+            'totalClasses', 'studentsByClass',
+            'attendancePresent', 'attendanceAbsent', 'attendanceLeave',
+            'attendanceTotal', 'attendancePct',
+            'totalFeeCollected', 'thisMonthFee', 'pendingFees',
+            'feeDefaultersCount', 'feeDefaulters',
+            'chartMonths', 'admissionsData', 'feeCollectedData',
+            'recentAdmissions', 'recentPayments',
+            'upcomingExams', 'upcomingEvents', 'recentNotices',
+            'recentActivities'
+        ));
     }
 
     public function academicSetupView()
     {
         return view('admin.academic-setup');
     }
+
     public function accessManagementView()
     {
         return view('admin.access-management');

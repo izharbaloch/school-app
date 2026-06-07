@@ -123,6 +123,34 @@ class RoleAndPermissionSeeder extends Seeder
             // profile
             'profile.view',
             'profile.update',
+
+            // transport
+            'transport.view',
+            'transport.create',
+            'transport.edit',
+            'transport.delete',
+
+            // events
+            'events.view',
+            'events.create',
+            'events.edit',
+            'events.delete',
+
+            // certificates
+            'certificates.view',
+            'certificates.print',
+
+            // homework
+            'homework.view',
+            'homework.create',
+            'homework.edit',
+            'homework.delete',
+
+            // accounting
+            'accounting.view',
+            'accounting.create',
+            'accounting.edit',
+            'accounting.delete',
         ];
 
         foreach ($permissions as $permission) {
@@ -244,6 +272,29 @@ class RoleAndPermissionSeeder extends Seeder
 
             'profile.view',
             'profile.update',
+
+            'homework.view',
+            'homework.create',
+            'homework.edit',
+            'homework.delete',
+
+            'accounting.view',
+            'accounting.create',
+            'accounting.edit',
+            'accounting.delete',
+
+            'transport.view',
+            'transport.create',
+            'transport.edit',
+            'transport.delete',
+
+            'events.view',
+            'events.create',
+            'events.edit',
+            'events.delete',
+
+            'certificates.view',
+            'certificates.print',
         ]);
 
         // principal
@@ -275,6 +326,17 @@ class RoleAndPermissionSeeder extends Seeder
 
             'settings.view',
 
+            'homework.view',
+            'homework.create',
+            'homework.edit',
+
+            'accounting.view',
+
+            'transport.view',
+            'events.view',
+            'certificates.view',
+            'certificates.print',
+
             'profile.view',
             'profile.update',
         ]);
@@ -299,6 +361,12 @@ class RoleAndPermissionSeeder extends Seeder
             'marks.edit',
 
             'notices.view',
+
+            'homework.view',
+            'homework.create',
+            'homework.edit',
+
+            'events.view',
 
             'profile.view',
             'profile.update',
@@ -353,6 +421,11 @@ class RoleAndPermissionSeeder extends Seeder
             'accounts.create',
             'accounts.edit',
             'accounts.delete',
+
+            'accounting.view',
+            'accounting.create',
+            'accounting.edit',
+            'accounting.delete',
 
             'notices.view',
 
