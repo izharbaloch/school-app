@@ -86,6 +86,16 @@ class Student extends Model
         return $this->belongsTo(Guardian::class);
     }
 
+    public function medicalRecord()
+    {
+        return $this->hasOne(StudentMedicalRecord::class);
+    }
+
+    public function vaccinations()
+    {
+        return $this->hasMany(StudentVaccination::class)->orderBy('date_administered', 'desc');
+    }
+
     public function scopeAllowedForUser($query, $user)
     {
         if ($user->hasRole('super admin') || $user->hasRole('admin') || $user->hasRole('principal')) {

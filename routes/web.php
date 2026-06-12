@@ -1,18 +1,25 @@
 <?php
 
 use App\Http\Controllers\AcademicSessionController;
-use App\Http\Controllers\AcademicSetupController;
 use App\Http\Controllers\AccountingController;
+use App\Http\Controllers\AdmissionController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\ConductController;
+use App\Http\Controllers\HostelController;
+use App\Http\Controllers\MedicalRecordController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SportsController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamMarkController;
+use App\Http\Controllers\ExamScheduleController;
 use App\Http\Controllers\FeePaymentController;
 use App\Http\Controllers\FeeStructureController;
 use App\Http\Controllers\FeeTypeController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\HomeworkController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\LibraryController;
@@ -46,6 +53,53 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['permission:settings.view'])->group(function () {
         Route::get('/admin/academic-setup', [IndexController::class, 'academicSetupView'])->name('academic.setup.view');
         Route::get('/admin/access-management', [IndexController::class, 'accessManagementView'])->name('access.management.view');
+    });
+
+    // Report routes
+    Route::middleware(['permission:reports.view'])->group(function () {
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/students', [ReportController::class, 'students'])->name('reports.students');
+        Route::get('reports/attendance', [ReportController::class, 'attendance'])->name('reports.attendance');
+        Route::get('reports/fees', [ReportController::class, 'fees'])->name('reports.fees');
+    });
+
+    // Hostel routes
+    Route::middleware(['permission:hostel.view'])->group(function () {
+        Route::get('hostel', [HostelController::class, 'index'])->name('hostel.index');
+    });
+
+    // Sports routes
+    Route::middleware(['permission:sports.view'])->group(function () {
+        Route::get('sports', [SportsController::class, 'index'])->name('sports.index');
+    });
+
+    // Medical records routes
+    Route::middleware(['permission:medical.view'])->group(function () {
+        Route::get('medical', [MedicalRecordController::class, 'index'])->name('medical.index');
+    });
+
+    // Conduct routes
+    Route::middleware(['permission:conduct.view'])->group(function () {
+        Route::get('conduct', [ConductController::class, 'index'])->name('conduct.index');
+    });
+
+    // Leave routes
+    Route::middleware(['permission:leaves.view'])->group(function () {
+        Route::get('leaves', [LeaveController::class, 'index'])->name('leaves.index');
+    });
+    Route::middleware(['permission:leaves.manage'])->group(function () {
+        Route::get('leaves/types', [LeaveController::class, 'types'])->name('leaves.types');
+    });
+
+    // Admission routes
+    Route::middleware(['permission:admissions.view'])->group(function () {
+        Route::get('admissions', [AdmissionController::class, 'index'])->name('admissions.index');
+        Route::get('admissions/{admission}', [AdmissionController::class, 'show'])->name('admissions.show');
+    });
+    Route::middleware(['permission:admissions.process'])->group(function () {
+        Route::post('admissions/{admission}/accept', [AdmissionController::class, 'accept'])->name('admissions.accept');
+        Route::post('admissions/{admission}/reject', [AdmissionController::class, 'reject'])->name('admissions.reject');
+        Route::post('admissions/{admission}/enroll', [AdmissionController::class, 'enroll'])->name('admissions.enroll');
     });
 
     // Student routes
@@ -119,6 +173,8 @@ Route::middleware('auth')->group(function () {
     // Exam routes
     Route::middleware(['permission:exams.view'])->group(function () {
         Route::get('exams', [ExamController::class, 'index'])->name('exams.index');
+        Route::get('exam-schedule', [ExamScheduleController::class, 'index'])->name('exam-schedule.index');
+        Route::get('exam-schedule/print', [ExamScheduleController::class, 'print'])->name('exam-schedule.print');
     });
     Route::middleware(['permission:marks.create'])->group(function () {
         Route::get('exam-marks/create', [ExamMarkController::class, 'create'])->name('exam-marks.create');
@@ -129,6 +185,7 @@ Route::middleware('auth')->group(function () {
         Route::get('results', [ResultController::class, 'index'])->name('results.index');
         Route::get('results/{exam}/{student}', [ResultController::class, 'show'])->name('results.show');
         Route::get('results/{exam}/{student}/print', [ResultController::class, 'print'])->name('results.print');
+        Route::get('results/{exam}/{student}/report-card', [ResultController::class, 'reportCard'])->name('results.report-card');
     });
 
     // Academic Sessions

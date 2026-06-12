@@ -334,6 +334,66 @@
 
                         <li class="menu-header">People</li>
 
+                        {{-- Admissions --}}
+                        @can('admissions.view')
+                            <li class="{{ request()->routeIs('admissions.*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('admissions.index') }}">
+                                    <i class="fas fa-file-signature"></i>
+                                    <span>Admissions</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        {{-- Leaves --}}
+                        @can('leaves.view')
+                            <li class="{{ request()->routeIs('leaves.*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('leaves.index') }}">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <span>Leave Management</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        {{-- Conduct --}}
+                        @can('conduct.view')
+                            <li class="{{ request()->routeIs('conduct.*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('conduct.index') }}">
+                                    <i class="fas fa-gavel"></i>
+                                    <span>Conduct & Discipline</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        {{-- Medical Records --}}
+                        @can('medical.view')
+                            <li class="{{ request()->routeIs('medical.*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('medical.index') }}">
+                                    <i class="fas fa-notes-medical"></i>
+                                    <span>Medical Records</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        {{-- Hostel --}}
+                        @can('hostel.view')
+                            <li class="{{ request()->routeIs('hostel.*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('hostel.index') }}">
+                                    <i class="fas fa-building"></i>
+                                    <span>Hostel</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        {{-- Sports & Activities --}}
+                        @can('sports.view')
+                            <li class="{{ request()->routeIs('sports.*') ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ route('sports.index') }}">
+                                    <i class="fas fa-futbol"></i>
+                                    <span>Sports & Activities</span>
+                                </a>
+                            </li>
+                        @endcan
+
                         {{-- Students --}}
                         @can('students.view')
                             @php $studMenuActive = request()->routeIs('students.*') || request()->routeIs('student-promotions.*') || request()->routeIs('certificates.*'); @endphp
@@ -428,7 +488,7 @@
 
                         {{-- Exam Management --}}
                         @can('exams.view')
-                            @php $examMenuActive = request()->routeIs('exams.*') || request()->routeIs('exam-marks.*') || request()->routeIs('results.*'); @endphp
+                            @php $examMenuActive = request()->routeIs('exams.*') || request()->routeIs('exam-marks.*') || request()->routeIs('results.*') || request()->routeIs('exam-schedule.*'); @endphp
                             <li class="dropdown {{ $examMenuActive ? 'active' : '' }}">
                                 <a href="#" class="nav-link has-dropdown {{ $examMenuActive ? 'toggled' : '' }}">
                                     <i class="fas fa-file-alt"></i>
@@ -438,6 +498,9 @@
                                     @hasanyrole('super admin|admin')
                                     <li class="{{ request()->routeIs('exams.index') ? 'active' : '' }}">
                                         <a class="nav-link" href="{{ route('exams.index') }}">Manage Exams</a>
+                                    </li>
+                                    <li class="{{ request()->routeIs('exam-schedule.*') ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ route('exam-schedule.index') }}">Exam Timetable</a>
                                     </li>
                                     @endhasanyrole
                                     @can('marks.create')
@@ -504,6 +567,16 @@
                             <a class="nav-link" href="{{ route('accounting.index') }}">
                                 <i class="fas fa-coins"></i>
                                 <span>Accounting</span>
+                            </a>
+                        </li>
+                        @endcan
+
+                        {{-- Reports --}}
+                        @can('reports.view')
+                        <li class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('reports.index') }}">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Reports</span>
                             </a>
                         </li>
                         @endcan

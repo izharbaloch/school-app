@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\User;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Livewire\WithPagination;
@@ -45,6 +46,7 @@ class AccessManagement extends Component
     public string $user_password = '';
     public $selected_user_role = '';
     public $userEditId = null;
+    public string $userSearch = '';
 
     public function mount()
     {
@@ -69,7 +71,18 @@ class AccessManagement extends Component
     #[Computed]
     public function users()
     {
-        return User::with('roles')->latest()->paginate(10);
+        return User::with('roles')
+            ->when($this->userSearch, fn ($q) => $q->where(function ($q) {
+                $q->where('name', 'like', '%' . $this->userSearch . '%')
+                  ->orWhere('email', 'like', '%' . $this->userSearch . '%');
+            }))
+            ->latest()
+            ->paginate(10);
+    }
+
+    public function updatedUserSearch(): void
+    {
+        $this->resetPage();
     }
 
     public function loadRolePermissionAssignments()
@@ -120,6 +133,13 @@ class AccessManagement extends Component
         ]);
 
         $role = Role::findOrFail($this->roleEditId);
+
+        if (strtolower($role->name) === 'super admin') {
+            session()->flash('role_error', 'The "super admin" role cannot be renamed.');
+            $this->resetRoleForm();
+            return;
+        }
+
         $role->update([
             'name' => $validated['role_name'],
         ]);
@@ -134,6 +154,11 @@ class AccessManagement extends Component
     public function deleteRole($id)
     {
         $role = Role::findOrFail($id);
+
+        if (strtolower($role->name) === 'super admin') {
+            session()->flash('role_error', 'The "super admin" role is a system role and cannot be deleted.');
+            return;
+        }
 
         if ($role->users()->count() > 0) {
             session()->flash('role_error', 'This role is assigned to users, so it cannot be deleted.');
@@ -374,6 +399,11 @@ class AccessManagement extends Component
 
     public function deleteUser($id)
     {
+        if ($id == Auth::id()) {
+            session()->flash('user_error', 'You cannot delete your own account.');
+            return;
+        }
+
         User::findOrFail($id)->delete();
 
         if ($this->userEditId == $id) {

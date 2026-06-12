@@ -34,6 +34,40 @@ class RoleAndPermissionSeeder extends Seeder
             'permissions.view',
             'permissions.assign',
 
+            // reports
+            'reports.view',
+
+            // hostel
+            'hostel.view',
+            'hostel.manage',
+
+            // sports & activities
+            'sports.view',
+            'sports.manage',
+
+            // medical records
+            'medical.view',
+            'medical.edit',
+
+            // conduct / discipline
+            'conduct.view',
+            'conduct.create',
+            'conduct.edit',
+            'conduct.delete',
+
+            // leaves
+            'leaves.view',
+            'leaves.apply',
+            'leaves.approve',
+            'leaves.manage',  // leave type CRUD
+
+            // admissions
+            'admissions.view',
+            'admissions.create',
+            'admissions.edit',
+            'admissions.delete',
+            'admissions.process',   // accept / reject / enroll
+
             // students
             'students.view',
             'students.create',
@@ -191,6 +225,33 @@ class RoleAndPermissionSeeder extends Seeder
         Role::findByName('admin')->syncPermissions([
             'dashboard.view',
 
+            'reports.view',
+
+            'hostel.view',
+            'hostel.manage',
+
+            'sports.view',
+            'sports.manage',
+
+            'medical.view',
+            'medical.edit',
+
+            'conduct.view',
+            'conduct.create',
+            'conduct.edit',
+            'conduct.delete',
+
+            'leaves.view',
+            'leaves.apply',
+            'leaves.approve',
+            'leaves.manage',
+
+            'admissions.view',
+            'admissions.create',
+            'admissions.edit',
+            'admissions.delete',
+            'admissions.process',
+
             'students.view',
             'students.create',
             'students.edit',
@@ -301,6 +362,28 @@ class RoleAndPermissionSeeder extends Seeder
         Role::findByName('principal')->syncPermissions([
             'dashboard.view',
 
+            'reports.view',
+
+            'hostel.view',
+            'hostel.manage',
+
+            'sports.view',
+            'sports.manage',
+
+            'medical.view',
+            'medical.edit',
+
+            'conduct.view',
+            'conduct.create',
+            'conduct.edit',
+            'conduct.delete',
+
+            'leaves.view',
+            'leaves.approve',
+
+            'admissions.view',
+            'admissions.process',
+
             'students.view',
             'teachers.view',
             'parents.view',
@@ -345,6 +428,21 @@ class RoleAndPermissionSeeder extends Seeder
         Role::findByName('teacher')->syncPermissions([
             'dashboard.view',
 
+            'reports.view',
+
+            'hostel.view',
+
+            'sports.view',
+
+            'medical.view',
+            'medical.edit',
+
+            'conduct.view',
+            'conduct.create',
+
+            'leaves.view',
+            'leaves.apply',
+
             'students.view',
             'classes.view',
             'sections.view',
@@ -376,6 +474,17 @@ class RoleAndPermissionSeeder extends Seeder
         Role::findByName('student')->syncPermissions([
             'dashboard.view',
 
+            'hostel.view',
+
+            'sports.view',
+
+            'medical.view',
+
+            'conduct.view',
+
+            'leaves.view',
+            'leaves.apply',
+
             'students.view',
             'subjects.view',
             'timetable.view',
@@ -394,6 +503,10 @@ class RoleAndPermissionSeeder extends Seeder
         Role::findByName('parent')->syncPermissions([
             'dashboard.view',
 
+            'medical.view',
+
+            'conduct.view',
+
             'students.view',
             'attendance.view',
             'marks.view',
@@ -407,6 +520,8 @@ class RoleAndPermissionSeeder extends Seeder
         // accountant
         Role::findByName('accountant')->syncPermissions([
             'dashboard.view',
+
+            'reports.view',
 
             'students.view',
             'parents.view',
@@ -454,6 +569,10 @@ class RoleAndPermissionSeeder extends Seeder
         Role::findByName('receptionist')->syncPermissions([
             'dashboard.view',
 
+            'admissions.view',
+            'admissions.create',
+            'admissions.edit',
+
             'students.view',
             'students.create',
             'students.edit',
@@ -475,12 +594,12 @@ class RoleAndPermissionSeeder extends Seeder
             'profile.update',
         ]);
 
-        // create super admin user
+        // create super admin user — credentials are read from .env (SUPER_ADMIN_EMAIL / PASSWORD)
         $superAdmin = \App\Models\User::firstOrCreate(
-            ['email' => 'superadmin@example.com'],
+            ['email' => env('SUPER_ADMIN_EMAIL', 'admin@school.com')],
             [
-                'name' => 'Super Admin',
-                'password' => bcrypt('password'),
+                'name' => env('SUPER_ADMIN_NAME', 'Super Admin'),
+                'password' => bcrypt(env('SUPER_ADMIN_PASSWORD', 'changeme123!')),
             ]
         );
 

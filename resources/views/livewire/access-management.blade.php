@@ -12,9 +12,7 @@
                     @if (session()->has('role_success'))
                         <div class="alert alert-success alert-dismissible show fade">
                             <div class="alert-body">
-                                <button class="close" data-dismiss="alert">
-                                    <span>&times;</span>
-                                </button>
+                                <button class="close" data-dismiss="alert"><span>&times;</span></button>
                                 {{ session('role_success') }}
                             </div>
                         </div>
@@ -23,9 +21,7 @@
                     @if (session()->has('role_error'))
                         <div class="alert alert-danger alert-dismissible show fade">
                             <div class="alert-body">
-                                <button class="close" data-dismiss="alert">
-                                    <span>&times;</span>
-                                </button>
+                                <button class="close" data-dismiss="alert"><span>&times;</span></button>
                                 {{ session('role_error') }}
                             </div>
                         </div>
@@ -45,7 +41,6 @@
                             <button type="submit" class="btn btn-primary mr-2">
                                 <i class="fas fa-save mr-1"></i> Update Role
                             </button>
-
                             <button type="button" class="btn btn-secondary" wire:click="cancelRoleEdit">
                                 <i class="fas fa-times mr-1"></i> Cancel
                             </button>
@@ -69,18 +64,25 @@
                                 @forelse ($roles as $role)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $role->name }}</td>
+                                        <td>
+                                            {{ $role->name }}
+                                            @if (strtolower($role->name) === 'super admin')
+                                                <span class="badge badge-danger ml-1">system</span>
+                                            @endif
+                                        </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-primary"
                                                 wire:click="editRole({{ $role->id }})" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-
-                                            <button type="button" class="btn btn-sm btn-danger"
-                                                onclick="if(confirm('Delete this role?')) { @this.call('deleteRole', {{ $role->id }}) }"
-                                                title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                            @if (strtolower($role->name) !== 'super admin')
+                                                <button type="button" class="btn btn-sm btn-danger"
+                                                    wire:click="deleteRole({{ $role->id }})"
+                                                    wire:confirm="Delete role '{{ $role->name }}'? This cannot be undone."
+                                                    title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -107,9 +109,7 @@
                     @if (session()->has('permission_success'))
                         <div class="alert alert-success alert-dismissible show fade">
                             <div class="alert-body">
-                                <button class="close" data-dismiss="alert">
-                                    <span>&times;</span>
-                                </button>
+                                <button class="close" data-dismiss="alert"><span>&times;</span></button>
                                 {{ session('permission_success') }}
                             </div>
                         </div>
@@ -119,7 +119,7 @@
                         <div class="form-group">
                             <label>Permission Name</label>
                             <input type="text" class="form-control @error('permission_name') is-invalid @enderror"
-                                wire:model.defer="permission_name" placeholder="Enter permission name">
+                                wire:model.defer="permission_name" placeholder="e.g. students.create">
                             @error('permission_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -129,7 +129,6 @@
                             <button type="submit" class="btn btn-primary mr-2">
                                 <i class="fas fa-save mr-1"></i> Update Permission
                             </button>
-
                             <button type="button" class="btn btn-secondary" wire:click="cancelPermissionEdit">
                                 <i class="fas fa-times mr-1"></i> Cancel
                             </button>
@@ -140,28 +139,28 @@
                         @endif
                     </form>
 
-                    <div class="table-responsive mt-3">
-                        <table class="table table-bordered table-striped">
-                            <thead>
+                    <div class="table-responsive mt-3" style="max-height:300px;overflow-y:auto">
+                        <table class="table table-bordered table-striped table-sm">
+                            <thead class="thead-light" style="position:sticky;top:0">
                                 <tr>
                                     <th>#</th>
                                     <th>Permission</th>
-                                    <th width="120">Action</th>
+                                    <th width="90">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($permissions as $permission)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $permission->name }}</td>
+                                        <td><small>{{ $permission->name }}</small></td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-primary"
                                                 wire:click="editPermission({{ $permission->id }})" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-
                                             <button type="button" class="btn btn-sm btn-danger"
-                                                onclick="if(confirm('Delete this permission?')) { @this.call('deletePermission', {{ $permission->id }}) }"
+                                                wire:click="deletePermission({{ $permission->id }})"
+                                                wire:confirm="Delete permission '{{ $permission->name }}'?"
                                                 title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -195,9 +194,7 @@
                     @if (session()->has('assignment_success'))
                         <div class="alert alert-success alert-dismissible show fade">
                             <div class="alert-body">
-                                <button class="close" data-dismiss="alert">
-                                    <span>&times;</span>
-                                </button>
+                                <button class="close" data-dismiss="alert"><span>&times;</span></button>
                                 {{ session('assignment_success') }}
                             </div>
                         </div>
@@ -205,7 +202,7 @@
 
                     <form wire:submit.prevent="assignPermissionsToRole">
                         <div class="form-row">
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label>Select Role</label>
                                 <select class="form-control @error('selected_role_id') is-invalid @enderror"
                                     wire:model.live="selected_role_id">
@@ -219,29 +216,37 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-8">
-                                <label>Select Permissions</label>
-                                <div class="border rounded p-3" style="max-height: 180px; overflow-y: auto;">
-                                    <div class="row">
-                                        @forelse ($permissions as $permission)
-                                            <div class="col-md-3 mb-2">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input"
-                                                        id="permission_{{ $permission->id }}"
-                                                        value="{{ $permission->id }}"
-                                                        wire:model="selected_permissions">
-                                                    <label class="custom-control-label"
-                                                        for="permission_{{ $permission->id }}">
-                                                        {{ $permission->name }}
-                                                    </label>
-                                                </div>
+                            <div class="form-group col-md-9">
+                                <label>Select Permissions <small class="text-muted">(grouped by module)</small></label>
+                                <div class="border rounded p-2" style="max-height: 220px; overflow-y: auto;">
+                                    @php
+                                        $grouped = $permissions->groupBy(fn($p) => \Illuminate\Support\Str::before($p->name, '.'));
+                                    @endphp
+                                    @foreach ($grouped as $module => $perms)
+                                        <div class="mb-1">
+                                            <small class="text-uppercase font-weight-bold text-muted"
+                                                style="font-size:.65rem;letter-spacing:.07em;display:block;padding:2px 0 1px">
+                                                {{ $module }}
+                                            </small>
+                                            <div class="d-flex flex-wrap">
+                                                @foreach ($perms as $permission)
+                                                    <div class="mr-3 mb-1">
+                                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                id="perm_{{ $permission->id }}"
+                                                                value="{{ $permission->id }}"
+                                                                wire:model="selected_permissions">
+                                                            <label class="custom-control-label" for="perm_{{ $permission->id }}"
+                                                                style="font-size:.82rem">
+                                                                {{ \Illuminate\Support\Str::after($permission->name, '.') }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
                                             </div>
-                                        @empty
-                                            <div class="col-12">
-                                                <span class="text-muted">No permissions found.</span>
-                                            </div>
-                                        @endforelse
-                                    </div>
+                                        </div>
+                                        <hr class="my-1">
+                                    @endforeach
                                 </div>
                                 @error('selected_permissions.*')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
@@ -255,7 +260,7 @@
                     </form>
 
                     <div class="table-responsive mt-4">
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered table-striped table-sm">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -267,26 +272,26 @@
                                 @forelse ($rolePermissionAssignments as $role)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $role->name }}</td>
+                                        <td class="text-nowrap font-weight-bold">{{ $role->name }}</td>
                                         <td>
                                             @forelse ($role->permissions as $permission)
-                                                <span class="badge badge-primary mr-1 mb-1">
+                                                <span class="badge badge-primary mr-1 mb-1" style="font-size:.75rem">
                                                     {{ $permission->name }}
                                                     <a href="javascript:void(0)" class="text-white ml-1"
                                                         wire:click="removePermissionFromRole({{ $role->id }}, {{ $permission->id }})"
+                                                        wire:confirm="Remove '{{ $permission->name }}' from role '{{ $role->name }}'?"
                                                         title="Remove">
                                                         <i class="fas fa-times"></i>
                                                     </a>
                                                 </span>
                                             @empty
-                                                <span class="text-muted">No permissions assigned</span>
+                                                <span class="text-muted small">No permissions assigned</span>
                                             @endforelse
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="text-center">No role-permission assignments found.
-                                        </td>
+                                        <td colspan="3" class="text-center">No role-permission assignments found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -304,18 +309,30 @@
         {{-- ===================== USER ===================== --}}
         <div class="col-md-12 mb-4">
             <div class="card">
-                <div class="card-header">
-                    <h4>{{ $userEditId ? 'Edit User' : 'Add User' }}</h4>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">{{ $userEditId ? 'Edit User' : 'Add User' }}</h4>
+                    <div style="width:260px">
+                        <input type="text" class="form-control form-control-sm"
+                            wire:model.live.debounce.300ms="userSearch"
+                            placeholder="Search by name or email...">
+                    </div>
                 </div>
                 <div class="card-body">
 
                     @if (session()->has('user_success'))
                         <div class="alert alert-success alert-dismissible show fade">
                             <div class="alert-body">
-                                <button class="close" data-dismiss="alert">
-                                    <span>&times;</span>
-                                </button>
+                                <button class="close" data-dismiss="alert"><span>&times;</span></button>
                                 {{ session('user_success') }}
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (session()->has('user_error'))
+                        <div class="alert alert-danger alert-dismissible show fade">
+                            <div class="alert-body">
+                                <button class="close" data-dismiss="alert"><span>&times;</span></button>
+                                {{ session('user_error') }}
                             </div>
                         </div>
                     @endif
@@ -341,7 +358,7 @@
                             </div>
 
                             <div class="form-group col-md-3">
-                                <label>Password {{ $userEditId ? '(Optional)' : '' }}</label>
+                                <label>Password {{ $userEditId ? '(leave blank to keep)' : '' }}</label>
                                 <input type="password"
                                     class="form-control @error('user_password') is-invalid @enderror"
                                     wire:model.defer="user_password" placeholder="Enter password">
@@ -366,16 +383,15 @@
 
                             <div class="form-group col-md-1 d-flex align-items-end">
                                 @if ($userEditId)
-                                    <button type="submit" class="btn btn-primary mr-2">
+                                    <button type="submit" class="btn btn-primary mr-1" title="Save">
                                         <i class="fas fa-save"></i>
                                     </button>
-
-                                    <button type="button" class="btn btn-secondary" wire:click="cancelUserEdit">
+                                    <button type="button" class="btn btn-secondary" wire:click="cancelUserEdit" title="Cancel">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 @else
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save"></i>
+                                    <button type="submit" class="btn btn-primary" title="Add User">
+                                        <i class="fas fa-plus"></i>
                                     </button>
                                 @endif
                             </div>
@@ -390,20 +406,25 @@
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Role</th>
-                                    <th width="120">Action</th>
+                                    <th width="100">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($users as $user)
-                                    <tr>
+                                    <tr @if ($user->id == auth()->id()) class="table-info" @endif>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $user->name }}</td>
+                                        <td>
+                                            {{ $user->name }}
+                                            @if ($user->id == auth()->id())
+                                                <span class="badge badge-info ml-1">you</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $user->email }}</td>
                                         <td>
                                             @forelse ($user->roles as $role)
-                                                <span class="badge badge-info mr-1">{{ $role->name }}</span>
+                                                <span class="badge badge-secondary mr-1">{{ $role->name }}</span>
                                             @empty
-                                                <span class="text-muted">No role assigned</span>
+                                                <span class="text-muted small">No role</span>
                                             @endforelse
                                         </td>
                                         <td>
@@ -411,12 +432,14 @@
                                                 wire:click="editUser({{ $user->id }})" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-
-                                            <button type="button" class="btn btn-sm btn-danger"
-                                                onclick="if(confirm('Delete this user?')) { @this.call('deleteUser', {{ $user->id }}) }"
-                                                title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                            @if ($user->id != auth()->id())
+                                                <button type="button" class="btn btn-sm btn-danger"
+                                                    wire:click="deleteUser({{ $user->id }})"
+                                                    wire:confirm="Delete user {{ $user->name }}? This cannot be undone."
+                                                    title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -428,9 +451,7 @@
                         </table>
                     </div>
 
-                    <div>
-                        {{ $users->links() }}
-                    </div>
+                    <div>{{ $users->links() }}</div>
 
                 </div>
             </div>
@@ -438,3 +459,4 @@
 
     </div>
 </div>
+{{-- end single root --}}

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'dashboard')
+@section('title', 'Access Management')
 @section('content')
     <div class="section-header">
         <h1>Access Management</h1>

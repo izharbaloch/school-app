@@ -596,6 +596,103 @@
 
         </div>
 
+        {{-- ══ ROW 1B: NEW MODULE QUICK-STATS ══ --}}
+        @if (!is_null($pendingLeavesCount) || !is_null($openIncidentsCount) || !is_null($hostelOccupied) || !is_null($activeSportsMembers))
+        <div class="row mb-1">
+            @if (!is_null($pendingLeavesCount))
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon ki-orange"><i class="fas fa-calendar-times"></i></div>
+                        <div>
+                            <div class="kpi-label">Pending Leaves</div>
+                            <div class="kpi-value">{{ $pendingLeavesCount }}</div>
+                            <div class="kpi-sub">Awaiting approval</div>
+                        </div>
+                    </div>
+                    <div class="kpi-footer">
+                        @can('leaves.view')
+                        <a href="{{ route('leaves.index') }}" class="text-muted" style="font-size:.75rem">View All</a>
+                        @endcan
+                        @if ($pendingLeavesCount > 0)
+                            <span class="kpi-badge warn"><i class="fas fa-clock mr-1"></i>Pending</span>
+                        @else
+                            <span class="kpi-badge up">All clear</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            @if (!is_null($openIncidentsCount))
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon ki-red"><i class="fas fa-gavel"></i></div>
+                        <div>
+                            <div class="kpi-label">Open Incidents</div>
+                            <div class="kpi-value">{{ $openIncidentsCount }}</div>
+                            <div class="kpi-sub">Conduct &amp; discipline</div>
+                        </div>
+                    </div>
+                    <div class="kpi-footer">
+                        @can('conduct.view')
+                        <a href="{{ route('conduct.index') }}" class="text-muted" style="font-size:.75rem">View All</a>
+                        @endcan
+                        @if ($openIncidentsCount > 0)
+                            <span class="kpi-badge down"><i class="fas fa-exclamation-triangle mr-1"></i>Open</span>
+                        @else
+                            <span class="kpi-badge up">All resolved</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            @if (!is_null($hostelOccupied))
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon ki-purple"><i class="fas fa-building"></i></div>
+                        <div>
+                            <div class="kpi-label">Hostel Residents</div>
+                            <div class="kpi-value">{{ $hostelOccupied }}</div>
+                            <div class="kpi-sub">Active allocations</div>
+                        </div>
+                    </div>
+                    <div class="kpi-footer">
+                        @can('hostel.view')
+                        <a href="{{ route('hostel.index') }}" class="text-muted" style="font-size:.75rem">Manage</a>
+                        @endcan
+                        <span class="kpi-badge up">Active</span>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            @if (!is_null($activeSportsMembers))
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon ki-teal"><i class="fas fa-futbol"></i></div>
+                        <div>
+                            <div class="kpi-label">Sports Enrollments</div>
+                            <div class="kpi-value">{{ $activeSportsMembers }}</div>
+                            <div class="kpi-sub">Active memberships</div>
+                        </div>
+                    </div>
+                    <div class="kpi-footer">
+                        @can('sports.view')
+                        <a href="{{ route('sports.index') }}" class="text-muted" style="font-size:.75rem">Manage</a>
+                        @endcan
+                        <span class="kpi-badge up">Active</span>
+                    </div>
+                </div>
+            </div>
+            @endif
+        </div>
+        @endif
+
         {{-- ══ ROW 2: CHARTS ══ --}}
         <p class="dash-heading"><i class="fas fa-chart-area"></i> Analytics</p>
 

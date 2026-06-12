@@ -56,7 +56,8 @@
                     <p><strong>Status:</strong> {{ $status }}</p>
                 </div>
 
-                <a href="{{ route('results.print', [$exam->id, $student->id]) }}" target="_blank" class="btn btn-secondary">Print Result Card</a>
+                <a href="{{ route('results.print', [$exam->id, $student->id]) }}" target="_blank" class="btn btn-secondary">Print Result</a>
+                <a href="{{ route('results.report-card', [$exam->id, $student->id]) }}" target="_blank" class="btn btn-success">Report Card</a>
                 <a href="{{ route('results.index', ['exam_id' => $exam->id, 'student_class_id' => $student->student_class_id, 'section_id' => $student->section_id]) }}" class="btn btn-primary">Back</a>
             </div>
         </div>

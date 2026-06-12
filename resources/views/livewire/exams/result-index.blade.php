@@ -156,6 +156,11 @@
                                             View
                                         </a>
 
+                                        <a href="{{ route('results.report-card', [$exam_id, $row['student']->id]) }}"
+                                            target="_blank" class="btn btn-sm btn-success">
+                                            Report Card
+                                        </a>
+
                                         <a href="{{ route('results.print', [$exam_id, $row['student']->id]) }}"
                                             target="_blank" class="btn btn-sm btn-secondary">
                                             Print

@@ -7,17 +7,22 @@ use App\Models\AttendanceStudent;
 use App\Models\Event;
 use App\Models\Exam;
 use App\Models\FeePayment;
+use App\Models\HostelAllocation;
+use App\Models\LeaveApplication;
 use App\Models\Notice;
 use App\Models\Student;
+use App\Models\StudentActivityEnrollment;
 use App\Models\StudentClass;
 use App\Models\StudentFee;
+use App\Models\StudentIncident;
 use App\Models\Teacher;
+use Illuminate\Support\Facades\Auth;
 
 class IndexController extends Controller
 {
     public function dashboard()
     {
-        $user  = auth()->user();
+        $user  = Auth::user();
         $today = now()->toDateString();
 
         // ── Student stats ──────────────────────────────────────────
@@ -141,6 +146,23 @@ class IndexController extends Controller
             ->take(10)
             ->get();
 
+        // ── New module quick-stats (permission-gated) ───────────────
+        $pendingLeavesCount   = $user->can('leaves.view')
+            ? LeaveApplication::allowedForUser($user)->where('status', 'pending')->count()
+            : null;
+
+        $openIncidentsCount   = $user->can('conduct.view')
+            ? StudentIncident::allowedForUser($user)->where('status', 'open')->count()
+            : null;
+
+        $hostelOccupied       = $user->can('hostel.view')
+            ? HostelAllocation::where('status', 'active')->count()
+            : null;
+
+        $activeSportsMembers  = $user->can('sports.view')
+            ? StudentActivityEnrollment::where('status', true)->count()
+            : null;
+
         return view('dashboard', compact(
             'totalStudents', 'activeStudents', 'maleStudents', 'femaleStudents',
             'newAdmissionsThisMonth', 'newAdmissionsAlert',
@@ -153,7 +175,9 @@ class IndexController extends Controller
             'chartMonths', 'admissionsData', 'feeCollectedData',
             'recentAdmissions', 'recentPayments',
             'upcomingExams', 'upcomingEvents', 'recentNotices',
-            'recentActivities'
+            'recentActivities',
+            'pendingLeavesCount', 'openIncidentsCount',
+            'hostelOccupied', 'activeSportsMembers'
         ));
     }
 
