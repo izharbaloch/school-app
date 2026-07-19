@@ -98,25 +98,8 @@ class ResultController extends Controller
             'totalMarks',
             'percentage',
         ) + [
-            'grade'  => $this->getGrade($percentage),
+            'grade'  => ExamResult::gradeForPercentage($percentage),
             'status' => $failedSubjects > 0 ? 'Fail' : 'Pass',
         ];
-    }
-
-    private function getGrade(float|int $percentage): string
-    {
-        if ($percentage >= 90) {
-            return 'A+';
-        } elseif ($percentage >= 80) {
-            return 'A';
-        } elseif ($percentage >= 70) {
-            return 'B';
-        } elseif ($percentage >= 60) {
-            return 'C';
-        } elseif ($percentage >= 50) {
-            return 'D';
-        }
-
-        return 'F';
     }
 }

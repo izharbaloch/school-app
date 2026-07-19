@@ -109,7 +109,10 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-success" wire:click="saveBook">{{ $bookId ? 'Update' : 'Save' }}</button>
+            <button class="btn btn-success" type="button" wire:click="saveBook" wire:loading.attr="disabled" wire:target="saveBook">
+                <span wire:loading.remove wire:target="saveBook">{{ $bookId ? 'Update' : 'Save' }}</span>
+                <span wire:loading wire:target="saveBook"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button class="btn btn-secondary ml-2" wire:click="$set('showBookForm', false)">Cancel</button>
         </div>
         @endif
@@ -147,10 +150,10 @@
                             <td>{{ $book->shelf_location ?? '-' }}</td>
                             <td>
                                 @can('library.edit')
-                                <button class="btn btn-xs btn-info" wire:click="editBook({{ $book->id }})"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-outline-primary" wire:click="editBook({{ $book->id }})" title="Edit"><i class="fas fa-edit"></i></button>
                                 @endcan
                                 @can('library.delete')
-                                <button class="btn btn-xs btn-danger ml-1" wire:click="deleteBook({{ $book->id }})" onclick="return confirm('Delete book?')"><i class="fas fa-trash"></i></button>
+                                <button class="btn btn-sm btn-outline-danger ml-1" wire:click="deleteBook({{ $book->id }})" wire:confirm="Delete book?" wire:loading.attr="disabled" wire:target="deleteBook" title="Delete"><i class="fas fa-trash"></i></button>
                                 @endcan
                             </td>
                         </tr>
@@ -190,7 +193,10 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-success" wire:click="saveCategory">{{ $categoryId ? 'Update' : 'Save' }}</button>
+            <button class="btn btn-success" type="button" wire:click="saveCategory" wire:loading.attr="disabled" wire:target="saveCategory">
+                <span wire:loading.remove wire:target="saveCategory">{{ $categoryId ? 'Update' : 'Save' }}</span>
+                <span wire:loading wire:target="saveCategory"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button class="btn btn-secondary ml-2" wire:click="$set('showCategoryForm', false)">Cancel</button>
         </div>
         @endif
@@ -206,10 +212,10 @@
                         <td>{{ $cat->books_count ?? $cat->books->count() }}</td>
                         <td>
                             @can('library.edit')
-                            <button class="btn btn-xs btn-info" wire:click="editCategory({{ $cat->id }})"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-primary" wire:click="editCategory({{ $cat->id }})" title="Edit"><i class="fas fa-edit"></i></button>
                             @endcan
                             @can('library.delete')
-                            <button class="btn btn-xs btn-danger ml-1" wire:click="deleteCategory({{ $cat->id }})" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ml-1" wire:click="deleteCategory({{ $cat->id }})" wire:confirm="Delete?" wire:loading.attr="disabled" wire:target="deleteCategory" title="Delete"><i class="fas fa-trash"></i></button>
                             @endcan
                         </td>
                     </tr>
@@ -308,7 +314,10 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-success" wire:click="saveIssue">Issue Book</button>
+            <button class="btn btn-success" type="button" wire:click="saveIssue" wire:loading.attr="disabled" wire:target="saveIssue">
+                <span wire:loading.remove wire:target="saveIssue">Issue Book</span>
+                <span wire:loading wire:target="saveIssue"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button class="btn btn-secondary ml-2" wire:click="$set('showIssueForm', false)">Cancel</button>
         </div>
         @endif
@@ -342,7 +351,7 @@
                         <td>
                             @if($issue->status === 'issued')
                             @can('library.issue_books')
-                            <button class="btn btn-xs btn-success" wire:click="returnBook({{ $issue->id }})" onclick="return confirm('Mark as returned?')">
+                            <button class="btn btn-xs btn-success" wire:click="returnBook({{ $issue->id }})" wire:confirm="Mark as returned?">
                                 <i class="fas fa-undo"></i> Return
                             </button>
                             @endcan

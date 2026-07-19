@@ -78,7 +78,10 @@
                 <label>Description</label>
                 <textarea class="form-control" wire:model="description" rows="3"></textarea>
             </div>
-            <button class="btn btn-success" wire:click="save">{{ $eventId ? 'Update' : 'Save' }}</button>
+            <button class="btn btn-success" wire:click="save" wire:loading.attr="disabled" wire:target="save">
+                <span wire:loading.remove wire:target="save">{{ $eventId ? 'Update' : 'Save' }}</span>
+                <span wire:loading wire:target="save"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button class="btn btn-secondary ml-2" wire:click="cancel">Cancel</button>
         </div>
         @endif
@@ -112,11 +115,11 @@
                             </td>
                             <td>{{ $event->venue ?? '-' }}</td>
                             <td>{{ ucfirst($event->audience) }}</td>
-                            <td><span class="badge badge-{{ $event->status ? 'success' : 'secondary' }}">{{ $event->status ? 'Active' : 'Inactive' }}</span></td>
+                            <td><span class="badge badge-{{ $event->status ? 'success' : 'danger' }}">{{ $event->status ? 'Active' : 'Inactive' }}</span></td>
                             <td>
                                 @can('notices.create')
-                                <button class="btn btn-xs btn-info" wire:click="edit({{ $event->id }})"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-xs btn-danger ml-1" wire:click="delete({{ $event->id }})" onclick="return confirm('Delete event?')"><i class="fas fa-trash"></i></button>
+                                <button class="btn btn-sm btn-outline-primary" wire:click="edit({{ $event->id }})" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-outline-danger ml-1" wire:click="delete({{ $event->id }})" wire:confirm="Delete event?" wire:loading.attr="disabled" wire:target="delete" title="Delete"><i class="fas fa-trash"></i></button>
                                 @endcan
                             </td>
                         </tr>

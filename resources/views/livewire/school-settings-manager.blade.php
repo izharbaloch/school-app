@@ -63,6 +63,21 @@
                         <input wire:model="school_motto" type="text" class="form-control">
                     </div>
                 </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="d-block font-weight-bold">Email Notifications</label>
+                        <div class="custom-control custom-switch mt-1">
+                            <input wire:model="notifications_enabled" type="checkbox" class="custom-control-input"
+                                   id="notifications_enabled">
+                            <label class="custom-control-label" for="notifications_enabled">
+                                Enable email notifications
+                            </label>
+                        </div>
+                        <small class="text-muted">
+                            When enabled, emails are sent for: admission decisions, fee notices, payment receipts, and leave approvals.
+                        </small>
+                    </div>
+                </div>
             </div>
             <button wire:click="saveGeneral" class="btn btn-primary">
                 <span wire:loading.remove wire:target="saveGeneral"><i class="fas fa-save"></i> Save General Settings</span>

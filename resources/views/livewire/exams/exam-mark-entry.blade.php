@@ -6,6 +6,29 @@
         </div>
     @endif
 
+    @if (session()->has('warning'))
+        <div class="alert alert-warning">
+            {{ session('warning') }}
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Please fix the following before saving:</strong>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $message)
+                    <li>{{ $message }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     {{-- FILTERS --}}
     <div class="card mb-3">
         <div class="card-body">
@@ -109,7 +132,7 @@
                                             <td>
                                                 <input type="number"
                                                     wire:model.defer="students.{{ $i }}.subjects.{{ $subject->id }}.obtained_marks"
-                                                    class="form-control mb-1">
+                                                    class="form-control mb-1 @error("students.$i.subjects.{$subject->id}.obtained_marks") is-invalid @enderror">
 
                                                 <input type="text" placeholder="Remarks"
                                                     wire:model.defer="students.{{ $i }}.subjects.{{ $subject->id }}.remarks"

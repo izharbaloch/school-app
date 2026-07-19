@@ -165,10 +165,10 @@
                                             <td>{{ $tt->room ?? '-' }}</td>
                                             <td>
                                                 @can('timetable.edit')
-                                                <button class="btn btn-xs btn-info" wire:click="edit({{ $tt->id }})"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-outline-primary" wire:click="edit({{ $tt->id }})" title="Edit"><i class="fas fa-edit"></i></button>
                                                 @endcan
                                                 @can('timetable.delete')
-                                                <button class="btn btn-xs btn-danger ml-1" wire:click="delete({{ $tt->id }})" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger ml-1" wire:click="delete({{ $tt->id }})" wire:confirm="Delete?" title="Delete"><i class="fas fa-trash"></i></button>
                                                 @endcan
                                             </td>
                                         </tr>

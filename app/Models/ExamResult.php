@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ExamResult extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'exam_id',
         'student_id',
@@ -41,6 +44,18 @@ class ExamResult extends Model
     public function getIsPassAttribute()
     {
         return $this->obtained_marks >= $this->passing_marks;
+    }
+
+    public static function gradeForPercentage(float|int $percentage): string
+    {
+        return match (true) {
+            $percentage >= 90 => 'A+',
+            $percentage >= 80 => 'A',
+            $percentage >= 70 => 'B',
+            $percentage >= 60 => 'C',
+            $percentage >= 50 => 'D',
+            default => 'F',
+        };
     }
 
     public function scopeAllowedForUser($query, $user)

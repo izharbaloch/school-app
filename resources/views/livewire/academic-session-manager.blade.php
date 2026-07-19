@@ -109,7 +109,7 @@
                                     <td>{{ $session->start_date->format('d M Y') }}</td>
                                     <td>{{ $session->end_date->format('d M Y') }}</td>
                                     <td>
-                                        <span class="badge badge-{{ $session->status === 'active' ? 'success' : 'secondary' }}">
+                                        <span class="badge badge-{{ $session->status === 'active' ? 'success' : 'danger' }}">
                                             {{ ucfirst($session->status) }}
                                         </span>
                                     </td>
@@ -126,12 +126,12 @@
                                     </td>
                                     <td>
                                         @can('settings.update')
-                                        <button class="btn btn-sm btn-info" wire:click="edit({{ $session->id }})" title="Edit">
+                                        <button class="btn btn-sm btn-outline-primary" wire:click="edit({{ $session->id }})" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         @if(!$session->is_active)
-                                        <button class="btn btn-sm btn-danger ml-1" wire:click="delete({{ $session->id }})"
-                                            onclick="return confirm('Delete this session?')" title="Delete">
+                                        <button class="btn btn-sm btn-outline-danger ml-1" wire:click="delete({{ $session->id }})"
+                                            wire:confirm="Delete this session?" title="Delete">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         @endif

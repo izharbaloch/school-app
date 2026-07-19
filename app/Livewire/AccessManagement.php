@@ -95,6 +95,8 @@ class AccessManagement extends Component
     // =========================
     public function saveRole()
     {
+        abort_unless(auth()->user()->can('roles.create'), 403);
+
         $validated = $this->validate([
             'role_name' => 'required|string|max:255|unique:roles,name',
         ]);
@@ -123,6 +125,8 @@ class AccessManagement extends Component
 
     public function updateRole()
     {
+        abort_unless(auth()->user()->can('roles.edit'), 403);
+
         $validated = $this->validate([
             'role_name' => [
                 'required',
@@ -153,6 +157,8 @@ class AccessManagement extends Component
 
     public function deleteRole($id)
     {
+        abort_unless(auth()->user()->can('roles.delete'), 403);
+
         $role = Role::findOrFail($id);
 
         if (strtolower($role->name) === 'super admin') {
@@ -194,6 +200,8 @@ class AccessManagement extends Component
     // =========================
     public function savePermission()
     {
+        abort_unless(auth()->user()->can('permissions.manage'), 403);
+
         $validated = $this->validate([
             'permission_name' => 'required|string|max:255|unique:permissions,name',
         ]);
@@ -222,6 +230,8 @@ class AccessManagement extends Component
 
     public function updatePermission()
     {
+        abort_unless(auth()->user()->can('permissions.manage'), 403);
+
         $validated = $this->validate([
             'permission_name' => [
                 'required',
@@ -245,6 +255,8 @@ class AccessManagement extends Component
 
     public function deletePermission($id)
     {
+        abort_unless(auth()->user()->can('permissions.manage'), 403);
+
         $permission = Permission::findOrFail($id);
         $permission->delete();
 
@@ -285,6 +297,8 @@ class AccessManagement extends Component
 
     public function assignPermissionsToRole()
     {
+        abort_unless(auth()->user()->can('permissions.assign'), 403);
+
         $validated = $this->validate([
             'selected_role_id' => 'required|exists:roles,id',
             'selected_permissions' => 'nullable|array',
@@ -305,6 +319,8 @@ class AccessManagement extends Component
 
     public function removePermissionFromRole($roleId, $permissionId)
     {
+        abort_unless(auth()->user()->can('permissions.assign'), 403);
+
         $role = Role::findById($roleId);
         $permission = Permission::findById($permissionId);
 
@@ -324,6 +340,8 @@ class AccessManagement extends Component
     // =========================
     public function saveUser()
     {
+        abort_unless(auth()->user()->can('users.create'), 403);
+
         $validated = $this->validate([
             'user_name' => 'required|string|max:255',
             'user_email' => 'required|email|max:255|unique:users,email',
@@ -362,6 +380,8 @@ class AccessManagement extends Component
 
     public function updateUser()
     {
+        abort_unless(auth()->user()->can('users.edit'), 403);
+
         $validated = $this->validate([
             'user_name' => 'required|string|max:255',
             'user_email' => [
@@ -399,6 +419,8 @@ class AccessManagement extends Component
 
     public function deleteUser($id)
     {
+        abort_unless(auth()->user()->can('users.delete'), 403);
+
         if ($id == Auth::id()) {
             session()->flash('user_error', 'You cannot delete your own account.');
             return;

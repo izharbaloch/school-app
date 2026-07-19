@@ -2,10 +2,13 @@
 
 namespace App\Livewire\Leave;
 
+use App\Mail\LeaveStatusMail;
 use App\Models\LeaveApplication;
 use App\Models\LeaveType;
+use App\Models\SchoolSetting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -64,7 +67,7 @@ class LeaveApplicationManager extends Component
                     $this->total_days = LeaveApplication::workingDays($from, $to);
                     return;
                 }
-            } catch (\Exception $e) {}
+            } catch (\Exception) {}
         }
         $this->total_days = 0;
     }
@@ -141,25 +144,54 @@ class LeaveApplicationManager extends Component
     public function approve(int $id): void
     {
         abort_unless(Auth::user()->can('leaves.approve'), 403);
-        LeaveApplication::findOrFail($id)->update([
+        $app = LeaveApplication::findOrFail($id);
+        $app->update([
             'status'      => LeaveApplication::STATUS_APPROVED,
             'reviewed_by' => Auth::id(),
             'reviewed_at' => now(),
             'rejection_reason' => null,
         ]);
+        $this->sendLeaveStatusMail($app);
         session()->flash('success', 'Leave approved.');
     }
 
     public function reject(int $id, string $reason = ''): void
     {
         abort_unless(Auth::user()->can('leaves.approve'), 403);
-        LeaveApplication::findOrFail($id)->update([
+        $app = LeaveApplication::findOrFail($id);
+        $app->update([
             'status'           => LeaveApplication::STATUS_REJECTED,
             'rejection_reason' => $reason ?: 'Rejected by administrator.',
             'reviewed_by'      => Auth::id(),
             'reviewed_at'      => now(),
         ]);
+        $this->sendLeaveStatusMail($app);
         session()->flash('success', 'Leave rejected.');
+    }
+
+    private function sendLeaveStatusMail(LeaveApplication $app): void
+    {
+        if (SchoolSetting::get('notifications_enabled', '1') !== '1') {
+            return;
+        }
+
+        if ($app->applicant_type === 'staff') {
+            $email = $app->user?->email;
+        } else {
+            $app->load('student.guardian');
+            $email = $app->student?->guardian_email
+                ?? $app->student?->guardian?->email;
+        }
+
+        if (!$email) {
+            return;
+        }
+
+        try {
+            Mail::to($email)->queue(new LeaveStatusMail($app));
+        } catch (\Exception) {
+            // mail failure must not break leave workflow
+        }
     }
 
     public function withdraw(int $id): void

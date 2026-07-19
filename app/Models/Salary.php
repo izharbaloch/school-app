@@ -20,6 +20,7 @@ class Salary extends Model
         'basic_salary' => 'decimal:2',
         'allowances'   => 'decimal:2',
         'deductions'   => 'decimal:2',
+        'net_salary'   => 'decimal:2',
     ];
 
     public static array $months = [
@@ -30,9 +31,4 @@ class Salary extends Model
 
     public function teacher() { return $this->belongsTo(Teacher::class); }
     public function paidBy()  { return $this->belongsTo(User::class, 'paid_by'); }
-
-    public function getNetSalaryAttribute(): float
-    {
-        return (float)$this->basic_salary + (float)$this->allowances - (float)$this->deductions;
-    }
 }

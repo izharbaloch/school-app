@@ -24,10 +24,11 @@
         <div class="card-body">
 
             @if ($showForm)
-                <div class="border rounded p-3 mb-4">
-                    <h5 class="mb-3">
-                        {{ $editId ? 'Edit Exam' : 'Create Exam' }}
-                    </h5>
+                <div class="card border-primary shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">{{ $editId ? 'Edit Exam' : 'Create Exam' }}</h6>
+                    </div>
+                    <div class="card-body">
 
                     <form wire:submit.prevent="{{ $editId ? 'update' : 'save' }}">
                         <div class="row">
@@ -91,12 +92,14 @@
 
                             <div class="form-group col-md-2 d-flex align-items-end">
                                 @if ($editId)
-                                    <button type="submit" class="btn btn-primary mr-2">
-                                        <i class="fas fa-save mr-1"></i> Update
+                                    <button type="submit" class="btn btn-primary mr-2" wire:loading.attr="disabled" wire:target="update">
+                                        <span wire:loading.remove wire:target="update"><i class="fas fa-save mr-1"></i> Update</span>
+                                        <span wire:loading wire:target="update"><i class="fas fa-spinner fa-spin"></i></span>
                                     </button>
                                 @else
-                                    <button type="submit" class="btn btn-primary mr-2">
-                                        <i class="fas fa-save mr-1"></i> Save
+                                    <button type="submit" class="btn btn-primary mr-2" wire:loading.attr="disabled" wire:target="save">
+                                        <span wire:loading.remove wire:target="save"><i class="fas fa-save mr-1"></i> Save</span>
+                                        <span wire:loading wire:target="save"><i class="fas fa-spinner fa-spin"></i></span>
                                     </button>
                                 @endif
 
@@ -106,6 +109,7 @@
                             </div>
                         </div>
                     </form>
+                    </div>
                 </div>
             @endif
 
@@ -145,15 +149,16 @@
                                 </td>
                                 <td>{{ $exam->remarks ?: '-' }}</td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-warning"
-                                        wire:click="edit({{ $exam->id }})">
-                                        Edit
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                        wire:click="edit({{ $exam->id }})" title="Edit">
+                                        <i class="fas fa-edit"></i>
                                     </button>
 
-                                    <button type="button" class="btn btn-sm btn-danger"
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
                                         wire:click="delete({{ $exam->id }})"
-                                        onclick="confirm('Delete this exam?') || event.stopImmediatePropagation()">
-                                        Delete
+                                        wire:confirm="Delete this exam?" title="Delete"
+                                        wire:loading.attr="disabled" wire:target="delete({{ $exam->id }})">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>

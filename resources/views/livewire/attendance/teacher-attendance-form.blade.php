@@ -97,8 +97,9 @@
             </div>
 
             <div class="form-group mt-4">
-                <button type="button" class="btn btn-primary" wire:click="save">
-                    <i class="fas fa-save"></i> {{ $isEdit ? 'Update Attendance' : 'Save Attendance' }}
+                <button type="button" class="btn btn-primary" wire:click="save" wire:loading.attr="disabled" wire:target="save">
+                    <span wire:loading.remove wire:target="save"><i class="fas fa-save"></i> {{ $isEdit ? 'Update Attendance' : 'Save Attendance' }}</span>
+                    <span wire:loading wire:target="save"><i class="fas fa-spinner fa-spin"></i> {{ $isEdit ? 'Update Attendance' : 'Save Attendance' }}</span>
                 </button>
                 <a href="{{ route('teacher-attendances.index') }}" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Cancel

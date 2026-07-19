@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Student;
 
-use App\Models\Guardian;
 use Livewire\Component;
 use App\Models\Student;
 use App\Models\Section;
@@ -10,12 +9,15 @@ use App\Models\StudentClass;
 use Livewire\WithFileUploads;
 use App\Models\StudentAttachment;
 use App\Models\User;
+use App\Services\StudentEnrollmentService;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
 class CreateStudent extends Component
 {
     use WithFileUploads;
+
+    protected array $generatedCredentials = [];
 
     public string $admission_no = '';
     public string $roll_no = '';
@@ -57,13 +59,13 @@ class CreateStudent extends Component
     {
         $this->classes = StudentClass::where('status', 1)->latest()->get();
         $this->sections = collect();
-        $this->admission_no = $this->generateAdmissionNo();
+        $this->admission_no = app(StudentEnrollmentService::class)->generateAdmissionNo();
     }
 
     public function updatedStudentClassId($value)
     {
         $this->loadSectionsByClass($value);
-        $this->roll_no = $value ? (string) $this->generateRollNo($value) : '';
+        $this->roll_no = $value ? (string) app(StudentEnrollmentService::class)->generateRollNo($value) : '';
     }
 
     public function loadSectionsByClass($classId)
@@ -142,18 +144,38 @@ class CreateStudent extends Component
     {
         $validated = $this->validate();
 
-        DB::transaction(function () use ($validated) {
-            $guardian = $this->findOrCreateGuardian($validated);
+        $service = app(StudentEnrollmentService::class);
+
+        DB::transaction(function () use ($validated, $service) {
+            ['guardian' => $guardian, 'temporary_password' => $guardianTempPassword] = $service->findOrCreateGuardian([
+                'father_name' => $validated['father_name'],
+                'mother_name' => $validated['mother_name'] ?? null,
+                'guardian_phone' => $validated['guardian_phone'] ?? null,
+                'guardian_cnic_no' => $validated['guardian_cnic_no'] ?? null,
+                'email' => $validated['guardian_email'] ?? null,
+                'address' => $validated['address'] ?? null,
+            ]);
+
+            if ($guardianTempPassword) {
+                $this->generatedCredentials[] = "Guardian login: {$guardian->email} / {$guardianTempPassword}";
+            }
 
             $user = null;
             if (!empty($validated['email'])) {
+                $temporaryPassword = User::generateTemporaryPassword();
+
                 $user = User::firstOrCreate(
                     ['email' => $validated['email']],
                     [
                         'name' => trim($validated['first_name'] . ' ' . ($validated['last_name'] ?? '')),
-                        'password' => bcrypt('password'),
+                        'password' => bcrypt($temporaryPassword),
+                        'must_change_password' => true,
                     ]
                 );
+
+                if ($user->wasRecentlyCreated) {
+                    $this->generatedCredentials[] = "Student login: {$user->email} / {$temporaryPassword}";
+                }
 
                 if (!$user->hasRole('student')) {
                     $user->assignRole('student');
@@ -164,8 +186,8 @@ class CreateStudent extends Component
                 ]);
             }
 
-            $admissionNo = $this->generateAdmissionNo();
-            $rollNo = $this->generateRollNo($validated['student_class_id']);
+            $admissionNo = $service->generateAdmissionNo();
+            $rollNo = $service->generateRollNo($validated['student_class_id']);
 
             $student = Student::create([
                 'user_id' => $user ? $user->id : null,
@@ -216,37 +238,14 @@ class CreateStudent extends Component
             }
         });
 
-        return redirect()
-            ->route('students.index')
-            ->with('success', 'Student added successfully with attachments.');
-    }
-
-    private function generateAdmissionNo(): string
-    {
-        $year = date('Y');
-
-        $lastStudent = Student::where('admission_no', 'like', 'ADM-%-' . $year)
-            ->orderByDesc('id')
-            ->first();
-
-        $nextNumber = 1;
-
-        if ($lastStudent && !empty($lastStudent->admission_no)) {
-            if (preg_match('/ADM-(\d+)-' . $year . '/', $lastStudent->admission_no, $matches)) {
-                $nextNumber = ((int) $matches[1]) + 1;
-            }
+        $message = 'Student added successfully with attachments.';
+        if (!empty($this->generatedCredentials)) {
+            $message .= ' ' . implode(' | ', $this->generatedCredentials) . ' (they must change this password on first login)';
         }
 
-        return 'ADM-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT) . '-' . $year;
-    }
-
-    private function generateRollNo($classId): int
-    {
-        $lastStudent = Student::where('student_class_id', $classId)
-            ->orderByRaw('CAST(roll_no AS UNSIGNED) DESC')
-            ->first();
-
-        return $lastStudent ? ((int) $lastStudent->roll_no + 1) : 1;
+        return redirect()
+            ->route('students.index')
+            ->with('success', $message);
     }
 
     private function saveAttachmentIfUploaded($studentId, $uploadedFile, $documentType, $title = null)
@@ -269,74 +268,6 @@ class CreateStudent extends Component
             'file_name' => $uploadedFile->getClientOriginalName(),
             'file_extension' => $uploadedFile->getClientOriginalExtension(),
             'file_size' => $uploadedFile->getSize(),
-            'status' => 1,
-        ]);
-    }
-
-    public function findOrCreateGuardian($validated): Guardian
-    {
-        $cnic = $this->emptyToNull($validated['guardian_cnic_no'] ?? null);
-        $phone = $this->emptyToNull($validated['guardian_phone'] ?? null);
-        $email = $this->emptyToNull($validated['guardian_email'] ?? null);
-        $fatherName = $validated['father_name'];
-
-        $guardian = null;
-
-        if ($cnic) {
-            $guardian = Guardian::where('guardian_cnic_no', $cnic)->first();
-        }
-
-        if (!$guardian && $phone) {
-            $guardian = Guardian::where('guardian_phone', $phone)->first();
-        }
-
-        if (!$guardian && $email) {
-            $guardian = Guardian::where('email', $email)->first();
-        }
-
-        $user = null;
-
-        if ($email) {
-            $user = User::firstOrCreate(
-                ['email' => $email],
-                [
-                    'name' => $fatherName,
-                    'password' => bcrypt('password'),
-                ]
-            );
-
-            $user->update([
-                'name' => $fatherName,
-            ]);
-
-            if (!$user->hasRole('parent')) {
-                $user->assignRole('parent');
-            }
-        }
-
-        if ($guardian) {
-            $guardian->update([
-                'user_id' => $user ? $user->id : $guardian->user_id,
-                'father_name' => $fatherName,
-                'mother_name' => $this->emptyToNull($validated['mother_name'] ?? null),
-                'guardian_phone' => $phone,
-                'guardian_cnic_no' => $cnic,
-                'email' => $email,
-                'address' => $this->emptyToNull($validated['address'] ?? null),
-                'status' => 1,
-            ]);
-
-            return $guardian;
-        }
-
-        return Guardian::create([
-            'user_id' => $user ? $user->id : null,
-            'father_name' => $fatherName,
-            'mother_name' => $this->emptyToNull($validated['mother_name'] ?? null),
-            'guardian_phone' => $phone,
-            'guardian_cnic_no' => $cnic,
-            'email' => $email,
-            'address' => $this->emptyToNull($validated['address'] ?? null),
             'status' => 1,
         ]);
     }

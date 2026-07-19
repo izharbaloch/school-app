@@ -226,16 +226,16 @@
                                 @if($hw->status)
                                     <span class="badge badge-success">Active</span>
                                 @else
-                                    <span class="badge badge-secondary">Inactive</span>
+                                    <span class="badge badge-danger">Inactive</span>
                                 @endif
                             </td>
                             <td>
                                 @can('homework.edit')
-                                    <button wire:click="edit({{ $hw->id }})" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button wire:click="edit({{ $hw->id }})" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
                                 @endcan
                                 @can('homework.delete')
-                                    <button wire:click="delete({{ $hw->id }})" class="btn btn-xs btn-danger"
-                                        onclick="return confirm('Delete this homework?')"><i class="fas fa-trash"></i></button>
+                                    <button wire:click="delete({{ $hw->id }})" class="btn btn-sm btn-outline-danger"
+                                        wire:confirm="Delete this homework?" title="Delete"><i class="fas fa-trash"></i></button>
                                 @endcan
                             </td>
                         </tr>

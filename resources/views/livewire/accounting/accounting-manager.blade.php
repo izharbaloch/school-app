@@ -182,10 +182,10 @@
                             <td class="text-danger font-weight-bold">Rs. {{ number_format($exp->amount, 0) }}</td>
                             <td>
                                 @can('accounting.edit')
-                                    <button wire:click="editExpense({{ $exp->id }})" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button wire:click="editExpense({{ $exp->id }})" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
                                 @endcan
                                 @can('accounting.delete')
-                                    <button wire:click="deleteExpense({{ $exp->id }})" class="btn btn-xs btn-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></button>
+                                    <button wire:click="deleteExpense({{ $exp->id }})" class="btn btn-sm btn-outline-danger" wire:confirm="Delete?" title="Delete"><i class="fas fa-trash"></i></button>
                                 @endcan
                             </td>
                         </tr>
@@ -312,10 +312,10 @@
                             <td class="text-success font-weight-bold">Rs. {{ number_format($inc->amount, 0) }}</td>
                             <td>
                                 @can('accounting.edit')
-                                    <button wire:click="editIncome({{ $inc->id }})" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button wire:click="editIncome({{ $inc->id }})" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
                                 @endcan
                                 @can('accounting.delete')
-                                    <button wire:click="deleteIncome({{ $inc->id }})" class="btn btn-xs btn-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></button>
+                                    <button wire:click="deleteIncome({{ $inc->id }})" class="btn btn-sm btn-outline-danger" wire:confirm="Delete?" title="Delete"><i class="fas fa-trash"></i></button>
                                 @endcan
                             </td>
                         </tr>
@@ -468,10 +468,10 @@
                                     @if($sal->status !== 'paid')
                                         <button wire:click="markSalaryPaid({{ $sal->id }})" class="btn btn-xs btn-success" title="Mark Paid"><i class="fas fa-check"></i></button>
                                     @endif
-                                    <button wire:click="editSalary({{ $sal->id }})" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button wire:click="editSalary({{ $sal->id }})" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
                                 @endcan
                                 @can('accounting.delete')
-                                    <button wire:click="deleteSalary({{ $sal->id }})" class="btn btn-xs btn-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></button>
+                                    <button wire:click="deleteSalary({{ $sal->id }})" class="btn btn-sm btn-outline-danger" wire:confirm="Delete?" title="Delete"><i class="fas fa-trash"></i></button>
                                 @endcan
                             </td>
                         </tr>

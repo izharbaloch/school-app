@@ -143,8 +143,9 @@
                         </div>
 
                         <div class="d-flex">
-                            <button type="submit" class="btn btn-primary mr-2">
-                                <i class="fas fa-save mr-1"></i> {{ $editId ? 'Update' : 'Save' }}
+                            <button type="submit" class="btn btn-primary mr-2" wire:loading.attr="disabled" wire:target="{{ $editId ? 'update' : 'save' }}">
+                                <span wire:loading.remove wire:target="{{ $editId ? 'update' : 'save' }}"><i class="fas fa-save mr-1"></i> {{ $editId ? 'Update' : 'Save' }}</span>
+                                <span wire:loading wire:target="{{ $editId ? 'update' : 'save' }}"><i class="fas fa-spinner fa-spin mr-1"></i> {{ $editId ? 'Update' : 'Save' }}</span>
                             </button>
                             <button type="button" class="btn btn-secondary" wire:click="cancel">
                                 <i class="fas fa-times mr-1"></i> Cancel
@@ -192,20 +193,21 @@
                                             @if($s->status)
                                                 <span class="badge badge-success">Active</span>
                                             @else
-                                                <span class="badge badge-secondary">Inactive</span>
+                                                <span class="badge badge-danger">Inactive</span>
                                             @endif
                                         </td>
                                         <td>
                                             @can('exams.edit')
-                                                <button class="btn btn-sm btn-warning" wire:click="edit({{ $s->id }})">
-                                                    Edit
+                                                <button class="btn btn-sm btn-outline-primary" wire:click="edit({{ $s->id }})" title="Edit">
+                                                    <i class="fas fa-edit"></i>
                                                 </button>
                                             @endcan
                                             @can('exams.delete')
-                                                <button class="btn btn-sm btn-danger"
+                                                <button class="btn btn-sm btn-outline-danger"
                                                     wire:click="delete({{ $s->id }})"
-                                                    onclick="confirm('Delete this schedule entry?') || event.stopImmediatePropagation()">
-                                                    Del
+                                                    wire:confirm="Delete this schedule entry?"
+                                                    wire:loading.attr="disabled" wire:target="delete" title="Delete">
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             @endcan
                                         </td>

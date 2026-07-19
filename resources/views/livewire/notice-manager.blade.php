@@ -94,7 +94,7 @@
                             <span class="badge badge-{{ $notice->audience === 'all' ? 'primary' : 'info' }}">
                                 {{ $audiences[$notice->audience] ?? $notice->audience }}
                             </span>
-                            <span class="badge badge-{{ $notice->status ? 'success' : 'secondary' }}">
+                            <span class="badge badge-{{ $notice->status ? 'success' : 'danger' }}">
                                 {{ $notice->status ? 'Active' : 'Inactive' }}
                             </span>
                             <small class="text-muted">Published: {{ $notice->publish_date->format('d M Y') }}
@@ -111,13 +111,13 @@
                             wire:click="togglePin({{ $notice->id }})" title="{{ $notice->is_pinned ? 'Unpin' : 'Pin' }}">
                             <i class="fas fa-thumbtack"></i>
                         </button>
-                        <button class="btn btn-xs btn-info" wire:click="edit({{ $notice->id }})">
+                        <button class="btn btn-sm btn-outline-primary" wire:click="edit({{ $notice->id }})" title="Edit">
                             <i class="fas fa-edit"></i>
                         </button>
                         @endcan
                         @can('notices.delete')
-                        <button class="btn btn-xs btn-danger" wire:click="delete({{ $notice->id }})"
-                            onclick="return confirm('Delete this notice?')">
+                        <button class="btn btn-sm btn-outline-danger" wire:click="delete({{ $notice->id }})"
+                            wire:confirm="Delete this notice?" title="Delete">
                             <i class="fas fa-trash"></i>
                         </button>
                         @endcan

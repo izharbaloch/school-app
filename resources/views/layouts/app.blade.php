@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" name="viewport">
-    <title>@yield('title') &mdash; School-app</title>
+    <title>@yield('title') &mdash; School ERP</title>
+
+    <!-- Google Fonts — Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- General CSS Files -->
     <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/bootstrap/css/bootstrap.min.css') }}">
@@ -12,40 +17,19 @@
 
     <!-- CSS Libraries -->
     <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/datatables/datatables.min.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('assets/dashboard/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('assets/dashboard/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/bootstrap-daterangepicker/daterangepicker.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('assets/dashboard/modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/jquery-selectric/selectric.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('assets/dashboard/modules/bootstrap-timepicker/css/bootstrap-timepicker.min.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('assets/dashboard/modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/bootstrap-timepicker/css/bootstrap-timepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/dashboard/modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
 
     <!-- Template CSS -->
     <link rel="stylesheet" href="{{ asset('assets/dashboard/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/dashboard/css/components.css') }}">
-    <!-- Custom overrides (education color scheme) -->
-    {{-- <link rel="stylesheet" href="{{ asset('assets/dashboard/css/custom.css') }}"> --}}
-    <!-- Start GA -->
     @stack('styles')
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-94034622-3"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'UA-94034622-3');
-    </script>
-    <!-- /END GA -->
     @livewireStyles
 </head>
 
@@ -56,249 +40,120 @@
             <nav class="navbar navbar-expand-lg main-navbar">
                 <form class="form-inline mr-auto">
                     <ul class="navbar-nav mr-3">
-                        <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg"><i
-                                    class="fas fa-bars"></i></a></li>
-                        <li><a href="#" data-toggle="search" class="nav-link nav-link-lg d-sm-none"><i
-                                    class="fas fa-search"></i></a></li>
+                        <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg"><i class="fas fa-bars"></i></a></li>
+                        <li><a href="#" data-toggle="search" class="nav-link nav-link-lg d-sm-none"><i class="fas fa-search"></i></a></li>
                     </ul>
                     <div class="search-element">
-                        <input class="form-control" type="search" placeholder="Search" aria-label="Search"
-                            data-width="250">
+                        <input class="form-control" type="search" placeholder="Quick search..." aria-label="Search" data-width="250">
                         <button class="btn" type="submit"><i class="fas fa-search"></i></button>
                         <div class="search-backdrop"></div>
                         <div class="search-result">
-                            <div class="search-header">
-                                Histories
-                            </div>
+                            <div class="search-header">Quick Links</div>
                             <div class="search-item">
-                                <a href="#">How to hack NASA using CSS</a>
-                                <a href="#" class="search-close"><i class="fas fa-times"></i></a>
-                            </div>
-                            <div class="search-item">
-                                <a href="#">Kodinger.com</a>
-                                <a href="#" class="search-close"><i class="fas fa-times"></i></a>
-                            </div>
-                            <div class="search-item">
-                                <a href="#">#Stisla</a>
-                                <a href="#" class="search-close"><i class="fas fa-times"></i></a>
-                            </div>
-                            <div class="search-header">
-                                Result
-                            </div>
-                            <div class="search-item">
-                                <a href="#">
-                                    <img class="mr-3 rounded" width="30"
-                                        src="{{ asset('assets/img/products/product-3-50.png') }}" alt="product">
-                                    oPhone S9 Limited Edition
+                                <a href="{{ route('students.index') }}">
+                                    <div class="search-icon bg-primary text-white mr-3"><i class="fas fa-user-graduate"></i></div>
+                                    All Students
                                 </a>
                             </div>
                             <div class="search-item">
-                                <a href="#">
-                                    <img class="mr-3 rounded" width="30"
-                                        src="{{ asset('assets/img/products/product-2-50.png') }}" alt="product">
-                                    Drone X2 New Gen-7
+                                <a href="{{ route('teachers.index') }}">
+                                    <div class="search-icon bg-info text-white mr-3"><i class="fas fa-chalkboard-teacher"></i></div>
+                                    Teachers
                                 </a>
                             </div>
                             <div class="search-item">
-                                <a href="#">
-                                    <img class="mr-3 rounded" width="30"
-                                        src="{{ asset('assets/img/products/product-1-50.png') }}" alt="product">
-                                    Headphone Blitz
-                                </a>
-                            </div>
-                            <div class="search-header">
-                                Projects
-                            </div>
-                            <div class="search-item">
-                                <a href="#">
-                                    <div class="search-icon bg-danger text-white mr-3">
-                                        <i class="fas fa-code"></i>
-                                    </div>
-                                    Stisla Admin Template
+                                <a href="{{ route('admissions.index') }}">
+                                    <div class="search-icon bg-success text-white mr-3"><i class="fas fa-file-signature"></i></div>
+                                    Admissions
                                 </a>
                             </div>
                             <div class="search-item">
-                                <a href="#">
-                                    <div class="search-icon bg-primary text-white mr-3">
-                                        <i class="fas fa-laptop"></i>
-                                    </div>
-                                    Create a new Homepage Design
+                                <a href="{{ route('student-fees.index') }}">
+                                    <div class="search-icon bg-warning text-white mr-3"><i class="fas fa-money-bill-wave"></i></div>
+                                    Fee Management
                                 </a>
                             </div>
                         </div>
                     </div>
                 </form>
                 <ul class="navbar-nav navbar-right">
-                    <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown"
-                            class="nav-link nav-link-lg message-toggle beep"><i class="far fa-envelope"></i></a>
+
+                    {{-- Notifications bell --}}
+                    <li class="dropdown dropdown-list-toggle">
+                        <a href="#" data-toggle="dropdown" class="nav-link notification-toggle nav-link-lg">
+                            <i class="far fa-bell"></i>
+                        </a>
                         <div class="dropdown-menu dropdown-list dropdown-menu-right">
-                            <div class="dropdown-header">Messages
+                            <div class="dropdown-header">
+                                Notifications
+                                @can('settings.view')
                                 <div class="float-right">
-                                    <a href="#">Mark All As Read</a>
+                                    <a href="{{ route('activity-logs.index') }}">Activity Log</a>
                                 </div>
-                            </div>
-                            <div class="dropdown-list-content dropdown-list-message">
-                                <a href="#" class="dropdown-item dropdown-item-unread">
-                                    <div class="dropdown-item-avatar">
-                                        <img alt="image" src="{{ asset('assets/img/avatar/avatar-1.png') }}"
-                                            class="rounded-circle">
-                                        <div class="is-online"></div>
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        <b>Kusnaedi</b>
-                                        <p>Hello, Bro!</p>
-                                        <div class="time">10 Hours Ago</div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item dropdown-item-unread">
-                                    <div class="dropdown-item-avatar">
-                                        <img alt="image" src="{{ asset('assets/img/avatar/avatar-2.png') }}"
-                                            class="rounded-circle">
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        <b>Dedik Sugiharto</b>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit</p>
-                                        <div class="time">12 Hours Ago</div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item dropdown-item-unread">
-                                    <div class="dropdown-item-avatar">
-                                        <img alt="image" src="{{ asset('assets/img/avatar/avatar-3.png') }}"
-                                            class="rounded-circle">
-                                        <div class="is-online"></div>
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        <b>Agung Ardiansyah</b>
-                                        <p>Sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                        <div class="time">12 Hours Ago</div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="dropdown-item-avatar">
-                                        <img alt="image" src="{{ asset('assets/img/avatar/avatar-4.png') }}"
-                                            class="rounded-circle">
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        <b>Ardian Rahardiansyah</b>
-                                        <p>Duis aute irure dolor in reprehenderit in voluptate velit ess</p>
-                                        <div class="time">16 Hours Ago</div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="dropdown-item-avatar">
-                                        <img alt="image" src="{{ asset('assets/img/avatar/avatar-5.png') }}"
-                                            class="rounded-circle">
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        <b>Alfa Zulkarnain</b>
-                                        <p>Exercitation ullamco laboris nisi ut aliquip ex ea commodo</p>
-                                        <div class="time">Yesterday</div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="dropdown-footer text-center">
-                                <a href="#">View All <i class="fas fa-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown"
-                            class="nav-link notification-toggle nav-link-lg beep"><i class="far fa-bell"></i></a>
-                        <div class="dropdown-menu dropdown-list dropdown-menu-right">
-                            <div class="dropdown-header">Notifications
-                                <div class="float-right">
-                                    <a href="#">Mark All As Read</a>
-                                </div>
+                                @endcan
                             </div>
                             <div class="dropdown-list-content dropdown-list-icons">
-                                <a href="#" class="dropdown-item dropdown-item-unread">
-                                    <div class="dropdown-item-icon bg-primary text-white">
-                                        <i class="fas fa-code"></i>
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        Template update is available now!
-                                        <div class="time text-primary">2 Min Ago</div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="dropdown-item-icon bg-info text-white">
-                                        <i class="far fa-user"></i>
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        <b>You</b> and <b>Dedik Sugiharto</b> are now friends
-                                        <div class="time">10 Hours Ago</div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="dropdown-item-icon bg-success text-white">
-                                        <i class="fas fa-check"></i>
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        <b>Kusnaedi</b> has moved task <b>Fix bug header</b> to <b>Done</b>
-                                        <div class="time">12 Hours Ago</div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="dropdown-item-icon bg-danger text-white">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        Low disk space. Let's clean it!
-                                        <div class="time">17 Hours Ago</div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="dropdown-item-icon bg-info text-white">
-                                        <i class="fas fa-bell"></i>
-                                    </div>
-                                    <div class="dropdown-item-desc">
-                                        Welcome to Stisla template!
-                                        <div class="time">Yesterday</div>
-                                    </div>
-                                </a>
+                                <div class="text-center py-4 px-3">
+                                    <i class="far fa-bell fa-2x mb-2 d-block" style="color:#cbd5e1"></i>
+                                    <small class="text-muted">No new notifications</small>
+                                </div>
                             </div>
                             <div class="dropdown-footer text-center">
-                                <a href="#">View All <i class="fas fa-chevron-right"></i></a>
+                                @can('settings.view')
+                                <a href="{{ route('activity-logs.index') }}">View Activity Log <i class="fas fa-chevron-right"></i></a>
+                                @else
+                                <span class="text-muted" style="font-size:.8rem">All caught up</span>
+                                @endcan
                             </div>
                         </div>
                     </li>
-                    <li class="dropdown"><a href="#" data-toggle="dropdown"
-                            class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-                            <img alt="image" src="{{ asset('assets/dashboard/img/avatar/avatar-1.png') }}"
-                                class="rounded-circle mr-1">
+
+                    {{-- User dropdown --}}
+                    <li class="dropdown">
+                        <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
                             <div class="d-sm-none d-lg-inline-block">{{ Auth::user()->name }}</div>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <div class="dropdown-title">Logged in 5 min ago</div>
-                            <a href="features-profile.html" class="dropdown-item has-icon">
-                                <i class="far fa-user"></i> Profile
+                            <div class="dropdown-title">
+                                <div style="font-weight:600;color:#1e293b;font-size:.88rem">{{ Auth::user()->name }}</div>
+                                <div style="font-size:.75rem;color:#94a3b8">{{ Auth::user()->email }}</div>
+                            </div>
+                            @can('settings.view')
+                            <a href="{{ route('settings.index') }}" class="dropdown-item has-icon">
+                                <i class="fas fa-cog"></i> School Settings
                             </a>
-                            <a href="features-activities.html" class="dropdown-item has-icon">
-                                <i class="fas fa-bolt"></i> Activities
+                            @endcan
+                            @can('settings.view')
+                            <a href="{{ route('activity-logs.index') }}" class="dropdown-item has-icon">
+                                <i class="fas fa-history"></i> Activity Log
                             </a>
-                            <a href="features-settings.html" class="dropdown-item has-icon">
-                                <i class="fas fa-cog"></i> Settings
-                            </a>
+                            @endcan
                             <div class="dropdown-divider"></div>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="dropdown-item has-icon text-danger"
-                                    onclick="return confirm('Are you sure you want to logout?')">
+                                <button type="submit" class="dropdown-item has-icon text-danger">
                                     <i class="fas fa-sign-out-alt"></i> Logout
                                 </button>
                             </form>
-
                         </div>
                     </li>
+
                 </ul>
             </nav>
+
             <div class="main-sidebar sidebar-style-2">
                 <aside id="sidebar-wrapper">
                     <div class="sidebar-brand">
-                        <a href="{{ route('dashboard') }}">School ERP</a>
+                        <a href="{{ route('dashboard') }}">
+                            <i class="fas fa-graduation-cap" style="color:#f0a500;margin-right:8px"></i>School ERP
+                        </a>
                     </div>
                     <div class="sidebar-brand sidebar-brand-sm">
-                        <a href="{{ route('dashboard') }}">ERP</a>
+                        <a href="{{ route('dashboard') }}">
+                            <i class="fas fa-graduation-cap" style="color:#f0a500"></i>
+                        </a>
                     </div>
+
                     <ul class="sidebar-menu">
                         <li class="menu-header">Main</li>
 
@@ -309,7 +164,7 @@
                             </a>
                         </li>
 
-                        {{-- Academic Setup --}}
+                        {{-- Administration --}}
                         @can('settings.view')
                         <li class="menu-header">Administration</li>
                         <li class="{{ request()->routeIs('academic.setup.view') ? 'active' : '' }}">
@@ -332,69 +187,63 @@
                         </li>
                         @endcan
 
+                        {{-- People --}}
                         <li class="menu-header">People</li>
 
-                        {{-- Admissions --}}
                         @can('admissions.view')
-                            <li class="{{ request()->routeIs('admissions.*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('admissions.index') }}">
-                                    <i class="fas fa-file-signature"></i>
-                                    <span>Admissions</span>
-                                </a>
-                            </li>
+                        <li class="{{ request()->routeIs('admissions.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('admissions.index') }}">
+                                <i class="fas fa-file-signature"></i>
+                                <span>Admissions</span>
+                            </a>
+                        </li>
                         @endcan
 
-                        {{-- Leaves --}}
                         @can('leaves.view')
-                            <li class="{{ request()->routeIs('leaves.*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('leaves.index') }}">
-                                    <i class="fas fa-calendar-times"></i>
-                                    <span>Leave Management</span>
-                                </a>
-                            </li>
+                        <li class="{{ request()->routeIs('leaves.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('leaves.index') }}">
+                                <i class="fas fa-calendar-times"></i>
+                                <span>Leave Management</span>
+                            </a>
+                        </li>
                         @endcan
 
-                        {{-- Conduct --}}
                         @can('conduct.view')
-                            <li class="{{ request()->routeIs('conduct.*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('conduct.index') }}">
-                                    <i class="fas fa-gavel"></i>
-                                    <span>Conduct & Discipline</span>
-                                </a>
-                            </li>
+                        <li class="{{ request()->routeIs('conduct.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('conduct.index') }}">
+                                <i class="fas fa-gavel"></i>
+                                <span>Conduct & Discipline</span>
+                            </a>
+                        </li>
                         @endcan
 
-                        {{-- Medical Records --}}
                         @can('medical.view')
-                            <li class="{{ request()->routeIs('medical.*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('medical.index') }}">
-                                    <i class="fas fa-notes-medical"></i>
-                                    <span>Medical Records</span>
-                                </a>
-                            </li>
+                        <li class="{{ request()->routeIs('medical.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('medical.index') }}">
+                                <i class="fas fa-notes-medical"></i>
+                                <span>Medical Records</span>
+                            </a>
+                        </li>
                         @endcan
 
-                        {{-- Hostel --}}
                         @can('hostel.view')
-                            <li class="{{ request()->routeIs('hostel.*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('hostel.index') }}">
-                                    <i class="fas fa-building"></i>
-                                    <span>Hostel</span>
-                                </a>
-                            </li>
+                        <li class="{{ request()->routeIs('hostel.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('hostel.index') }}">
+                                <i class="fas fa-building"></i>
+                                <span>Hostel</span>
+                            </a>
+                        </li>
                         @endcan
 
-                        {{-- Sports & Activities --}}
                         @can('sports.view')
-                            <li class="{{ request()->routeIs('sports.*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('sports.index') }}">
-                                    <i class="fas fa-futbol"></i>
-                                    <span>Sports & Activities</span>
-                                </a>
-                            </li>
+                        <li class="{{ request()->routeIs('sports.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('sports.index') }}">
+                                <i class="fas fa-futbol"></i>
+                                <span>Sports & Activities</span>
+                            </a>
+                        </li>
                         @endcan
 
-                        {{-- Students --}}
                         @can('students.view')
                             @php $studMenuActive = request()->routeIs('students.*') || request()->routeIs('student-promotions.*') || request()->routeIs('certificates.*'); @endphp
                             <li class="dropdown {{ $studMenuActive ? 'active' : '' }}">
@@ -413,7 +262,7 @@
                                     </li>
                                     @can('students.edit')
                                     <li class="{{ request()->routeIs('student-promotions.*') ? 'active' : '' }}">
-                                        <a class="nav-link" href="{{ route('student-promotions.index') }}">Student Promotion</a>
+                                        <a class="nav-link" href="{{ route('student-promotions.index') }}">Promotions</a>
                                     </li>
                                     @endcan
                                     <li class="{{ request()->routeIs('certificates.*') ? 'active' : '' }}">
@@ -423,29 +272,27 @@
                             </li>
                         @endcan
 
-                        {{-- Teacher Management --}}
                         @can('teachers.view')
-                            <li class="{{ request()->routeIs('teachers.*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('teachers.index') }}">
-                                    <i class="fas fa-chalkboard-teacher"></i>
-                                    <span>Teachers</span>
-                                </a>
-                            </li>
+                        <li class="{{ request()->routeIs('teachers.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('teachers.index') }}">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span>Teachers</span>
+                            </a>
+                        </li>
                         @endcan
 
-                        {{-- Guardian Management --}}
                         @can('parents.view')
-                            <li class="{{ request()->routeIs('guardians.*') ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ route('guardians.index') }}">
-                                    <i class="fas fa-users"></i>
-                                    <span>Guardians / Parents</span>
-                                </a>
-                            </li>
+                        <li class="{{ request()->routeIs('guardians.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('guardians.index') }}">
+                                <i class="fas fa-users"></i>
+                                <span>Guardians / Parents</span>
+                            </a>
+                        </li>
                         @endcan
 
+                        {{-- Academic --}}
                         <li class="menu-header">Academic</li>
 
-                        {{-- Timetable --}}
                         @can('timetable.view')
                         <li class="{{ request()->routeIs('timetable.*') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('timetable.index') }}">
@@ -455,7 +302,6 @@
                         </li>
                         @endcan
 
-                        {{-- Attendance --}}
                         @can('attendance.view')
                             @php $attendanceMenuActive = request()->routeIs('attendances.*') || request()->routeIs('teacher-attendances.*'); @endphp
                             <li class="dropdown {{ $attendanceMenuActive ? 'active' : '' }}">
@@ -466,7 +312,7 @@
                                 <ul class="dropdown-menu" style="{{ $attendanceMenuActive ? 'display: block;' : '' }}">
                                     @can('attendance.mark')
                                     <li class="{{ request()->routeIs('attendances.create') ? 'active' : '' }}">
-                                        <a class="nav-link" href="{{ route('attendances.create') }}">Mark Student Attendance</a>
+                                        <a class="nav-link" href="{{ route('attendances.create') }}">Mark Student</a>
                                     </li>
                                     @endcan
                                     <li class="{{ request()->routeIs('attendances.index') ? 'active' : '' }}">
@@ -474,19 +320,18 @@
                                     </li>
                                     @can('attendance.mark')
                                     <li class="{{ request()->routeIs('teacher-attendances.create') ? 'active' : '' }}">
-                                        <a class="nav-link" href="{{ route('teacher-attendances.create') }}">Mark Teacher Attendance</a>
+                                        <a class="nav-link" href="{{ route('teacher-attendances.create') }}">Mark Teacher</a>
                                     </li>
                                     @endcan
-                                    @hasanyrole('super admin|admin|principal')
+                                    @can('teachers.view')
                                     <li class="{{ request()->routeIs('teacher-attendances.index') ? 'active' : '' }}">
                                         <a class="nav-link" href="{{ route('teacher-attendances.index') }}">Teacher Attendance</a>
                                     </li>
-                                    @endhasanyrole
+                                    @endcan
                                 </ul>
                             </li>
                         @endcan
 
-                        {{-- Exam Management --}}
                         @can('exams.view')
                             @php $examMenuActive = request()->routeIs('exams.*') || request()->routeIs('exam-marks.*') || request()->routeIs('results.*') || request()->routeIs('exam-schedule.*'); @endphp
                             <li class="dropdown {{ $examMenuActive ? 'active' : '' }}">
@@ -495,14 +340,14 @@
                                     <span>Examinations</span>
                                 </a>
                                 <ul class="dropdown-menu" style="{{ $examMenuActive ? 'display: block;' : '' }}">
-                                    @hasanyrole('super admin|admin')
+                                    @can('exams.edit')
                                     <li class="{{ request()->routeIs('exams.index') ? 'active' : '' }}">
                                         <a class="nav-link" href="{{ route('exams.index') }}">Manage Exams</a>
                                     </li>
                                     <li class="{{ request()->routeIs('exam-schedule.*') ? 'active' : '' }}">
                                         <a class="nav-link" href="{{ route('exam-schedule.index') }}">Exam Timetable</a>
                                     </li>
-                                    @endhasanyrole
+                                    @endcan
                                     @can('marks.create')
                                     <li class="{{ request()->routeIs('exam-marks.create') ? 'active' : '' }}">
                                         <a class="nav-link" href="{{ route('exam-marks.create') }}">Marks Entry</a>
@@ -517,7 +362,6 @@
                             </li>
                         @endcan
 
-                        {{-- Homework --}}
                         @can('homework.view')
                         <li class="{{ request()->routeIs('homework.*') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('homework.index') }}">
@@ -527,9 +371,9 @@
                         </li>
                         @endcan
 
+                        {{-- Finance --}}
                         <li class="menu-header">Finance</li>
 
-                        {{-- Fee Management --}}
                         @can('fees.view')
                             @php $feeMenuActive = request()->routeIs('fee-types.*') || request()->routeIs('fee-structures.*') || request()->routeIs('student-fees.*'); @endphp
                             <li class="dropdown {{ $feeMenuActive ? 'active' : '' }}">
@@ -538,14 +382,14 @@
                                     <span>Fee Management</span>
                                 </a>
                                 <ul class="dropdown-menu" style="{{ $feeMenuActive ? 'display: block;' : '' }}">
-                                    @hasanyrole('super admin|admin|accountant')
+                                    @can('fees.edit')
                                     <li class="{{ request()->routeIs('fee-types.index') ? 'active' : '' }}">
                                         <a class="nav-link" href="{{ route('fee-types.index') }}">Fee Types</a>
                                     </li>
                                     <li class="{{ request()->routeIs('fee-structures.index') ? 'active' : '' }}">
                                         <a class="nav-link" href="{{ route('fee-structures.index') }}">Fee Structure</a>
                                     </li>
-                                    @endhasanyrole
+                                    @endcan
                                     <li class="{{ request()->routeIs('student-fees.index') ? 'active' : '' }}">
                                         <a class="nav-link" href="{{ route('student-fees.index') }}">Student Fees</a>
                                     </li>
@@ -561,7 +405,6 @@
                             </li>
                         @endcan
 
-                        {{-- Accounting --}}
                         @can('accounting.view')
                         <li class="{{ request()->routeIs('accounting.*') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('accounting.index') }}">
@@ -571,7 +414,6 @@
                         </li>
                         @endcan
 
-                        {{-- Reports --}}
                         @can('reports.view')
                         <li class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('reports.index') }}">
@@ -581,9 +423,9 @@
                         </li>
                         @endcan
 
+                        {{-- Services --}}
                         <li class="menu-header">Services</li>
 
-                        {{-- Library --}}
                         @can('library.view')
                         <li class="{{ request()->routeIs('library.*') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('library.index') }}">
@@ -593,7 +435,6 @@
                         </li>
                         @endcan
 
-                        {{-- Transport --}}
                         @can('settings.view')
                         <li class="{{ request()->routeIs('transport.*') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('transport.index') }}">
@@ -603,9 +444,9 @@
                         </li>
                         @endcan
 
+                        {{-- Communication --}}
                         <li class="menu-header">Communication</li>
 
-                        {{-- Notice Board --}}
                         @can('notices.view')
                         <li class="{{ request()->routeIs('notices.*') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('notices.index') }}">
@@ -615,7 +456,6 @@
                         </li>
                         @endcan
 
-                        {{-- Events --}}
                         @can('notices.view')
                         <li class="{{ request()->routeIs('events.*') ? 'active' : '' }}">
                             <a class="nav-link" href="{{ route('events.index') }}">
@@ -625,7 +465,6 @@
                         </li>
                         @endcan
 
-                        {{-- Parent Portal --}}
                         @hasrole('parent')
                         <li class="menu-header">My Children</li>
                         <li class="{{ request()->routeIs('parent.*') ? 'active' : '' }}">
@@ -654,11 +493,23 @@
 
                     </ul>
 
-                    <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
-                        <a href="#" class="btn btn-primary btn-lg btn-block btn-icon-split">
-                            <i class="fas fa-rocket"></i> Website Visit
-                        </a>
+                    {{-- Sidebar user card --}}
+                    <div class="mt-4 mb-3 p-3 hide-sidebar-mini">
+                        <div class="sidebar-user-card">
+                            <div class="suc-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
+                            <div class="suc-info">
+                                <div class="suc-name">{{ Auth::user()->name }}</div>
+                                <div class="suc-role">{{ ucfirst(str_replace(['-', '_'], ' ', Auth::user()->getRoleNames()->first() ?? 'User')) }}</div>
+                            </div>
+                            <form action="{{ route('logout') }}" method="POST" class="ml-auto">
+                                @csrf
+                                <button type="submit" class="suc-logout" title="Logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
+
                 </aside>
             </div>
 
@@ -668,12 +519,13 @@
                     @yield('content')
                 </section>
             </div>
+
             <footer class="main-footer">
                 <div class="footer-left">
-                    Copyright &copy; 2026 <div class="bullet"></div> Design By <a href="#">Izhar Baloch</a>
+                    Copyright &copy; {{ date('Y') }} &nbsp;<div class="bullet"></div>&nbsp; <a href="#">School ERP</a> &mdash; Design By <a href="#">Izhar Baloch</a>
                 </div>
                 <div class="footer-right">
-
+                    <span class="text-muted" style="font-size:.78rem">v1.0</span>
                 </div>
             </footer>
         </div>
@@ -688,19 +540,16 @@
     <script src="{{ asset('assets/dashboard/modules/moment.min.js') }}"></script>
     <script src="{{ asset('assets/dashboard/js/stisla.js') }}"></script>
 
-    <!-- JS Libraies -->
+    <!-- JS Libraries -->
     <script src="{{ asset('assets/dashboard/modules/datatables/datatables.min.js') }}"></script>
-    <script src="{{ asset('assets/dashboard/modules/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js') }}">
-    </script>
+    <script src="{{ asset('assets/dashboard/modules/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/dashboard/modules/datatables/Select-1.2.4/js/dataTables.select.min.js') }}"></script>
     <script src="{{ asset('assets/dashboard/modules/jquery-ui/jquery-ui.min.js') }}"></script>
-
     <script src="{{ asset('assets/dashboard/modules/cleave-js/dist/cleave.min.js') }}"></script>
     <script src="{{ asset('assets/dashboard/modules/cleave-js/dist/addons/cleave-phone.us.js') }}"></script>
     <script src="{{ asset('assets/dashboard/modules/jquery-pwstrength/jquery.pwstrength.min.js') }}"></script>
     <script src="{{ asset('assets/dashboard/modules/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-    <script src="{{ asset('assets/dashboard/modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js') }}">
-    </script>
+    <script src="{{ asset('assets/dashboard/modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js') }}"></script>
     <script src="{{ asset('assets/dashboard/modules/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}"></script>
     <script src="{{ asset('assets/dashboard/modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
     <script src="{{ asset('assets/dashboard/modules/select2/dist/js/select2.full.min.js') }}"></script>
@@ -714,7 +563,6 @@
     <script src="{{ asset('assets/dashboard/js/custom.js') }}"></script>
 
     @stack('scripts')
-
     @livewireScripts
 </body>
 

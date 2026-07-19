@@ -178,17 +178,18 @@
                                 <td>{{ ucfirst($fee->status) }}</td>
                                 <td>
                                     <a href="{{ route('student-fees.show', $fee->id) }}"
-                                        class="btn btn-sm btn-info">View</a>
+                                        class="btn btn-sm btn-outline-info" title="View"><i class="fas fa-eye"></i></a>
                                     <a href="{{ route('student-fees.payment.create', $fee->id) }}"
                                         class="btn btn-sm btn-success">Collect Fee</a>
                                     <a href="{{ route('student-fees.print-slip', $fee->id) }}" target="_blank"
                                         class="btn btn-sm btn-secondary">Print Slip</a>
 
                                     @if ($fee->paid_amount <= 0)
-                                        <button type="button" class="btn btn-sm btn-danger"
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
                                             wire:click="delete({{ $fee->id }})"
-                                            onclick="confirm('Delete this fee?') || event.stopImmediatePropagation()">
-                                            Delete
+                                            wire:confirm="Delete this fee?" title="Delete"
+                                            wire:loading.attr="disabled" wire:target="delete({{ $fee->id }})">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     @endif
                                 </td>

@@ -52,6 +52,8 @@ class GuardianIndex extends Component
 
     public function toggleForm(): void
     {
+        abort_unless(auth()->user()->can('parents.create'), 403);
+
         $this->showForm = ! $this->showForm;
 
         if (! $this->showForm) {
@@ -77,6 +79,8 @@ class GuardianIndex extends Component
 
     public function edit(int $id): void
     {
+        abort_unless(auth()->user()->can('parents.edit'), 403);
+
         $guardian = Guardian::allowedForUser(auth()->user())->findOrFail($id);
         $this->guardianId = $guardian->id;
         $this->father_name = $guardian->father_name;
@@ -92,21 +96,31 @@ class GuardianIndex extends Component
 
     public function save(): void
     {
-        $validated = $this->validate();
+        abort_unless(auth()->user()->can($this->guardianId ? 'parents.edit' : 'parents.create'), 403);
 
-        DB::transaction(function () use ($validated) {
+        $validated = $this->validate();
+        $credentialNote = '';
+
+        DB::transaction(function () use ($validated, &$credentialNote) {
             $guardian = $this->findExistingGuardianForForm($validated, $this->guardianId);
 
             $user = null;
 
             if (!empty($validated['email'])) {
+                $temporaryPassword = User::generateTemporaryPassword();
+
                 $user = User::firstOrCreate(
                     ['email' => $validated['email']],
                     [
                         'name' => $validated['father_name'],
-                        'password' => bcrypt('password'),
+                        'password' => bcrypt($temporaryPassword),
+                        'must_change_password' => true,
                     ]
                 );
+
+                if ($user->wasRecentlyCreated) {
+                    $credentialNote = " Login: {$user->email} / {$temporaryPassword} (must be changed on first login).";
+                }
 
                 $user->update([
                     'name' => $validated['father_name'],
@@ -131,7 +145,7 @@ class GuardianIndex extends Component
                     'status' => (bool) $validated['status'],
                 ]);
 
-                session()->flash('success', 'Guardian updated successfully.');
+                session()->flash('success', 'Guardian updated successfully.' . $credentialNote);
             } else {
                 Guardian::create([
                     'user_id' => $user ? $user->id : null,
@@ -144,7 +158,7 @@ class GuardianIndex extends Component
                     'status' => (bool) $validated['status'],
                 ]);
 
-                session()->flash('success', 'Guardian added successfully.');
+                session()->flash('success', 'Guardian added successfully.' . $credentialNote);
             }
         });
 
@@ -185,6 +199,23 @@ class GuardianIndex extends Component
         }
 
         return null;
+    }
+
+    public function delete(int $id): void
+    {
+        abort_unless(auth()->user()->can('parents.delete'), 403);
+
+        $guardian = Guardian::allowedForUser(auth()->user())->findOrFail($id);
+
+        if ($guardian->students()->exists()) {
+            session()->flash('error', 'This guardian has students linked to their record and cannot be deleted. Reassign or remove the students first.');
+            return;
+        }
+
+        $guardian->delete();
+
+        session()->flash('success', 'Guardian deleted successfully.');
+        $this->resetPage();
     }
 
     private function emptyToNull($value): mixed

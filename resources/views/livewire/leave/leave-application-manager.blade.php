@@ -114,9 +114,15 @@
         </div>
         <div class="d-flex gap-2">
             @if ($editId)
-                <button wire:click="update" class="btn btn-primary btn-sm">Update Application</button>
+                <button wire:click="update" class="btn btn-primary btn-sm" wire:loading.attr="disabled" wire:target="update">
+                    <span wire:loading.remove wire:target="update">Update Application</span>
+                    <span wire:loading wire:target="update"><i class="fas fa-spinner fa-spin"></i></span>
+                </button>
             @else
-                <button wire:click="save" class="btn btn-success btn-sm">Submit Application</button>
+                <button wire:click="save" class="btn btn-success btn-sm" wire:loading.attr="disabled" wire:target="save">
+                    <span wire:loading.remove wire:target="save">Submit Application</span>
+                    <span wire:loading wire:target="save"><i class="fas fa-spinner fa-spin"></i></span>
+                </button>
             @endif
             <button wire:click="cancel" class="btn btn-secondary btn-sm">Cancel</button>
         </div>
@@ -201,7 +207,8 @@
                         </button>
                         <button wire:click="withdraw({{ $app->id }})"
                                 wire:confirm="Withdraw this application? It will be permanently deleted."
-                                class="btn btn-sm btn-outline-secondary" title="Withdraw">
+                                class="btn btn-sm btn-outline-secondary" title="Withdraw"
+                                wire:loading.attr="disabled" wire:target="withdraw({{ $app->id }})">
                             <i class="fas fa-undo"></i>
                         </button>
                     @endif

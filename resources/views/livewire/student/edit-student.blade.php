@@ -280,7 +280,8 @@
                                             </a>
 
                                             <button type="button" class="btn btn-sm btn-danger mt-2"
-                                                wire:click="deleteAttachment({{ $file['id'] }})">
+                                                wire:click="deleteAttachment({{ $file['id'] }})"
+                                                wire:loading.attr="disabled" wire:target="deleteAttachment">
                                                 Delete
                                             </button>
                                         </div>
@@ -292,8 +293,9 @@
                 @endif
 
                 <div class="d-flex mt-3">
-                    <button type="submit" class="btn btn-primary mr-2">
-                        <i class="fas fa-save mr-1"></i> Update Student
+                    <button type="submit" class="btn btn-primary mr-2" wire:loading.attr="disabled" wire:target="updateStudent">
+                        <span wire:loading.remove wire:target="updateStudent"><i class="fas fa-save mr-1"></i> Update Student</span>
+                        <span wire:loading wire:target="updateStudent"><i class="fas fa-spinner fa-spin mr-1"></i> Update Student</span>
                     </button>
 
                     <a href="{{ route('students.index') }}" class="btn btn-secondary">

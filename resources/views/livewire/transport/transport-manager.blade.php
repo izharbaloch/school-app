@@ -56,7 +56,10 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-success" wire:click="saveVehicle">{{ $vehicleId ? 'Update' : 'Save' }}</button>
+            <button class="btn btn-success" type="button" wire:click="saveVehicle" wire:loading.attr="disabled" wire:target="saveVehicle">
+                <span wire:loading.remove wire:target="saveVehicle">{{ $vehicleId ? 'Update' : 'Save' }}</span>
+                <span wire:loading wire:target="saveVehicle"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button class="btn btn-secondary ml-2" wire:click="$set('showVehicleForm', false)">Cancel</button>
         </div>
         @endif
@@ -73,10 +76,10 @@
                         <td>{{ $v->capacity }}</td>
                         <td>{{ $v->driver_name ?? '-' }}</td>
                         <td>{{ $v->driver_phone ?? '-' }}</td>
-                        <td><span class="badge badge-{{ $v->status ? 'success' : 'secondary' }}">{{ $v->status ? 'Active' : 'Inactive' }}</span></td>
+                        <td><span class="badge badge-{{ $v->status ? 'success' : 'danger' }}">{{ $v->status ? 'Active' : 'Inactive' }}</span></td>
                         <td>
-                            <button class="btn btn-xs btn-info" wire:click="editVehicle({{ $v->id }})"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-xs btn-danger ml-1" wire:click="deleteVehicle({{ $v->id }})" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-outline-primary" wire:click="editVehicle({{ $v->id }})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ml-1" wire:click="deleteVehicle({{ $v->id }})" wire:confirm="Delete this vehicle?" wire:loading.attr="disabled" wire:target="deleteVehicle" title="Delete"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                     @empty
@@ -117,7 +120,10 @@
                 <div class="col-md-2"><div class="form-group"><label>End Point</label><input type="text" class="form-control" wire:model="r_end_point"></div></div>
                 <div class="col-md-2"><div class="form-group"><label>Monthly Fee (Rs.)</label><input type="number" class="form-control" wire:model="r_monthly_fee" step="0.01"></div></div>
             </div>
-            <button class="btn btn-success" wire:click="saveRoute">{{ $routeId ? 'Update' : 'Save' }}</button>
+            <button class="btn btn-success" type="button" wire:click="saveRoute" wire:loading.attr="disabled" wire:target="saveRoute">
+                <span wire:loading.remove wire:target="saveRoute">{{ $routeId ? 'Update' : 'Save' }}</span>
+                <span wire:loading wire:target="saveRoute"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button class="btn btn-secondary ml-2" wire:click="$set('showRouteForm', false)">Cancel</button>
         </div>
         @endif
@@ -133,10 +139,10 @@
                         <td>{{ $r->start_point ?? '-' }}</td>
                         <td>{{ $r->end_point ?? '-' }}</td>
                         <td>Rs. {{ number_format($r->monthly_fee, 0) }}</td>
-                        <td><span class="badge badge-{{ $r->status ? 'success' : 'secondary' }}">{{ $r->status ? 'Active' : 'Inactive' }}</span></td>
+                        <td><span class="badge badge-{{ $r->status ? 'success' : 'danger' }}">{{ $r->status ? 'Active' : 'Inactive' }}</span></td>
                         <td>
-                            <button class="btn btn-xs btn-info" wire:click="editRoute({{ $r->id }})"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-xs btn-danger ml-1" wire:click="deleteRoute({{ $r->id }})" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-outline-primary" wire:click="editRoute({{ $r->id }})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ml-1" wire:click="deleteRoute({{ $r->id }})" wire:confirm="Delete this route?" wire:loading.attr="disabled" wire:target="deleteRoute" title="Delete"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                     @empty
@@ -183,7 +189,10 @@
                 <div class="col-md-2"><div class="form-group"><label>Drop Point</label><input type="text" class="form-control" wire:model="st_drop_point"></div></div>
                 <div class="col-md-2"><div class="form-group"><label>Start Date</label><input type="date" class="form-control" wire:model="st_start_date"></div></div>
             </div>
-            <button class="btn btn-success" wire:click="saveStudentTransport">Save</button>
+            <button class="btn btn-success" type="button" wire:click="saveStudentTransport" wire:loading.attr="disabled" wire:target="saveStudentTransport">
+                <span wire:loading.remove wire:target="saveStudentTransport">Save</span>
+                <span wire:loading wire:target="saveStudentTransport"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button class="btn btn-secondary ml-2" wire:click="$set('showStudentForm', false)">Cancel</button>
         </div>
         @endif
@@ -199,9 +208,9 @@
                         <td>{{ $st->pickup_point ?? '-' }}</td>
                         <td>{{ $st->drop_point ?? '-' }}</td>
                         <td>{{ $st->start_date->format('d M Y') }}</td>
-                        <td><span class="badge badge-{{ $st->status ? 'success' : 'secondary' }}">{{ $st->status ? 'Active' : 'Inactive' }}</span></td>
+                        <td><span class="badge badge-{{ $st->status ? 'success' : 'danger' }}">{{ $st->status ? 'Active' : 'Inactive' }}</span></td>
                         <td>
-                            <button class="btn btn-xs btn-danger" wire:click="removeStudentTransport({{ $st->id }})" onclick="return confirm('Remove?')"><i class="fas fa-times"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" wire:click="removeStudentTransport({{ $st->id }})" wire:confirm="Remove this student's transport assignment?" wire:loading.attr="disabled" wire:target="removeStudentTransport" title="Delete"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                     @empty

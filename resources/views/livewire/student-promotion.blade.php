@@ -118,7 +118,7 @@
                     </div>
 
                     <button class="btn btn-success btn-block" wire:click="promote" wire:loading.attr="disabled"
-                        onclick="return confirm('Promote {{ count($selectedStudents) }} student(s) to selected class?')">
+                        wire:confirm="Promote {{ count($selectedStudents) }} student(s) to selected class?">
                         <span wire:loading wire:target="promote"><span class="spinner-border spinner-border-sm"></span></span>
                         <i class="fas fa-level-up-alt mr-1"></i> Promote {{ count($selectedStudents) }} Student(s)
                     </button>

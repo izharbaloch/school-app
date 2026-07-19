@@ -2,12 +2,16 @@
 
 namespace App\Livewire\Fees;
 
+use App\Mail\FeeGeneratedMail;
 use App\Models\FeeStructure;
 use App\Models\FeeType;
+use App\Models\SchoolSetting;
 use App\Models\Section;
 use App\Models\Student;
 use App\Models\StudentClass;
 use App\Models\StudentFee;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Component;
 
 class StudentFeeCreate extends Component
@@ -137,6 +141,14 @@ class StudentFeeCreate extends Component
 
     public function save()
     {
+        $rateLimitKey = 'fee-create:' . auth()->id();
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 30)) {
+            $this->addError('student_id', 'Too many requests — please wait a moment and try again.');
+            return;
+        }
+        RateLimiter::hit($rateLimitKey, 60);
+
         $this->validate();
 
         $studentExists = Student::where('id', $this->student_id)
@@ -160,7 +172,7 @@ class StudentFeeCreate extends Component
             return;
         }
 
-        StudentFee::create([
+        $fee = StudentFee::create([
             'student_id' => $this->student_id,
             'fee_type_id' => $this->fee_type_id,
             'month' => $this->month,
@@ -173,6 +185,18 @@ class StudentFeeCreate extends Component
             'status' => StudentFee::UNPAID,
             'remarks' => $this->remarks,
         ]);
+
+        if (SchoolSetting::get('notifications_enabled', '1') === '1') {
+            $student = Student::find($this->student_id);
+            $email = $student?->guardian_email ?? $student?->guardian?->email;
+            if ($email) {
+                try {
+                    Mail::to($email)->queue(new FeeGeneratedMail($fee));
+                } catch (\Exception) {
+                    // mail failure must not block fee creation
+                }
+            }
+        }
 
         session()->flash('success', 'Student fee assigned successfully.');
 

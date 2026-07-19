@@ -24,10 +24,11 @@
         <div class="card-body">
 
             @if ($showForm)
-                <div class="border rounded p-3 mb-4">
-                    <h5 class="mb-3">
-                        {{ $teacherId ? 'Edit Teacher' : 'Create Teacher' }}
-                    </h5>
+                <div class="card border-primary shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">{{ $teacherId ? 'Edit Teacher' : 'Create Teacher' }}</h6>
+                    </div>
+                    <div class="card-body">
 
                     <form wire:submit.prevent="{{ $teacherId ? 'update' : 'save' }}">
                         <div class="form-row">
@@ -141,9 +142,15 @@
                         </div>
 
                         <div class="d-flex mt-3">
-                            <button type="submit" class="btn btn-primary mr-2">
-                                <i class="fas fa-save mr-1"></i>
-                                {{ $teacherId ? 'Update Teacher' : 'Save Teacher' }}
+                            <button type="submit" class="btn btn-primary mr-2" wire:loading.attr="disabled" wire:target="save,update">
+                                <span wire:loading.remove wire:target="save,update">
+                                    <i class="fas fa-save mr-1"></i>
+                                    {{ $teacherId ? 'Update Teacher' : 'Save Teacher' }}
+                                </span>
+                                <span wire:loading wire:target="save,update">
+                                    <i class="fas fa-spinner fa-spin mr-1"></i>
+                                    {{ $teacherId ? 'Update Teacher' : 'Save Teacher' }}
+                                </span>
                             </button>
 
                             <button type="button" class="btn btn-secondary" wire:click="cancel">
@@ -151,6 +158,7 @@
                             </button>
                         </div>
                     </form>
+                    </div>
                 </div>
             @endif
 
@@ -188,21 +196,22 @@
                                 <td>{{ $teacher->section->name ?? '-' }}</td>
                                 <td>
                                     @if ($teacher->status)
-                                        <span class="badge badge-primary">Active</span>
+                                        <span class="badge badge-success">Active</span>
                                     @else
                                         <span class="badge badge-danger">Inactive</span>
                                     @endif
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-warning"
-                                        wire:click="edit({{ $teacher->id }})">
-                                        Edit
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                        wire:click="edit({{ $teacher->id }})" title="Edit">
+                                        <i class="fas fa-edit"></i>
                                     </button>
 
-                                    <button type="button" class="btn btn-sm btn-danger"
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
                                         wire:click="delete({{ $teacher->id }})"
-                                        onclick="confirm('Delete this teacher?') || event.stopImmediatePropagation()">
-                                        Delete
+                                        wire:confirm="Delete this teacher?"
+                                        wire:loading.attr="disabled" wire:target="delete" title="Delete">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>

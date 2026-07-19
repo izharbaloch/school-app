@@ -33,6 +33,13 @@ class RoleAndPermissionSeeder extends Seeder
             'roles.delete',
             'permissions.view',
             'permissions.assign',
+            'permissions.manage', // create/edit/delete permission definitions themselves
+
+            // user management
+            'users.view',
+            'users.create',
+            'users.edit',
+            'users.delete',
 
             // reports
             'reports.view',
@@ -131,11 +138,6 @@ class RoleAndPermissionSeeder extends Seeder
             'fees.delete',
             'fees.collect',
 
-            // accounts
-            'accounts.view',
-            'accounts.create',
-            'accounts.edit',
-            'accounts.delete',
 
             // library
             'library.view',
@@ -153,6 +155,9 @@ class RoleAndPermissionSeeder extends Seeder
             // settings
             'settings.view',
             'settings.update',
+
+            // activity logs
+            'activity-logs.view',
 
             // profile
             'profile.view',
@@ -306,11 +311,6 @@ class RoleAndPermissionSeeder extends Seeder
             'fees.delete',
             'fees.collect',
 
-            'accounts.view',
-            'accounts.create',
-            'accounts.edit',
-            'accounts.delete',
-
             'library.view',
             'library.create',
             'library.edit',
@@ -325,11 +325,18 @@ class RoleAndPermissionSeeder extends Seeder
             'settings.view',
             'settings.update',
 
+            'activity-logs.view',
+
             'roles.view',
             'roles.create',
             'roles.edit',
             'permissions.view',
             'permissions.assign',
+
+            'users.view',
+            'users.create',
+            'users.edit',
+            'users.delete',
 
             'profile.view',
             'profile.update',
@@ -399,7 +406,6 @@ class RoleAndPermissionSeeder extends Seeder
             'marks.view',
 
             'fees.view',
-            'accounts.view',
 
             'library.view',
 
@@ -408,6 +414,8 @@ class RoleAndPermissionSeeder extends Seeder
             'notices.edit',
 
             'settings.view',
+
+            'activity-logs.view',
 
             'homework.view',
             'homework.create',
@@ -531,11 +539,6 @@ class RoleAndPermissionSeeder extends Seeder
             'fees.edit',
             'fees.delete',
             'fees.collect',
-
-            'accounts.view',
-            'accounts.create',
-            'accounts.edit',
-            'accounts.delete',
 
             'accounting.view',
             'accounting.create',

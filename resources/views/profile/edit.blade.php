@@ -10,6 +10,15 @@
 </div>
 
 <div class="section-body">
+
+    @if (session('status') === 'must-change-password')
+        <div class="alert alert-warning alert-dismissible fade show">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <i class="fas fa-exclamation-triangle mr-1"></i>
+            For security, you must set a new password before continuing.
+        </div>
+    @endif
+
     <div class="row">
 
         {{-- Profile Information --}}

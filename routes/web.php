@@ -49,9 +49,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    // Admin routes — super admin only
-    Route::middleware(['permission:settings.view'])->group(function () {
+    Route::middleware(['permission:classes.view'])->group(function () {
         Route::get('/admin/academic-setup', [IndexController::class, 'academicSetupView'])->name('academic.setup.view');
+    });
+
+    Route::middleware(['permission:roles.view'])->group(function () {
         Route::get('/admin/access-management', [IndexController::class, 'accessManagementView'])->name('access.management.view');
     });
 
@@ -214,7 +216,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Transport routes
-    Route::middleware(['permission:settings.view'])->group(function () {
+    Route::middleware(['permission:transport.view'])->group(function () {
         Route::get('transport', [TransportController::class, 'index'])->name('transport.index');
     });
 
@@ -239,7 +241,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Activity Logs routes
-    Route::middleware(['permission:settings.view'])->group(function () {
+    Route::middleware(['permission:activity-logs.view'])->group(function () {
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     });
 

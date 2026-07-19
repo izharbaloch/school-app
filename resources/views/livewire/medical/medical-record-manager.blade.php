@@ -130,7 +130,10 @@
                 </div>
 
                 <div class="d-flex gap-2 mt-2">
-                    <button wire:click="saveRecord" class="btn btn-sm btn-success">Save</button>
+                    <button wire:click="saveRecord" type="button" class="btn btn-sm btn-success" wire:loading.attr="disabled" wire:target="saveRecord">
+                        <span wire:loading.remove wire:target="saveRecord">Save</span>
+                        <span wire:loading wire:target="saveRecord"><i class="fas fa-spinner fa-spin"></i></span>
+                    </button>
                     <button wire:click="cancelForm" class="btn btn-sm btn-secondary">Cancel</button>
                 </div>
 
@@ -283,7 +286,10 @@
                         </div>
                     </div>
                     <div class="d-flex gap-2">
-                        <button wire:click="saveVaccination" class="btn btn-sm btn-success">Save</button>
+                        <button wire:click="saveVaccination" type="button" class="btn btn-sm btn-success" wire:loading.attr="disabled" wire:target="saveVaccination">
+                            <span wire:loading.remove wire:target="saveVaccination">Save</span>
+                            <span wire:loading wire:target="saveVaccination"><i class="fas fa-spinner fa-spin"></i></span>
+                        </button>
                         <button wire:click="cancelForm" class="btn btn-sm btn-secondary">Cancel</button>
                     </div>
                 </div>
@@ -327,6 +333,7 @@
                                 </button>
                                 <button wire:click="deleteVaccination({{ $vac->id }})"
                                         wire:confirm="Delete this vaccination record?"
+                                        wire:loading.attr="disabled" wire:target="deleteVaccination"
                                         class="btn btn-sm btn-outline-danger" title="Delete">
                                     <i class="fas fa-trash"></i>
                                 </button>

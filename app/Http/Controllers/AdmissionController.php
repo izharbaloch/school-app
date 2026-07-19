@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RejectAdmissionRequest;
+use App\Mail\AdmissionStatusMail;
 use App\Models\Admission;
-use App\Models\Guardian;
+use App\Models\SchoolSetting;
 use App\Models\Student;
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Services\StudentEnrollmentService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class AdmissionController extends Controller
 {
@@ -41,17 +43,13 @@ class AdmissionController extends Controller
             'rejection_reason' => null,
         ]);
 
+        $this->sendAdmissionMail($admission);
+
         return back()->with('success', 'Application accepted.');
     }
 
-    public function reject(Request $request, Admission $admission)
+    public function reject(RejectAdmissionRequest $request, Admission $admission)
     {
-        abort_unless(Auth::user()?->can('admissions.process'), 403);
-
-        $request->validate([
-            'rejection_reason' => ['required', 'string', 'max:500'],
-        ]);
-
         abort_if(
             $admission->status === Admission::STATUS_ENROLLED,
             422,
@@ -64,6 +62,8 @@ class AdmissionController extends Controller
             'reviewed_by'      => Auth::id(),
             'reviewed_at'      => now(),
         ]);
+
+        $this->sendAdmissionMail($admission);
 
         return back()->with('success', 'Application rejected.');
     }
@@ -78,71 +78,22 @@ class AdmissionController extends Controller
             'Only accepted applications can be enrolled.'
         );
 
-        DB::transaction(function () use ($admission) {
+        $temporaryPassword = null;
+        $service = app(StudentEnrollmentService::class);
 
-            // Find or create guardian
-            $guardian = null;
-            if ($admission->guardian_cnic_no) {
-                $guardian = Guardian::where('guardian_cnic_no', $admission->guardian_cnic_no)->first();
-            }
-            if (!$guardian && $admission->guardian_phone) {
-                $guardian = Guardian::where('guardian_phone', $admission->guardian_phone)->first();
-            }
-            if (!$guardian && $admission->guardian_email) {
-                $guardian = Guardian::where('email', $admission->guardian_email)->first();
-            }
+        DB::transaction(function () use ($admission, &$temporaryPassword, $service) {
 
-            // Create guardian user account if email provided
-            $guardianUser = null;
-            if ($admission->guardian_email) {
-                $guardianUser = User::firstOrCreate(
-                    ['email' => $admission->guardian_email],
-                    [
-                        'name'     => $admission->father_name,
-                        'password' => bcrypt('changeme123!'),
-                    ]
-                );
-                $guardianUser->update(['name' => $admission->father_name]);
-                if (!$guardianUser->hasRole('parent')) {
-                    $guardianUser->assignRole('parent');
-                }
-            }
+            ['guardian' => $guardian, 'temporary_password' => $temporaryPassword] = $service->findOrCreateGuardian([
+                'father_name' => $admission->father_name,
+                'mother_name' => $admission->mother_name,
+                'guardian_phone' => $admission->guardian_phone,
+                'guardian_cnic_no' => $admission->guardian_cnic_no,
+                'email' => $admission->guardian_email,
+                'address' => $admission->address,
+            ]);
 
-            if ($guardian) {
-                $guardian->update([
-                    'user_id'          => $guardianUser?->id ?? $guardian->user_id,
-                    'father_name'      => $admission->father_name,
-                    'mother_name'      => $admission->mother_name,
-                    'guardian_phone'   => $admission->guardian_phone,
-                    'guardian_cnic_no' => $admission->guardian_cnic_no,
-                    'email'            => $admission->guardian_email,
-                    'address'          => $admission->address,
-                ]);
-            } else {
-                $guardian = Guardian::create([
-                    'user_id'          => $guardianUser?->id,
-                    'father_name'      => $admission->father_name,
-                    'mother_name'      => $admission->mother_name,
-                    'guardian_phone'   => $admission->guardian_phone,
-                    'guardian_cnic_no' => $admission->guardian_cnic_no,
-                    'email'            => $admission->guardian_email,
-                    'address'          => $admission->address,
-                    'status'           => 1,
-                ]);
-            }
-
-            // Generate admission no and roll no
-            $year = date('Y');
-            $lastStudent = Student::where('admission_no', 'like', 'ADM-%-' . $year)->orderByDesc('id')->first();
-            $nextNum = 1;
-            if ($lastStudent && preg_match('/ADM-(\d+)-' . $year . '/', $lastStudent->admission_no, $m)) {
-                $nextNum = (int) $m[1] + 1;
-            }
-            $admissionNo = 'ADM-' . str_pad($nextNum, 4, '0', STR_PAD_LEFT) . '-' . $year;
-
-            $lastInClass = Student::where('student_class_id', $admission->applied_class_id)
-                ->orderByRaw('CAST(roll_no AS UNSIGNED) DESC')->first();
-            $rollNo = $lastInClass ? ((int) $lastInClass->roll_no + 1) : 1;
+            $admissionNo = $service->generateAdmissionNo();
+            $rollNo = $service->generateRollNo($admission->applied_class_id);
 
             // Create student record
             $student = Student::create([
@@ -174,9 +125,34 @@ class AdmissionController extends Controller
             ]);
         });
 
+        $this->sendAdmissionMail($admission);
+
+        $message = 'Student enrolled successfully.';
+        if ($temporaryPassword) {
+            $message .= " Guardian login: {$admission->guardian_email} / {$temporaryPassword} (must be changed on first login).";
+        }
+
         return redirect()
             ->route('admissions.show', $admission)
-            ->with('success', 'Student enrolled successfully. Login credentials: email / changeme123!');
+            ->with('success', $message);
+    }
+
+    private function sendAdmissionMail(Admission $admission): void
+    {
+        if (SchoolSetting::get('notifications_enabled', '1') !== '1') {
+            return;
+        }
+
+        $email = $admission->guardian_email;
+        if (!$email) {
+            return;
+        }
+
+        try {
+            Mail::to($email)->queue(new AdmissionStatusMail($admission));
+        } catch (\Exception) {
+            // mail failure must not break the admission workflow
+        }
     }
 
 }

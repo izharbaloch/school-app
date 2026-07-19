@@ -10,13 +10,14 @@ class SchoolSettingsManager extends Component
     public string $activeTab = 'general';
 
     // General
-    public string $school_name    = '';
-    public string $school_address = '';
-    public string $school_phone   = '';
-    public string $school_email   = '';
-    public string $school_website = '';
-    public string $school_motto   = '';
-    public string $established    = '';
+    public string $school_name             = '';
+    public string $school_address          = '';
+    public string $school_phone            = '';
+    public string $school_email            = '';
+    public string $school_website          = '';
+    public string $school_motto            = '';
+    public string $established             = '';
+    public bool   $notifications_enabled   = true;
 
     // Academic
     public string $academic_year_start = '';
@@ -62,27 +63,36 @@ class SchoolSettingsManager extends Component
                 $this->$key = $settings[$key];
             }
         }
+
+        if (isset($settings['notifications_enabled'])) {
+            $this->notifications_enabled = $settings['notifications_enabled'] === '1';
+        }
     }
 
     public function saveGeneral(): void
     {
+        abort_unless(auth()->user()->can('settings.update'), 403);
+
         $this->validate([
             'school_name' => ['required', 'string', 'max:255'],
         ]);
 
-        SchoolSetting::set('school_name',    $this->school_name,    'general');
-        SchoolSetting::set('school_address', $this->school_address, 'general');
-        SchoolSetting::set('school_phone',   $this->school_phone,   'general');
-        SchoolSetting::set('school_email',   $this->school_email,   'general');
-        SchoolSetting::set('school_website', $this->school_website, 'general');
-        SchoolSetting::set('school_motto',   $this->school_motto,   'general');
-        SchoolSetting::set('established',    $this->established,    'general');
+        SchoolSetting::set('school_name',           $this->school_name,           'general');
+        SchoolSetting::set('school_address',        $this->school_address,        'general');
+        SchoolSetting::set('school_phone',          $this->school_phone,          'general');
+        SchoolSetting::set('school_email',          $this->school_email,          'general');
+        SchoolSetting::set('school_website',        $this->school_website,        'general');
+        SchoolSetting::set('school_motto',          $this->school_motto,          'general');
+        SchoolSetting::set('established',           $this->established,           'general');
+        SchoolSetting::set('notifications_enabled', $this->notifications_enabled ? '1' : '0', 'general');
 
         session()->flash('success', 'General settings saved.');
     }
 
     public function saveAcademic(): void
     {
+        abort_unless(auth()->user()->can('settings.update'), 403);
+
         SchoolSetting::set('academic_year_start', $this->academic_year_start, 'academic');
         SchoolSetting::set('academic_year_end',   $this->academic_year_end,   'academic');
         SchoolSetting::set('working_days',        $this->working_days,        'academic');
@@ -94,6 +104,8 @@ class SchoolSettingsManager extends Component
 
     public function saveFee(): void
     {
+        abort_unless(auth()->user()->can('settings.update'), 403);
+
         $this->validate([
             'fee_due_day'      => ['required', 'integer', 'between:1,31'],
             'late_fee_per_day' => ['required', 'numeric', 'min:0'],
@@ -109,6 +121,8 @@ class SchoolSettingsManager extends Component
 
     public function saveAttendance(): void
     {
+        abort_unless(auth()->user()->can('settings.update'), 403);
+
         SchoolSetting::set('min_attendance_pct', $this->min_attendance_pct, 'attendance');
         SchoolSetting::set('late_mark_after',    $this->late_mark_after,    'attendance');
 
@@ -117,6 +131,8 @@ class SchoolSettingsManager extends Component
 
     public function saveLibrary(): void
     {
+        abort_unless(auth()->user()->can('settings.update'), 403);
+
         SchoolSetting::set('max_books_per_student', $this->max_books_per_student, 'library');
         SchoolSetting::set('fine_per_day',          $this->fine_per_day,          'library');
         SchoolSetting::set('loan_period_days',      $this->loan_period_days,      'library');

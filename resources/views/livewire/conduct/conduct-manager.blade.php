@@ -192,10 +192,14 @@
 
         <div class="d-flex gap-2">
             @if ($editId)
-                <button wire:click="update" class="btn btn-primary btn-sm">Update</button>
+                <button wire:click="update" class="btn btn-primary btn-sm" wire:loading.attr="disabled" wire:target="update">
+                    <span wire:loading.remove wire:target="update">Update</span>
+                    <span wire:loading wire:target="update"><i class="fas fa-spinner fa-spin"></i></span>
+                </button>
             @else
-                <button wire:click="save" class="btn btn-danger btn-sm">
-                    <i class="fas fa-exclamation-triangle"></i> Record Incident
+                <button wire:click="save" class="btn btn-danger btn-sm" wire:loading.attr="disabled" wire:target="save">
+                    <span wire:loading.remove wire:target="save"><i class="fas fa-exclamation-triangle"></i> Record Incident</span>
+                    <span wire:loading wire:target="save"><i class="fas fa-spinner fa-spin"></i> Record Incident</span>
                 </button>
             @endif
             <button wire:click="cancel" class="btn btn-secondary btn-sm">Cancel</button>
@@ -264,6 +268,7 @@
                     @if ($canDelete)
                     <button wire:click="delete({{ $inc->id }})"
                             wire:confirm="Delete this incident record? This cannot be undone."
+                            wire:loading.attr="disabled" wire:target="delete"
                             class="btn btn-sm btn-outline-danger" title="Delete">
                         <i class="fas fa-trash"></i>
                     </button>

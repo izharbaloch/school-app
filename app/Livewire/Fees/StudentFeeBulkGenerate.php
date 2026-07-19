@@ -2,13 +2,17 @@
 
 namespace App\Livewire\Fees;
 
+use App\Mail\FeeGeneratedMail;
 use App\Models\FeeStructure;
 use App\Models\FeeType;
+use App\Models\SchoolSetting;
 use App\Models\Section;
 use App\Models\Student;
 use App\Models\StudentClass;
 use App\Models\StudentFee;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Component;
 
 class StudentFeeBulkGenerate extends Component
@@ -139,14 +143,16 @@ class StudentFeeBulkGenerate extends Component
         $this->amount = $structure?->amount ?? '';
     }
 
-    protected function generateSlipNo()
-    {
-        $lastId = StudentFee::max('id') + 1;
-        return 'SLIP-' . now()->format('Y') . '-' . str_pad($lastId, 5, '0', STR_PAD_LEFT);
-    }
-
     public function generate()
     {
+        $rateLimitKey = 'fee-bulk-generate:' . auth()->id();
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 10)) {
+            $this->addError('selected_students', 'Too many bulk-generate requests — please wait a moment and try again.');
+            return;
+        }
+        RateLimiter::hit($rateLimitKey, 60);
+
         $this->validate();
 
         $students = Student::where('student_class_id', $this->student_class_id)
@@ -172,8 +178,9 @@ class StudentFeeBulkGenerate extends Component
 
         $createdCount = 0;
         $skippedCount = 0;
+        $createdFees  = [];
 
-        DB::transaction(function () use ($students, $amount, &$createdCount, &$skippedCount) {
+        DB::transaction(function () use ($students, $amount, &$createdCount, &$skippedCount, &$createdFees) {
             foreach ($students as $student) {
                 $exists = StudentFee::where('student_id', $student->id)
                     ->where('fee_type_id', $this->fee_type_id)
@@ -186,7 +193,7 @@ class StudentFeeBulkGenerate extends Component
                     continue;
                 }
 
-                StudentFee::create([
+                $fee = StudentFee::create([
                     'student_id' => $student->id,
                     'fee_type_id' => $this->fee_type_id,
                     'month' => $this->month,
@@ -198,12 +205,24 @@ class StudentFeeBulkGenerate extends Component
                     'due_date' => $this->due_date ?: null,
                     'status' => StudentFee::UNPAID,
                     'remarks' => $this->remarks,
-                    'slip_no' => $this->generateSlipNo(),
                 ]);
 
+                $createdFees[] = ['fee' => $fee, 'email' => $student->guardian_email];
                 $createdCount++;
             }
         });
+
+        if (SchoolSetting::get('notifications_enabled', '1') === '1') {
+            foreach ($createdFees as $item) {
+                if ($item['email']) {
+                    try {
+                        Mail::to($item['email'])->queue(new FeeGeneratedMail($item['fee']));
+                    } catch (\Exception) {
+                        // mail failure must not block bulk generation
+                    }
+                }
+            }
+        }
 
         session()->flash('success', "Fee generated successfully. Created: {$createdCount}, Skipped: {$skippedCount}");
 

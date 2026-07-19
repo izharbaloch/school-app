@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StudentFee extends Model
 {
+    use SoftDeletes;
+
     const UNPAID = 'unpaid';
     const PARTIAL = 'partial';
     const PAID = 'paid';
@@ -26,6 +29,10 @@ class StudentFee extends Model
 
     protected $casts = [
         'due_date' => 'date',
+        'amount' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'fine' => 'decimal:2',
+        'paid_amount' => 'decimal:2',
     ];
 
     public function student()

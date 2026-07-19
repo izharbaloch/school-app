@@ -65,9 +65,15 @@
         </div>
         <div class="d-flex gap-2">
             @if ($editId)
-                <button wire:click="update" class="btn btn-primary btn-sm">Update</button>
+                <button wire:click="update" class="btn btn-primary btn-sm" wire:loading.attr="disabled" wire:target="update">
+                    <span wire:loading.remove wire:target="update">Update</span>
+                    <span wire:loading wire:target="update"><i class="fas fa-spinner fa-spin"></i></span>
+                </button>
             @else
-                <button wire:click="save" class="btn btn-success btn-sm">Save</button>
+                <button wire:click="save" class="btn btn-success btn-sm" wire:loading.attr="disabled" wire:target="save">
+                    <span wire:loading.remove wire:target="save">Save</span>
+                    <span wire:loading wire:target="save"><i class="fas fa-spinner fa-spin"></i></span>
+                </button>
             @endif
             <button wire:click="cancel" class="btn btn-secondary btn-sm">Cancel</button>
         </div>
@@ -127,7 +133,8 @@
                     </button>
                     <button wire:click="delete({{ $type->id }})"
                             wire:confirm="Delete '{{ $type->name }}'? Applications using this type will also be affected."
-                            class="btn btn-sm btn-outline-danger">
+                            class="btn btn-sm btn-outline-danger"
+                            wire:loading.attr="disabled" wire:target="delete({{ $type->id }})">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>

@@ -146,19 +146,19 @@
                                 <td>{{ $attendance->late_count }}</td>
                                 <td>
                                     <a href="{{ route('attendances.show', $attendance->id) }}"
-                                        class="btn btn-sm btn-info">
-                                        View
+                                        class="btn btn-sm btn-outline-info" title="View">
+                                        <i class="fas fa-eye"></i>
                                     </a>
 
                                     <a href="{{ route('attendances.edit', $attendance->id) }}"
-                                        class="btn btn-sm btn-warning">
-                                        Edit
+                                        class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
                                     </a>
 
                                     <button type="button" wire:click="confirmDelete({{ $attendance->id }})"
-                                        class="btn btn-sm btn-danger"
-                                        onclick="confirm('Are you sure you want to delete this attendance?') || event.stopImmediatePropagation()">
-                                        Delete
+                                        class="btn btn-sm btn-outline-danger"
+                                        wire:confirm="Are you sure you want to delete this attendance?" title="Delete">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>

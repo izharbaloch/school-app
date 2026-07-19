@@ -48,16 +48,6 @@ class ResultIndex extends Component
             })->orderBy('name')->get();
     }
 
-    private function getGrade($percentage): string
-    {
-        if ($percentage >= 90) return 'A+';
-        if ($percentage >= 80) return 'A';
-        if ($percentage >= 70) return 'B';
-        if ($percentage >= 60) return 'C';
-        if ($percentage >= 50) return 'D';
-        return 'F';
-    }
-
     public function getResultsProperty()
     {
         if (!$this->exam_id || !$this->student_class_id) {
@@ -70,14 +60,12 @@ class ResultIndex extends Component
             return [];
         }
 
-        // 🔥 STEP 1: Get result students only from same academic year + class
         $studentIds = ExamResult::where('exam_id', $this->exam_id)
             ->where('student_class_id', $this->student_class_id)
             ->where('academic_year', $exam->academic_year)
             ->pluck('student_id')
             ->unique();
 
-        // 🔥 STEP 2: Students load (role-filtered)
         $students = Student::allowedForUser(auth()->user())
             ->with([
                 'studentClass:id,name',
@@ -95,7 +83,6 @@ class ResultIndex extends Component
             ->orderBy('first_name')
             ->get();
 
-        // 🔥 STEP 3: Results load (SYNC FIX)
         $examResults = ExamResult::with('subject:id,name')
             ->where('exam_id', $this->exam_id)
             ->where('student_class_id', $this->student_class_id)
@@ -126,7 +113,7 @@ class ResultIndex extends Component
                 'total_obtained' => $totalObtained,
                 'total_marks' => $totalMarks,
                 'percentage' => round($percentage, 2),
-                'grade' => $this->getGrade($percentage),
+                'grade' => ExamResult::gradeForPercentage($percentage),
                 'status' => $failedSubjects > 0 ? 'Fail' : 'Pass',
             ];
         }

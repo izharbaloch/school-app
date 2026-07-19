@@ -95,17 +95,26 @@ class TeacherIndex extends Component
             return;
         }
 
-        DB::transaction(function () use ($validated) {
+        $credentialNote = '';
+
+        DB::transaction(function () use ($validated, &$credentialNote) {
             $user = null;
 
             if (!empty($validated['email'])) {
+                $temporaryPassword = User::generateTemporaryPassword();
+
                 $user = User::firstOrCreate(
                     ['email' => $validated['email']],
                     [
                         'name' => $validated['name'],
-                        'password' => bcrypt('password'),
+                        'password' => bcrypt($temporaryPassword),
+                        'must_change_password' => true,
                     ]
                 );
+
+                if ($user->wasRecentlyCreated) {
+                    $credentialNote = " Login: {$user->email} / {$temporaryPassword} (must be changed on first login).";
+                }
 
                 $user->update([
                     'name' => $validated['name'],
@@ -133,7 +142,7 @@ class TeacherIndex extends Component
             ]);
         });
 
-        session()->flash('success', 'Teacher added successfully.');
+        session()->flash('success', 'Teacher added successfully.' . $credentialNote);
 
         $this->resetForm();
         $this->showForm = false;
@@ -170,8 +179,9 @@ class TeacherIndex extends Component
         }
 
         $teacher = Teacher::allowedForUser(auth()->user())->findOrFail($this->teacherId);
+        $credentialNote = '';
 
-        DB::transaction(function () use ($validated, $teacher) {
+        DB::transaction(function () use ($validated, $teacher, &$credentialNote) {
             $user = null;
 
             if (!empty($validated['email'])) {
@@ -198,13 +208,20 @@ class TeacherIndex extends Component
                 }
 
                 if (!$user) {
+                    $temporaryPassword = User::generateTemporaryPassword();
+
                     $user = User::firstOrCreate(
                         ['email' => $validated['email']],
                         [
                             'name' => $validated['name'],
-                            'password' => bcrypt('password'),
+                            'password' => bcrypt($temporaryPassword),
+                            'must_change_password' => true,
                         ]
                     );
+
+                    if ($user->wasRecentlyCreated) {
+                        $credentialNote = " Login: {$user->email} / {$temporaryPassword} (must be changed on first login).";
+                    }
 
                     $user->update([
                         'name' => $validated['name'],
@@ -233,7 +250,7 @@ class TeacherIndex extends Component
             ]);
         });
 
-        session()->flash('success', 'Teacher updated successfully.');
+        session()->flash('success', 'Teacher updated successfully.' . $credentialNote);
 
         $this->resetForm();
         $this->showForm = false;

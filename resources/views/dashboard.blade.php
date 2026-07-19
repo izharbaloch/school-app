@@ -4,8 +4,8 @@
 @push('styles')
     <style>
         /* ══════════════════════════════════════════
-       DASHBOARD — Professional Redesign
-    ══════════════════════════════════════════ */
+                   DASHBOARD — Professional Redesign
+                ══════════════════════════════════════════ */
 
         /* Page background */
         .section-body {
@@ -597,100 +597,109 @@
         </div>
 
         {{-- ══ ROW 1B: NEW MODULE QUICK-STATS ══ --}}
-        @if (!is_null($pendingLeavesCount) || !is_null($openIncidentsCount) || !is_null($hostelOccupied) || !is_null($activeSportsMembers))
-        <div class="row mb-1">
-            @if (!is_null($pendingLeavesCount))
-            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-                <div class="kpi-card">
-                    <div class="kpi-top">
-                        <div class="kpi-icon ki-orange"><i class="fas fa-calendar-times"></i></div>
-                        <div>
-                            <div class="kpi-label">Pending Leaves</div>
-                            <div class="kpi-value">{{ $pendingLeavesCount }}</div>
-                            <div class="kpi-sub">Awaiting approval</div>
+        @if (
+            !is_null($pendingLeavesCount) ||
+                !is_null($openIncidentsCount) ||
+                !is_null($hostelOccupied) ||
+                !is_null($activeSportsMembers))
+            <div class="row mb-1">
+                @if (!is_null($pendingLeavesCount))
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="kpi-card">
+                            <div class="kpi-top">
+                                <div class="kpi-icon ki-orange"><i class="fas fa-calendar-times"></i></div>
+                                <div>
+                                    <div class="kpi-label">Pending Leaves</div>
+                                    <div class="kpi-value">{{ $pendingLeavesCount }}</div>
+                                    <div class="kpi-sub">Awaiting approval</div>
+                                </div>
+                            </div>
+                            <div class="kpi-footer">
+                                @can('leaves.view')
+                                    <a href="{{ route('leaves.index') }}" class="text-muted" style="font-size:.75rem">View
+                                        All</a>
+                                @endcan
+                                @if ($pendingLeavesCount > 0)
+                                    <span class="kpi-badge warn"><i class="fas fa-clock mr-1"></i>Pending</span>
+                                @else
+                                    <span class="kpi-badge up">All clear</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                    <div class="kpi-footer">
-                        @can('leaves.view')
-                        <a href="{{ route('leaves.index') }}" class="text-muted" style="font-size:.75rem">View All</a>
-                        @endcan
-                        @if ($pendingLeavesCount > 0)
-                            <span class="kpi-badge warn"><i class="fas fa-clock mr-1"></i>Pending</span>
-                        @else
-                            <span class="kpi-badge up">All clear</span>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            @endif
+                @endif
 
-            @if (!is_null($openIncidentsCount))
-            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-                <div class="kpi-card">
-                    <div class="kpi-top">
-                        <div class="kpi-icon ki-red"><i class="fas fa-gavel"></i></div>
-                        <div>
-                            <div class="kpi-label">Open Incidents</div>
-                            <div class="kpi-value">{{ $openIncidentsCount }}</div>
-                            <div class="kpi-sub">Conduct &amp; discipline</div>
+                @if (!is_null($openIncidentsCount))
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="kpi-card">
+                            <div class="kpi-top">
+                                <div class="kpi-icon ki-red"><i class="fas fa-gavel"></i></div>
+                                <div>
+                                    <div class="kpi-label">Open Incidents</div>
+                                    <div class="kpi-value">{{ $openIncidentsCount }}</div>
+                                    <div class="kpi-sub">Conduct &amp; discipline</div>
+                                </div>
+                            </div>
+                            <div class="kpi-footer">
+                                @can('conduct.view')
+                                    <a href="{{ route('conduct.index') }}" class="text-muted" style="font-size:.75rem">View
+                                        All</a>
+                                @endcan
+                                @if ($openIncidentsCount > 0)
+                                    <span class="kpi-badge down"><i
+                                            class="fas fa-exclamation-triangle mr-1"></i>Open</span>
+                                @else
+                                    <span class="kpi-badge up">All resolved</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                    <div class="kpi-footer">
-                        @can('conduct.view')
-                        <a href="{{ route('conduct.index') }}" class="text-muted" style="font-size:.75rem">View All</a>
-                        @endcan
-                        @if ($openIncidentsCount > 0)
-                            <span class="kpi-badge down"><i class="fas fa-exclamation-triangle mr-1"></i>Open</span>
-                        @else
-                            <span class="kpi-badge up">All resolved</span>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            @endif
+                @endif
 
-            @if (!is_null($hostelOccupied))
-            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-                <div class="kpi-card">
-                    <div class="kpi-top">
-                        <div class="kpi-icon ki-purple"><i class="fas fa-building"></i></div>
-                        <div>
-                            <div class="kpi-label">Hostel Residents</div>
-                            <div class="kpi-value">{{ $hostelOccupied }}</div>
-                            <div class="kpi-sub">Active allocations</div>
+                @if (!is_null($hostelOccupied))
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="kpi-card">
+                            <div class="kpi-top">
+                                <div class="kpi-icon ki-purple"><i class="fas fa-building"></i></div>
+                                <div>
+                                    <div class="kpi-label">Hostel Residents</div>
+                                    <div class="kpi-value">{{ $hostelOccupied }}</div>
+                                    <div class="kpi-sub">Active allocations</div>
+                                </div>
+                            </div>
+                            <div class="kpi-footer">
+                                @can('hostel.view')
+                                    <a href="{{ route('hostel.index') }}" class="text-muted"
+                                        style="font-size:.75rem">Manage</a>
+                                @endcan
+                                <span class="kpi-badge up">Active</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="kpi-footer">
-                        @can('hostel.view')
-                        <a href="{{ route('hostel.index') }}" class="text-muted" style="font-size:.75rem">Manage</a>
-                        @endcan
-                        <span class="kpi-badge up">Active</span>
-                    </div>
-                </div>
-            </div>
-            @endif
+                @endif
 
-            @if (!is_null($activeSportsMembers))
-            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
-                <div class="kpi-card">
-                    <div class="kpi-top">
-                        <div class="kpi-icon ki-teal"><i class="fas fa-futbol"></i></div>
-                        <div>
-                            <div class="kpi-label">Sports Enrollments</div>
-                            <div class="kpi-value">{{ $activeSportsMembers }}</div>
-                            <div class="kpi-sub">Active memberships</div>
+                @if (!is_null($activeSportsMembers))
+                    <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                        <div class="kpi-card">
+                            <div class="kpi-top">
+                                <div class="kpi-icon ki-teal"><i class="fas fa-futbol"></i></div>
+                                <div>
+                                    <div class="kpi-label">Sports Enrollments</div>
+                                    <div class="kpi-value">{{ $activeSportsMembers }}</div>
+                                    <div class="kpi-sub">Active memberships</div>
+                                </div>
+                            </div>
+                            <div class="kpi-footer">
+                                @can('sports.view')
+                                    <a href="{{ route('sports.index') }}" class="text-muted"
+                                        style="font-size:.75rem">Manage</a>
+                                @endcan
+                                <span class="kpi-badge up">Active</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="kpi-footer">
-                        @can('sports.view')
-                        <a href="{{ route('sports.index') }}" class="text-muted" style="font-size:.75rem">Manage</a>
-                        @endcan
-                        <span class="kpi-badge up">Active</span>
-                    </div>
-                </div>
+                @endif
             </div>
-            @endif
-        </div>
         @endif
 
         {{-- ══ ROW 2: CHARTS ══ --}}
@@ -699,7 +708,7 @@
         <div class="row mb-1">
 
             {{-- Monthly Admissions --}}
-            <div class="col-xl-5 col-lg-6 mb-3">
+            <div class="col-xl-6 col-lg-6 mb-3">
                 <div class="dash-card">
                     <div class="dc-header">
                         <h5 class="dc-title"><i class="fas fa-user-plus text-primary"></i> Monthly Admissions</h5>
@@ -711,7 +720,7 @@
             </div>
 
             {{-- Fee Collection --}}
-            <div class="col-xl-4 col-lg-6 mb-3">
+            <div class="col-xl-6 col-lg-6 mb-3">
                 <div class="dash-card">
                     <div class="dc-header">
                         <h5 class="dc-title"><i class="fas fa-coins text-success"></i> Fee Collection (Rs.)</h5>
@@ -722,8 +731,26 @@
                 </div>
             </div>
 
+        </div>
+
+        {{-- ══ ROW 3: STUDENTS BY CLASS + RECENT ADMISSIONS ══ --}}
+        <p class="dash-heading"><i class="fas fa-users"></i> Students</p>
+
+        <div class="row mb-1">
+
+            <div class="col-xl-6 col-lg-6 mb-3">
+                <div class="dash-card">
+                    <div class="dc-header">
+                        <h5 class="dc-title"><i class="fas fa-layer-group text-primary"></i> Students by Class</h5>
+                    </div>
+                    <div class="dc-body">
+                        <div class="chart-wrap"><canvas id="classBarsChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Today's Attendance Doughnut --}}
-            <div class="col-xl-3 col-lg-6 mb-3">
+            <div class="col-xl-6 col-lg-6 mb-3">
                 <div class="dash-card">
                     <div class="dc-header">
                         <h5 class="dc-title"><i class="fas fa-calendar-check text-info"></i> Today's Attendance</h5>
@@ -754,75 +781,57 @@
 
         </div>
 
-        {{-- ══ ROW 3: STUDENTS BY CLASS + RECENT ADMISSIONS ══ --}}
-        <p class="dash-heading"><i class="fas fa-users"></i> Students</p>
-
-        <div class="row mb-1">
-
-            <div class="col-xl-4 col-lg-5 mb-3">
-                <div class="dash-card">
-                    <div class="dc-header">
-                        <h5 class="dc-title"><i class="fas fa-layer-group text-primary"></i> Students by Class</h5>
-                    </div>
-                    <div class="dc-body">
-                        <div class="chart-wrap"><canvas id="classBarsChart"></canvas></div>
-                    </div>
+        <div class="col-12">
+            <div class="dash-card">
+                <div class="dc-header">
+                    <h5 class="dc-title"><i class="fas fa-user-plus text-primary"></i> Recent Admissions</h5>
+                    @can('student.view')
+                        <a href="{{ route('students.index') }}" class="btn btn-sm btn-light" style="font-size:.75rem">View
+                            All</a>
+                    @endcan
                 </div>
-            </div>
-
-            <div class="col-xl-8 col-lg-7 mb-3">
-                <div class="dash-card">
-                    <div class="dc-header">
-                        <h5 class="dc-title"><i class="fas fa-user-plus text-primary"></i> Recent Admissions</h5>
-                        @can('student.view')
-                            <a href="{{ route('students.index') }}" class="btn btn-sm btn-light"
-                                style="font-size:.75rem">View All</a>
-                        @endcan
-                    </div>
-                    <div class="dc-body-flush">
-                        <table class="table dash-table">
-                            <thead>
+                <div class="dc-body-flush">
+                    <table class="table dash-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Adm No</th>
+                                <th>Class</th>
+                                <th>Gender</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentAdmissions as $s)
                                 <tr>
-                                    <th>Student</th>
-                                    <th>Adm No</th>
-                                    <th>Class</th>
-                                    <th>Gender</th>
-                                    <th>Joined</th>
+                                    <td>
+                                        <a href="{{ route('students.show', $s) }}" class="font-weight-600 text-dark">
+                                            {{ $s->first_name }} {{ $s->last_name }}
+                                        </a>
+                                    </td>
+                                    <td><span class="badge badge-light"
+                                            style="font-size:.75rem">{{ $s->admission_no ?? '—' }}</span></td>
+                                    <td>{{ $s->studentClass->name ?? '—' }}</td>
+                                    <td>
+                                        @if ($s->gender == 'male')
+                                            <span style="color:#3b82f6;font-size:.8rem"><i
+                                                    class="fas fa-mars mr-1"></i>Male</span>
+                                        @else
+                                            <span style="color:#ec4899;font-size:.8rem"><i
+                                                    class="fas fa-venus mr-1"></i>Female</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-muted">{{ $s->created_at->format('d M Y') }}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($recentAdmissions as $s)
-                                    <tr>
-                                        <td>
-                                            <a href="{{ route('students.show', $s) }}" class="font-weight-600 text-dark">
-                                                {{ $s->first_name }} {{ $s->last_name }}
-                                            </a>
-                                        </td>
-                                        <td><span class="badge badge-light"
-                                                style="font-size:.75rem">{{ $s->admission_no ?? '—' }}</span></td>
-                                        <td>{{ $s->studentClass->name ?? '—' }}</td>
-                                        <td>
-                                            @if ($s->gender == 'male')
-                                                <span style="color:#3b82f6;font-size:.8rem"><i
-                                                        class="fas fa-mars mr-1"></i>Male</span>
-                                            @else
-                                                <span style="color:#ec4899;font-size:.8rem"><i
-                                                        class="fas fa-venus mr-1"></i>Female</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-muted">{{ $s->created_at->format('d M Y') }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-3">No admissions yet</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-3">No admissions yet</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
         </div>
 
         {{-- ══ ROW 4: RECENT PAYMENTS + FEE DEFAULTERS ══ --}}

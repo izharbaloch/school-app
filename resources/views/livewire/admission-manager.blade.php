@@ -172,8 +172,9 @@
                 </div>
 
                 <div class="d-flex" style="gap:8px;">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save mr-1"></i> {{ $editId ? 'Update' : 'Submit Application' }}
+                    <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="{{ $editId ? 'update' : 'save' }}">
+                        <span wire:loading.remove wire:target="{{ $editId ? 'update' : 'save' }}"><i class="fas fa-save mr-1"></i> {{ $editId ? 'Update' : 'Submit Application' }}</span>
+                        <span wire:loading wire:target="{{ $editId ? 'update' : 'save' }}"><i class="fas fa-spinner fa-spin mr-1"></i> {{ $editId ? 'Update' : 'Submit Application' }}</span>
                     </button>
                     <button type="button" class="btn btn-secondary" wire:click="cancel">
                         <i class="fas fa-times mr-1"></i> Cancel
@@ -220,21 +221,22 @@
                                 <td><small>{{ $app->created_at->format('d M Y') }}</small></td>
                                 <td>
                                     <a href="{{ route('admissions.show', $app->id) }}"
-                                        class="btn btn-sm btn-info">View</a>
+                                        class="btn btn-sm btn-outline-info" title="View"><i class="fas fa-eye"></i></a>
 
                                     @can('admissions.edit')
                                         @if (!in_array($app->status, ['enrolled']))
-                                            <button class="btn btn-sm btn-warning"
-                                                wire:click="edit({{ $app->id }})">Edit</button>
+                                            <button class="btn btn-sm btn-outline-primary"
+                                                wire:click="edit({{ $app->id }})" title="Edit"><i class="fas fa-edit"></i></button>
                                         @endif
                                     @endcan
 
                                     @can('admissions.delete')
                                         @if ($app->status === 'pending')
-                                            <button class="btn btn-sm btn-danger"
+                                            <button class="btn btn-sm btn-outline-danger"
                                                 wire:click="delete({{ $app->id }})"
-                                                onclick="confirm('Delete this application?') || event.stopImmediatePropagation()">
-                                                Del
+                                                wire:confirm="Delete this application?"
+                                                wire:loading.attr="disabled" wire:target="delete" title="Delete">
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                         @endif
                                     @endcan

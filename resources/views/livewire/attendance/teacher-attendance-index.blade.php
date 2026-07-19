@@ -200,8 +200,9 @@
                         <button type="button" class="btn btn-secondary" wire:click="$set('deleteId', null)">
                             Cancel
                         </button>
-                        <button type="button" class="btn btn-danger" wire:click="delete()">
-                            <i class="fas fa-trash"></i> Delete
+                        <button type="button" class="btn btn-danger" wire:click="delete()" wire:loading.attr="disabled" wire:target="delete">
+                            <span wire:loading.remove wire:target="delete"><i class="fas fa-trash"></i> Delete</span>
+                            <span wire:loading wire:target="delete"><i class="fas fa-spinner fa-spin"></i> Delete</span>
                         </button>
                     </div>
                 </div>

@@ -94,7 +94,10 @@
             </div>
         </div>
         <div class="d-flex gap-2">
-            <button wire:click="saveEnroll" class="btn btn-success btn-sm">Save</button>
+            <button wire:click="saveEnroll" type="button" class="btn btn-success btn-sm" wire:loading.attr="disabled" wire:target="saveEnroll">
+                <span wire:loading.remove wire:target="saveEnroll">Save</span>
+                <span wire:loading wire:target="saveEnroll"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button wire:click="cancelForms" class="btn btn-secondary btn-sm">Cancel</button>
         </div>
     </div>
@@ -117,13 +120,14 @@
             <td class="text-nowrap">{{ $e->joined_date->format('d M Y') }}</td>
             <td>
                 @if ($e->status) <span class="badge badge-success">Active</span>
-                @else <span class="badge badge-secondary">Inactive</span> @endif
+                @else <span class="badge badge-danger">Inactive</span> @endif
             </td>
             @if ($canManage)
             <td class="text-nowrap">
-                <button wire:click="editEnroll({{ $e->id }})" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                <button wire:click="editEnroll({{ $e->id }})" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
                 <button wire:click="deleteEnroll({{ $e->id }})" wire:confirm="Remove {{ $e->student->full_name }} from this activity?"
-                        class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        wire:loading.attr="disabled" wire:target="deleteEnroll"
+                        class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
             </td>
             @endif
         </tr>
@@ -224,7 +228,10 @@
             </div>
         </div>
         <div class="d-flex gap-2">
-            <button wire:click="saveActivity" class="btn btn-success btn-sm">Save</button>
+            <button wire:click="saveActivity" type="button" class="btn btn-success btn-sm" wire:loading.attr="disabled" wire:target="saveActivity">
+                <span wire:loading.remove wire:target="saveActivity">Save</span>
+                <span wire:loading wire:target="saveActivity"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button wire:click="cancelForms" class="btn btn-secondary btn-sm">Cancel</button>
         </div>
     </div>
@@ -251,16 +258,17 @@
                 </td>
                 <td>
                     @if ($act->status) <span class="badge badge-success">Active</span>
-                    @else <span class="badge badge-secondary">Inactive</span> @endif
+                    @else <span class="badge badge-danger">Inactive</span> @endif
                 </td>
                 <td class="text-nowrap">
                     <button wire:click="selectActivity({{ $act->id }})" class="btn btn-sm btn-outline-info" title="View Members">
                         <i class="fas fa-users"></i>
                     </button>
                     @if ($canManage)
-                    <button wire:click="editActivity({{ $act->id }})" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button wire:click="editActivity({{ $act->id }})" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
                     <button wire:click="deleteActivity({{ $act->id }})" wire:confirm="Delete '{{ $act->name }}'? All enrollments will also be removed."
-                            class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            wire:loading.attr="disabled" wire:target="deleteActivity"
+                            class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></button>
                     @endif
                 </td>
             </tr>

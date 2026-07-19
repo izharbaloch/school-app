@@ -105,6 +105,8 @@ class StudentPromotion extends Component
 
     public function promote(): void
     {
+        $this->authorize('create', PromotionModel::class);
+
         $this->validate();
 
         if (empty($this->selectedStudents)) {

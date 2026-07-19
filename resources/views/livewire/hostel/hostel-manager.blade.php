@@ -89,7 +89,10 @@
             <input type="text" wire:model.defer="h_address" class="form-control" placeholder="Hostel address">
         </div>
         <div class="d-flex gap-2">
-            <button wire:click="saveHostel" class="btn btn-success btn-sm">Save</button>
+            <button wire:click="saveHostel" class="btn btn-success btn-sm" wire:loading.attr="disabled" wire:target="saveHostel">
+                <span wire:loading.remove wire:target="saveHostel">Save</span>
+                <span wire:loading wire:target="saveHostel"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button wire:click="cancelAll" class="btn btn-secondary btn-sm">Cancel</button>
         </div>
     </div>
@@ -117,13 +120,14 @@
                 <td class="text-center">{{ $h->occupied_count }}</td>
                 <td>
                     @if ($h->status) <span class="badge badge-success">Active</span>
-                    @else <span class="badge badge-secondary">Inactive</span> @endif
+                    @else <span class="badge badge-danger">Inactive</span> @endif
                 </td>
                 @if ($canManage)
                 <td class="text-nowrap">
-                    <button wire:click="editHostel({{ $h->id }})" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button wire:click="editHostel({{ $h->id }})" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
                     <button wire:click="deleteHostel({{ $h->id }})" wire:confirm="Delete '{{ $h->name }}'? All rooms and allocations will be removed."
-                            class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            class="btn btn-sm btn-outline-danger" title="Delete"
+                            wire:loading.attr="disabled" wire:target="deleteHostel({{ $h->id }})"><i class="fas fa-trash"></i></button>
                 </td>
                 @endif
             </tr>
@@ -220,7 +224,10 @@
             </div>
         </div>
         <div class="d-flex gap-2">
-            <button wire:click="saveRoom" class="btn btn-success btn-sm">Save</button>
+            <button wire:click="saveRoom" class="btn btn-success btn-sm" wire:loading.attr="disabled" wire:target="saveRoom">
+                <span wire:loading.remove wire:target="saveRoom">Save</span>
+                <span wire:loading wire:target="saveRoom"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button wire:click="cancelAll" class="btn btn-secondary btn-sm">Cancel</button>
         </div>
     </div>
@@ -252,9 +259,10 @@
                 </td>
                 @if ($canManage)
                 <td class="text-nowrap">
-                    <button wire:click="editRoom({{ $room->id }})" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button wire:click="editRoom({{ $room->id }})" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
                     <button wire:click="deleteRoom({{ $room->id }})" wire:confirm="Delete room {{ $room->room_number }}?"
-                            class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            class="btn btn-sm btn-outline-danger" title="Delete"
+                            wire:loading.attr="disabled" wire:target="deleteRoom({{ $room->id }})"><i class="fas fa-trash"></i></button>
                 </td>
                 @endif
             </tr>
@@ -380,7 +388,10 @@
             </div>
         </div>
         <div class="d-flex gap-2">
-            <button wire:click="saveAlloc" class="btn btn-success btn-sm">Save</button>
+            <button wire:click="saveAlloc" class="btn btn-success btn-sm" wire:loading.attr="disabled" wire:target="saveAlloc">
+                <span wire:loading.remove wire:target="saveAlloc">Save</span>
+                <span wire:loading wire:target="saveAlloc"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
             <button wire:click="cancelAll" class="btn btn-secondary btn-sm">Cancel</button>
         </div>
     </div>
@@ -404,9 +415,10 @@
                 <td><span class="badge badge-{{ $alloc->status_badge }}">{{ ucfirst($alloc->status) }}</span></td>
                 @if ($canManage)
                 <td class="text-nowrap">
-                    <button wire:click="editAlloc({{ $alloc->id }})" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></button>
+                    <button wire:click="editAlloc({{ $alloc->id }})" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
                     <button wire:click="deleteAlloc({{ $alloc->id }})" wire:confirm="Remove this allocation?"
-                            class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                            class="btn btn-sm btn-outline-danger" title="Delete"
+                            wire:loading.attr="disabled" wire:target="deleteAlloc({{ $alloc->id }})"><i class="fas fa-trash"></i></button>
                 </td>
                 @endif
             </tr>

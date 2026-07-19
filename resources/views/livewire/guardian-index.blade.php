@@ -3,10 +3,12 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4>Guardians List</h4>
 
+            @can('parents.create')
             <button type="button" class="btn btn-primary" wire:click="toggleForm">
                 <i class="fas fa-plus mr-1"></i>
                 {{ $showForm ? 'Close Form' : 'Add Guardian' }}
             </button>
+            @endcan
         </div>
 
         <div class="card-body">
@@ -16,9 +18,18 @@
                 </div>
             @endif
 
+            @if (session()->has('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             @if ($showForm)
-                <div class="border rounded p-3 mb-4">
-                    <h5 class="mb-3">{{ $guardianId ? 'Edit Guardian' : 'Add Guardian' }}</h5>
+                <div class="card border-primary shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">{{ $guardianId ? 'Edit Guardian' : 'Add Guardian' }}</h6>
+                    </div>
+                    <div class="card-body">
 
                     <form wire:submit.prevent="save">
                         <div class="form-row">
@@ -105,9 +116,9 @@
                         </div>
 
                         <div class="d-flex mt-3">
-                            <button type="submit" class="btn btn-success mr-2">
-                                <i class="fas fa-save mr-1"></i>
-                                {{ $guardianId ? 'Update Guardian' : 'Save Guardian' }}
+                            <button type="submit" class="btn btn-success mr-2" wire:loading.attr="disabled" wire:target="save">
+                                <span wire:loading.remove wire:target="save"><i class="fas fa-save mr-1"></i>{{ $guardianId ? 'Update Guardian' : 'Save Guardian' }}</span>
+                                <span wire:loading wire:target="save"><i class="fas fa-spinner fa-spin mr-1"></i>Saving...</span>
                             </button>
 
                             <button type="button" class="btn btn-secondary" wire:click="resetForm">
@@ -115,6 +126,7 @@
                             </button>
                         </div>
                     </form>
+                    </div>
                 </div>
             @endif
 
@@ -160,11 +172,26 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @can('parents.edit')
                                     <button type="button"
-                                        class="btn btn-sm btn-primary"
-                                        wire:click="edit({{ $parent->id }})">
-                                        Edit
+                                        class="btn btn-sm btn-outline-primary"
+                                        wire:click="edit({{ $parent->id }})"
+                                        wire:loading.attr="disabled"
+                                        title="Edit">
+                                        <i class="fas fa-edit"></i>
                                     </button>
+                                    @endcan
+                                    @can('parents.delete')
+                                    <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        wire:click="delete({{ $parent->id }})"
+                                        wire:confirm="Delete this guardian? This cannot be undone."
+                                        wire:loading.attr="disabled"
+                                        wire:target="delete({{ $parent->id }})"
+                                        title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    @endcan
                                 </td>
                             </tr>
                         @empty

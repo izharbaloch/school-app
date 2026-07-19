@@ -148,7 +148,8 @@
                             <div class="card-body">
                                 <p class="text-muted small mb-3">
                                     Creates a student record, guardian account, and portal login from this application.
-                                    Default password: <code>changeme123!</code>
+                                    A random temporary password will be generated and shown once after enrolling —
+                                    share it with the guardian; they'll be required to change it on first login.
                                 </p>
                                 <form action="{{ route('admissions.enroll', $admission) }}" method="POST">
                                     @csrf

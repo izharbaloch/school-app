@@ -142,83 +142,106 @@ class ExamMarkEntry extends Component
 
     public function save()
     {
-        DB::transaction(function () {
+        abort_unless(auth()->user()->can('marks.create'), 403);
 
-            $exam = Exam::find($this->exam_id);
-            if (!$exam) return;
+        $exam = Exam::find($this->exam_id);
+        if (!$exam) {
+            session()->flash('error', 'Please select a valid exam.');
+            return;
+        }
 
-            // preload subjects (optimization)
-            $subjects = Subject::whereIn('id', collect($this->subjects)->pluck('id'))->get()->keyBy('id');
+        $subjects = Subject::whereIn('id', collect($this->subjects)->pluck('id'))->get()->keyBy('id');
 
+        foreach ($this->students as $index => $student) {
+            foreach ($student['subjects'] as $subject_id => $marks) {
+                $subject = $subjects[$subject_id] ?? null;
+                if (!$subject) continue;
+
+                $obtained = $marks['obtained_marks'];
+
+                if (!is_numeric($obtained) || $obtained < 0 || $obtained > $subject->total_marks) {
+                    $this->addError(
+                        "students.{$index}.subjects.{$subject_id}.obtained_marks",
+                        "Marks for {$student['name']} in {$subject->name} must be between 0 and {$subject->total_marks}."
+                    );
+                }
+            }
+        }
+
+        if ($this->getErrorBag()->isNotEmpty()) {
+            return;
+        }
+
+        $canPromote = $this->is_promoted && auth()->user()->can('students.edit');
+        if ($this->is_promoted && !$canPromote) {
+            session()->flash('warning', 'You do not have permission to promote students — marks were saved but promotion was skipped.');
+        }
+
+        $studentIds = collect($this->students)->pluck('student_id');
+
+        $existingResults = ExamResult::where('exam_id', $this->exam_id)
+            ->where('student_class_id', $this->student_class_id)
+            ->where('academic_year', $exam->academic_year)
+            ->whereIn('student_id', $studentIds)
+            ->get()
+            ->keyBy(fn($result) => $result->student_id . '_' . $result->subject_id);
+
+        $studentModels = $canPromote
+            ? Student::whereIn('id', $studentIds)->get()->keyBy('id')
+            : collect();
+
+        DB::transaction(function () use ($exam, $subjects, $existingResults, $studentModels, $canPromote) {
             foreach ($this->students as $student) {
-
                 $isFail = false;
 
                 foreach ($student['subjects'] as $subject_id => $marks) {
-
                     $subject = $subjects[$subject_id] ?? null;
                     if (!$subject) continue;
 
-                    // 🔥 SMART CHECK (NO OVERWRITE ISSUE)
-                    $existingResult = ExamResult::where('exam_id', $this->exam_id)
-                        ->where('student_id', $student['student_id'])
-                        ->where('subject_id', $subject_id)
-                        ->where('academic_year', $exam->academic_year)
-                        ->where('student_class_id', $this->student_class_id)
-                        ->first();
+                    $key = $student['student_id'] . '_' . $subject_id;
+                    $existingResult = $existingResults[$key] ?? null;
+
+                    $payload = [
+                        'obtained_marks' => $marks['obtained_marks'],
+                        'total_marks' => $subject->total_marks,
+                        'passing_marks' => $subject->passing_marks,
+                        'remarks' => $marks['remarks'],
+                    ];
 
                     if ($existingResult) {
-                        // UPDATE
-                        $existingResult->update([
-                            'obtained_marks' => $marks['obtained_marks'],
-                            'total_marks' => $subject->total_marks,
-                            'passing_marks' => $subject->passing_marks,
-                            'remarks' => $marks['remarks'],
-                        ]);
+                        $existingResult->update($payload);
                     } else {
-                        // CREATE NEW (history safe)
-                        ExamResult::create([
+                        ExamResult::create($payload + [
                             'exam_id' => $this->exam_id,
                             'student_id' => $student['student_id'],
                             'subject_id' => $subject_id,
                             'student_class_id' => $this->student_class_id,
                             'academic_year' => $exam->academic_year,
-                            'obtained_marks' => $marks['obtained_marks'],
-                            'total_marks' => $subject->total_marks,
-                            'passing_marks' => $subject->passing_marks,
-                            'remarks' => $marks['remarks'],
                         ]);
                     }
 
-                    // Fail check
                     if ($marks['obtained_marks'] < $subject->passing_marks) {
                         $isFail = true;
                     }
                 }
 
-                // 🔥 PROMOTION LOGIC (FINAL TERM ONLY)
-                if ($this->is_promoted && stripos($exam->name, 'final') !== false) {
-
-                    $studentModel = Student::find($student['student_id']);
+                if ($canPromote && stripos($exam->name, 'final') !== false) {
+                    $studentModel = $studentModels[$student['student_id']] ?? null;
                     if (!$studentModel) continue;
 
                     if ($isFail) {
                         $studentModel->update(['is_failed' => 1]);
                     } else {
-
                         $nextClass = StudentClass::where('id', '>', $studentModel->student_class_id)
                             ->orderBy('id')
                             ->first();
 
                         if ($nextClass) {
-
-                            // prevent duplicate promotion
                             $alreadyPromoted = StudentPromotion::where('student_id', $studentModel->id)
                                 ->where('exam_id', $this->exam_id)
                                 ->exists();
 
                             if (!$alreadyPromoted) {
-
                                 StudentPromotion::create([
                                     'student_id' => $studentModel->id,
                                     'from_class_id' => $studentModel->student_class_id,
@@ -230,7 +253,6 @@ class ExamMarkEntry extends Component
 
                                 $studentModel->update([
                                     'student_class_id' => $nextClass->id,
-                                    // 'status' => 'pass_out',
                                     'is_failed' => 0,
                                 ]);
                             }
@@ -240,7 +262,7 @@ class ExamMarkEntry extends Component
             }
         });
 
-        session()->flash('success', 'Marks saved successfully ✅');
+        session()->flash('success', 'Marks saved successfully.');
         $this->loadData();
     }
 

@@ -38,15 +38,17 @@
                         </div>
 
                         @if ($roleEditId)
-                            <button type="submit" class="btn btn-primary mr-2">
-                                <i class="fas fa-save mr-1"></i> Update Role
+                            <button type="submit" class="btn btn-primary mr-2" wire:loading.attr="disabled" wire:target="updateRole">
+                                <span wire:loading.remove wire:target="updateRole"><i class="fas fa-save mr-1"></i> Update Role</span>
+                                <span wire:loading wire:target="updateRole"><i class="fas fa-spinner fa-spin mr-1"></i> Update Role</span>
                             </button>
                             <button type="button" class="btn btn-secondary" wire:click="cancelRoleEdit">
                                 <i class="fas fa-times mr-1"></i> Cancel
                             </button>
                         @else
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save mr-1"></i> Save Role
+                            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="saveRole">
+                                <span wire:loading.remove wire:target="saveRole"><i class="fas fa-save mr-1"></i> Save Role</span>
+                                <span wire:loading wire:target="saveRole"><i class="fas fa-spinner fa-spin mr-1"></i> Save Role</span>
                             </button>
                         @endif
                     </form>
@@ -71,14 +73,15 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-primary"
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
                                                 wire:click="editRole({{ $role->id }})" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             @if (strtolower($role->name) !== 'super admin')
-                                                <button type="button" class="btn btn-sm btn-danger"
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
                                                     wire:click="deleteRole({{ $role->id }})"
                                                     wire:confirm="Delete role '{{ $role->name }}'? This cannot be undone."
+                                                    wire:loading.attr="disabled" wire:target="deleteRole"
                                                     title="Delete">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -126,15 +129,17 @@
                         </div>
 
                         @if ($permissionEditId)
-                            <button type="submit" class="btn btn-primary mr-2">
-                                <i class="fas fa-save mr-1"></i> Update Permission
+                            <button type="submit" class="btn btn-primary mr-2" wire:loading.attr="disabled" wire:target="updatePermission">
+                                <span wire:loading.remove wire:target="updatePermission"><i class="fas fa-save mr-1"></i> Update Permission</span>
+                                <span wire:loading wire:target="updatePermission"><i class="fas fa-spinner fa-spin mr-1"></i> Update Permission</span>
                             </button>
                             <button type="button" class="btn btn-secondary" wire:click="cancelPermissionEdit">
                                 <i class="fas fa-times mr-1"></i> Cancel
                             </button>
                         @else
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save mr-1"></i> Save Permission
+                            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="savePermission">
+                                <span wire:loading.remove wire:target="savePermission"><i class="fas fa-save mr-1"></i> Save Permission</span>
+                                <span wire:loading wire:target="savePermission"><i class="fas fa-spinner fa-spin mr-1"></i> Save Permission</span>
                             </button>
                         @endif
                     </form>
@@ -154,13 +159,14 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td><small>{{ $permission->name }}</small></td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-primary"
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
                                                 wire:click="editPermission({{ $permission->id }})" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button type="button" class="btn btn-sm btn-danger"
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
                                                 wire:click="deletePermission({{ $permission->id }})"
                                                 wire:confirm="Delete permission '{{ $permission->name }}'?"
+                                                wire:loading.attr="disabled" wire:target="deletePermission"
                                                 title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -383,15 +389,17 @@
 
                             <div class="form-group col-md-1 d-flex align-items-end">
                                 @if ($userEditId)
-                                    <button type="submit" class="btn btn-primary mr-1" title="Save">
-                                        <i class="fas fa-save"></i>
+                                    <button type="submit" class="btn btn-primary mr-1" title="Save" wire:loading.attr="disabled" wire:target="updateUser">
+                                        <span wire:loading.remove wire:target="updateUser"><i class="fas fa-save"></i></span>
+                                        <span wire:loading wire:target="updateUser"><i class="fas fa-spinner fa-spin"></i></span>
                                     </button>
                                     <button type="button" class="btn btn-secondary" wire:click="cancelUserEdit" title="Cancel">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 @else
-                                    <button type="submit" class="btn btn-primary" title="Add User">
-                                        <i class="fas fa-plus"></i>
+                                    <button type="submit" class="btn btn-primary" title="Add User" wire:loading.attr="disabled" wire:target="saveUser">
+                                        <span wire:loading.remove wire:target="saveUser"><i class="fas fa-plus"></i></span>
+                                        <span wire:loading wire:target="saveUser"><i class="fas fa-spinner fa-spin"></i></span>
                                     </button>
                                 @endif
                             </div>
@@ -428,14 +436,15 @@
                                             @endforelse
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-primary"
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
                                                 wire:click="editUser({{ $user->id }})" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             @if ($user->id != auth()->id())
-                                                <button type="button" class="btn btn-sm btn-danger"
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
                                                     wire:click="deleteUser({{ $user->id }})"
                                                     wire:confirm="Delete user {{ $user->name }}? This cannot be undone."
+                                                    wire:loading.attr="disabled" wire:target="deleteUser"
                                                     title="Delete">
                                                     <i class="fas fa-trash"></i>
                                                 </button>

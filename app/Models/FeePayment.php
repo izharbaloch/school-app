@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FeePayment extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'student_fee_id',
         'payment_date',
@@ -18,6 +21,7 @@ class FeePayment extends Model
 
     protected $casts = [
         'payment_date' => 'date',
+        'amount' => 'decimal:2',
     ];
 
     public function studentFee()

@@ -2,9 +2,13 @@
 
 namespace App\Livewire\Fees;
 
+use App\Mail\FeePaymentReceiptMail;
 use App\Models\FeePayment;
+use App\Models\SchoolSetting;
 use App\Models\StudentFee;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Component;
 
 class FeePaymentCreate extends Component
@@ -19,6 +23,9 @@ class FeePaymentCreate extends Component
 
     public function mount(StudentFee $studentFee)
     {
+        $this->authorize('create', FeePayment::class);
+        abort_unless(StudentFee::allowedForUser(auth()->user())->whereKey($studentFee->id)->exists(), 403);
+
         $this->studentFee = $studentFee->load([
             'student.studentClass:id,name',
             'student.section:id,name',
@@ -42,6 +49,14 @@ class FeePaymentCreate extends Component
 
     public function save()
     {
+        $rateLimitKey = 'fee-payment:' . auth()->id();
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 15)) {
+            $this->addError('amount', 'Too many payment submissions — please wait a moment and try again.');
+            return;
+        }
+        RateLimiter::hit($rateLimitKey, 60);
+
         $this->validate();
 
         $remaining = $this->studentFee->remaining_amount;
@@ -51,8 +66,10 @@ class FeePaymentCreate extends Component
             return;
         }
 
-        DB::transaction(function () {
-            FeePayment::create([
+        $payment = null;
+
+        DB::transaction(function () use (&$payment) {
+            $payment = FeePayment::create([
                 'student_fee_id' => $this->studentFee->id,
                 'payment_date' => $this->payment_date,
                 'amount' => $this->amount,
@@ -80,6 +97,19 @@ class FeePaymentCreate extends Component
                 'status' => $status,
             ]);
         });
+
+        if ($payment && SchoolSetting::get('notifications_enabled', '1') === '1') {
+            $email = $this->studentFee->student->guardian_email
+                ?? $this->studentFee->student->guardian?->email;
+            if ($email) {
+                try {
+                    $this->studentFee->refresh();
+                    Mail::to($email)->queue(new FeePaymentReceiptMail($this->studentFee, $payment));
+                } catch (\Exception) {
+                    // mail failure must not break payment recording
+                }
+            }
+        }
 
         session()->flash('success', 'Payment saved successfully.');
 

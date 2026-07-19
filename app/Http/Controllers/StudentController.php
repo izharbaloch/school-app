@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -60,14 +58,8 @@ class StudentController extends Controller
     {
         $this->authorize('delete', $student);
 
-        $student->load('attachments');
-
-        foreach ($student->attachments as $attachment) {
-            if ($attachment->file_path && Storage::disk('public')->exists($attachment->file_path)) {
-                Storage::disk('public')->delete($attachment->file_path);
-            }
-        }
-
+        // Soft delete only — attachments and financial/academic history stay on
+        // disk and in the database so the student can be restored if needed.
         $student->delete();
 
         return redirect()
